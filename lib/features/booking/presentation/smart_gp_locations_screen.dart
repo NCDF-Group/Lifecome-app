@@ -49,7 +49,7 @@ class SmartGpLocationsScreen extends StatelessWidget {
                 city: 'London',
                 image: 'assets/images/home/smart-gp-london.jpg',
                 chip: 'Check availability',
-                chipColor: const Color(0xFFFBEFB4),
+                chipColor: AppColors.tintYellowStrong,
               ),
             ),
             const SizedBox(height: 24),
@@ -61,7 +61,7 @@ class SmartGpLocationsScreen extends StatelessWidget {
                 city: 'Lagos',
                 image: 'assets/images/home/smart-gp-city.jpg',
                 chip: 'View location',
-                chipColor: const Color(0xFFDDF0FC),
+                chipColor: AppColors.tintBlue,
               ),
             ),
           ],
@@ -164,7 +164,7 @@ class _LocationCardState extends ConsumerState<_LocationCard> {
               child: Container(
                 padding: const EdgeInsets.fromLTRB(12, 10, 14, 10),
                 decoration: BoxDecoration(
-                  color: AppColors.white,
+                  color: AppColors.background,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -177,7 +177,7 @@ class _LocationCardState extends ConsumerState<_LocationCard> {
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.5,
-                        color: AppColors.onIllustration,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -195,7 +195,7 @@ class _LocationCardState extends ConsumerState<_LocationCard> {
                         style: TextStyle(
                           fontSize: 14,
                           letterSpacing: -0.2,
-                          color: AppColors.onIllustration,
+                          color: AppColors.textPrimary,
                         ),
                       ),
                     ),

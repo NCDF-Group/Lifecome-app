@@ -205,11 +205,8 @@ class _ServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // The artwork has its own pale background, so this card stays light in dark mode too.
     return SoftCard(
       onTap: onTap,
-      fill: AppColors.illustrationFill,
-      borderColor: const Color(0xFFD7DAE0),
       padding: const EdgeInsets.fromLTRB(18, 20, 14, 22),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,7 +229,7 @@ class _ServiceCard extends StatelessWidget {
               fontSize: 19,
               fontWeight: FontWeight.w800,
               letterSpacing: -0.4,
-              color: AppColors.onIllustration,
+              color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 6),
@@ -242,7 +239,7 @@ class _ServiceCard extends StatelessWidget {
               fontSize: 13.5,
               height: 1.45,
               letterSpacing: -0.2,
-              color: AppColors.onIllustrationMuted,
+              color: AppColors.textSecondary,
             ),
           ),
         ],

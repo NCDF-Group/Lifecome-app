@@ -99,8 +99,7 @@ the theme live in `AppColors` as getters (`background`, `textPrimary`, `cardFill
 light and a dark palette; brand and accent colours (`actionBlue`, `accentGreen`, ...) are constants. The
 palette is global and is switched in `app.dart` before any screen builds, and the whole UI rebuilds when the
 brightness changes - so use the getters, never a hard-coded hex, for anything that should follow the theme.
-Because they are getters, expressions using them can't be `const`. The Online GP / Smart GP Clinic cards stay
-light in both themes because their artwork has a pale background baked in.
+Because they are getters, expressions using them can't be `const`. The Online GP / Smart GP Clinic illustrations are transparent PNGs, so those cards go dark too.
 
 ## Navigation
 

@@ -77,12 +77,6 @@ abstract final class AppColors {
   static Color get successText => _p.successText;
   static Color get warningText => _p.warningText;
 
-  /// Cards that hold a fixed light illustration (Online GP, Smart GP Clinic): the artwork has its own
-  /// pale background baked in, so these stay light in dark mode too.
-  static const illustrationFill = Color(0xFFF5F9FD);
-  static const onIllustration = Color(0xFF24262D);
-  static const onIllustrationMuted = Color(0xFF667085);
-
   /// Icon accents of the revamped screens (sampled from the designs).
   static const accentLime = Color(0xFFA2D610);
   static const accentGreen = Color(0xFF49AA02);
