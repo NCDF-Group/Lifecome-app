@@ -34,9 +34,9 @@ class SelectHmoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Select your HMO',
           style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
         ),
@@ -45,7 +45,7 @@ class SelectHmoScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
-            const Text(
+            Text(
               "Choose your health plan from our participating HMOs. If you can't see "
               'your HMO, you can still pay directly.',
               style: TextStyle(
@@ -68,7 +68,7 @@ class SelectHmoScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.md),
-            const Text(
+            Text(
               'Participating HMOs',
               style: TextStyle(
                 fontSize: 16,
@@ -85,14 +85,14 @@ class SelectHmoScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFE8F4FC),
+                color: AppColors.tintBlue,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
                 children: [
                   const Icon(Icons.info_outline, color: AppColors.blue),
                   const SizedBox(width: AppSpacing.sm),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       "Can't find your HMO? You can still pay directly for your consultation.",
                       style: TextStyle(fontSize: 13, color: AppColors.ink),
@@ -124,7 +124,7 @@ class _HmoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: isDefault ? const Color(0xFFEAF7E8) : AppColors.white,
+      color: isDefault ? AppColors.tintGreenSoft : AppColors.background,
       borderRadius: BorderRadius.circular(AppRadius.control),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.control),
@@ -157,7 +157,7 @@ class _HmoTile extends StatelessWidget {
                   children: [
                     Text(
                       hmo.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
                         color: AppColors.ink,
@@ -165,10 +165,7 @@ class _HmoTile extends StatelessWidget {
                     ),
                     Text(
                       hmo.tagline,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.inkMuted,
-                      ),
+                      style: TextStyle(fontSize: 12, color: AppColors.inkMuted),
                     ),
                   ],
                 ),
@@ -193,7 +190,7 @@ class _HmoTile extends StatelessWidget {
                   ),
                 )
               else
-                const Icon(Icons.chevron_right, color: AppColors.inkMuted),
+                Icon(Icons.chevron_right, color: AppColors.inkMuted),
             ],
           ),
         ),

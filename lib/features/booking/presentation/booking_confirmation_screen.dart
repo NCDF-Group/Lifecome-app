@@ -28,7 +28,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
         showComingSoonPopup(context, feature: feature);
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -42,15 +42,15 @@ class BookingConfirmationScreen extends ConsumerWidget {
                 Container(
                   width: 56,
                   height: 56,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Color(0xFFD9F9E3),
+                    color: AppColors.tintGreenSoft,
                   ),
-                  child: const Center(
+                  child: Center(
                     child: AppSvgIcon(
                       AppSvgGlyph.checkCircleBold,
                       size: 30,
-                      color: Color(0xFF1B9C4A),
+                      color: AppColors.successText,
                     ),
                   ),
                 ),
@@ -63,7 +63,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
                         inPerson
                             ? 'Clinic appointment confirmed'
                             : 'Online appointment confirmed',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 24,
                           height: 1.25,
                           fontWeight: FontWeight.w800,
@@ -72,7 +72,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      const Text(
+                      Text(
                         "Your appointment has been booked. You'll receive a "
                         'confirmation message.',
                         style: TextStyle(
@@ -129,16 +129,16 @@ class BookingConfirmationScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF3FAEF),
+                  color: AppColors.tintGreenSoft,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: AppColors.cardBorder),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
                     IconCircle(
                       glyph: AppSvgGlyph.checkCircleBold,
-                      color: Color(0xFF1B9C4A),
-                      fill: Color(0xFFD9F9E3),
+                      color: AppColors.successText,
+                      fill: AppColors.tintGreenSoft,
                       size: 50,
                       iconSize: 26,
                     ),
@@ -153,7 +153,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
                               fontSize: 21,
                               fontWeight: FontWeight.w800,
                               letterSpacing: -0.5,
-                              color: Color(0xFF1B9C4A),
+                              color: AppColors.successText,
                             ),
                           ),
                           SizedBox(height: 2),

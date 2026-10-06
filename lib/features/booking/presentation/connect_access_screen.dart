@@ -62,7 +62,7 @@ class _ConnectAccessScreenState extends ConsumerState<ConnectAccessScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -82,7 +82,7 @@ class _ConnectAccessScreenState extends ConsumerState<ConnectAccessScreen> {
                 onTap: () => setState(() => _selected = option),
               ),
             const SizedBox(height: 26),
-            const Text(
+            Text(
               'Membership or access reference',
               style: TextStyle(
                 fontSize: 15,
@@ -95,18 +95,15 @@ class _ConnectAccessScreenState extends ConsumerState<ConnectAccessScreen> {
             TextField(
               controller: _codeController,
               textCapitalization: TextCapitalization.characters,
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.textPrimary,
-              ),
+              style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
               decoration: InputDecoration(
                 hintText: 'Enter code',
-                hintStyle: const TextStyle(
+                hintStyle: TextStyle(
                   fontSize: 16,
                   color: AppColors.textSecondary,
                 ),
                 filled: true,
-                fillColor: const Color(0xFFF6F7F9),
+                fillColor: AppColors.inputFill,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 18,
@@ -122,7 +119,7 @@ class _ConnectAccessScreenState extends ConsumerState<ConnectAccessScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Check your eligibility',
                     style: TextStyle(
                       fontSize: 20,
@@ -132,7 +129,7 @@ class _ConnectAccessScreenState extends ConsumerState<ConnectAccessScreen> {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     "We'll confirm your access and show your available "
                     'benefits',
                     style: TextStyle(
@@ -149,7 +146,7 @@ class _ConnectAccessScreenState extends ConsumerState<ConnectAccessScreen> {
                       children: [
                         _Checkbox(checked: _confirmed),
                         const SizedBox(width: 14),
-                        const Text(
+                        Text(
                           'Check my eligibility',
                           style: TextStyle(
                             fontSize: 16,
@@ -208,8 +205,8 @@ class _OptionRow extends StatelessWidget {
       child: SoftCard(
         onTap: onTap,
         radius: 12,
-        fill: selected ? AppColors.cardFill : AppColors.white,
-        borderColor: selected ? AppColors.cardBorder : AppColors.white,
+        fill: selected ? AppColors.cardFill : AppColors.background,
+        borderColor: selected ? AppColors.cardBorder : AppColors.background,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
@@ -221,7 +218,7 @@ class _OptionRow extends StatelessWidget {
             Expanded(
               child: Text(
                 option.title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.w800,
                   letterSpacing: -0.4,
@@ -279,7 +276,7 @@ class _Checkbox extends StatelessWidget {
       width: 24,
       height: 24,
       decoration: BoxDecoration(
-        color: checked ? AppColors.actionBlue : AppColors.white,
+        color: checked ? AppColors.actionBlue : AppColors.background,
         borderRadius: BorderRadius.circular(6),
         border: Border.all(
           color: checked ? AppColors.actionBlue : AppColors.textSecondary,

@@ -69,14 +69,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: Center(
         child: FadeTransition(
           opacity: _opacity,
           child: ScaleTransition(
             scale: _scale,
             child: SvgPicture.asset(
-              'assets/images/logo/lifecome-live-logo.svg',
+              AppColors.logoAsset,
               height: 40,
               semanticsLabel: 'LifeCome Live',
             ),

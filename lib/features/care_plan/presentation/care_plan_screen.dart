@@ -20,9 +20,9 @@ class CarePlanScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     if (selection == null) {
       return Scaffold(
-        backgroundColor: AppColors.white,
+        backgroundColor: AppColors.background,
         appBar: AppBar(
-          title: const Text(
+          title: Text(
             'My care plan',
             style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
           ),
@@ -47,7 +47,7 @@ class CarePlanScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                const Text(
+                Text(
                   'No care plan yet',
                   style: TextStyle(
                     fontSize: 20,
@@ -56,7 +56,7 @@ class CarePlanScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                const Text(
+                Text(
                   'Your care plan appears here once you complete a consultation.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -75,9 +75,9 @@ class CarePlanScreen extends StatelessWidget {
     final doctor = selection!.doctor!;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'My care plan',
           style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
         ),
@@ -89,10 +89,10 @@ class CarePlanScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF7E8),
+                color: AppColors.tintGreenSoft,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Icon(Icons.check_circle, color: AppColors.greenStrong),
                   SizedBox(width: AppSpacing.sm),
@@ -140,7 +140,7 @@ class CarePlanScreen extends StatelessWidget {
                     children: [
                       Text(
                         doctor.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: AppColors.ink,
@@ -148,7 +148,7 @@ class CarePlanScreen extends StatelessWidget {
                       ),
                       Text(
                         '${selection!.service?.title ?? 'Consultation'} · ${selection!.date != null ? "${selection!.date!.day}/${selection!.date!.month}/${selection!.date!.year}" : ''}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: AppColors.inkMuted,
                         ),
@@ -204,7 +204,7 @@ class _NextStepTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.white,
+      color: AppColors.background,
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.control),
         onTap: onTap,
@@ -228,7 +228,7 @@ class _NextStepTile extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         color: AppColors.ink,
@@ -236,15 +236,12 @@ class _NextStepTile extends StatelessWidget {
                     ),
                     Text(
                       subtitle,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.inkMuted,
-                      ),
+                      style: TextStyle(fontSize: 12, color: AppColors.inkMuted),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppColors.inkMuted),
+              Icon(Icons.chevron_right, color: AppColors.inkMuted),
             ],
           ),
         ),

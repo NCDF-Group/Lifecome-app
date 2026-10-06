@@ -83,7 +83,7 @@ class _OtpTimerState extends State<OtpTimer> {
     final label = '00:${seconds.toString().padLeft(2, '0')}';
     return Text(
       "Didn't get any code? Resend in $label",
-      style: const TextStyle(color: AppColors.inkMuted, fontSize: 14),
+      style: TextStyle(color: AppColors.inkMuted, fontSize: 14),
     );
   }
 }

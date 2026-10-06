@@ -37,7 +37,7 @@ class NotificationsScreen extends ConsumerWidget {
     final items = feed.value ?? const <NotificationItem>[];
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -50,12 +50,12 @@ class NotificationsScreen extends ConsumerWidget {
                     onPressed: () => context.canPop()
                         ? context.pop()
                         : context.go(RoutePaths.home),
-                    icon: const AppSvgIcon(
+                    icon: AppSvgIcon(
                       AppSvgGlyph.backLine,
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'Notifications',
                       textAlign: TextAlign.center,
@@ -71,7 +71,7 @@ class NotificationsScreen extends ConsumerWidget {
                     onPressed: items.any((item) => item.unread)
                         ? ref.read(notificationsProvider.notifier).markAllRead
                         : null,
-                    icon: const AppSvgIcon(
+                    icon: AppSvgIcon(
                       AppSvgGlyph.checkLine,
                       color: AppColors.textSecondary,
                     ),
@@ -129,7 +129,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 40),
         child: Column(

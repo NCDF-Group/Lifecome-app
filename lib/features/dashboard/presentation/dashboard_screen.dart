@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../../core/theme/app_typography.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -39,7 +42,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final locationConfirmed = ref.watch(locationConfirmationProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -104,12 +107,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
             ),
             const SizedBox(height: 32),
-            const Text(
+            Text(
               'Quick Links',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF0B101A),
+                color: AppColors.heading,
               ),
             ),
             const SizedBox(height: 14),
@@ -161,7 +164,7 @@ class _Headline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -202,8 +205,11 @@ class _ServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // The artwork has its own pale background, so this card stays light in dark mode too.
     return SoftCard(
       onTap: onTap,
+      fill: AppColors.illustrationFill,
+      borderColor: const Color(0xFFD7DAE0),
       padding: const EdgeInsets.fromLTRB(18, 20, 14, 22),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -222,21 +228,21 @@ class _ServiceCard extends StatelessWidget {
             title,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 19,
               fontWeight: FontWeight.w800,
               letterSpacing: -0.4,
-              color: AppColors.textPrimary,
+              color: AppColors.onIllustration,
             ),
           ),
           const SizedBox(height: 6),
           Text(
             subtitle,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13.5,
               height: 1.45,
               letterSpacing: -0.2,
-              color: AppColors.textSecondary,
+              color: AppColors.onIllustrationMuted,
             ),
           ),
         ],
@@ -261,9 +267,9 @@ class _YourCareCard extends StatelessWidget {
               Container(
                 width: 50,
                 height: 50,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Color(0xFFD6E6F5),
+                  color: AppColors.tintBlue,
                 ),
                 child: const AppSvgIcon(
                   AppSvgGlyph.calendarBold,
@@ -272,7 +278,7 @@ class _YourCareCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 14),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -310,6 +316,7 @@ class _YourCareCard extends StatelessWidget {
                 foregroundColor: AppColors.white,
                 shape: const StadiumBorder(),
                 textStyle: const TextStyle(
+                  fontFamily: appFontFamily,
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
                   letterSpacing: -0.3,
@@ -354,7 +361,7 @@ class _MembershipBanner extends StatelessWidget {
           const SizedBox(width: 16),
           Expanded(
             child: pending
-                ? const Column(
+                ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -377,7 +384,7 @@ class _MembershipBanner extends StatelessWidget {
                       ),
                     ],
                   )
-                : const Text(
+                : Text(
                     'Membership optional - pay per visit',
                     style: TextStyle(
                       fontSize: 15,
@@ -415,7 +422,7 @@ class _QuickLink extends StatelessWidget {
   Widget build(BuildContext context) {
     return SoftCard(
       onTap: onTap,
-      fill: AppColors.white,
+      fill: AppColors.background,
       radius: 12,
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 16),
       child: Column(
@@ -428,7 +435,7 @@ class _QuickLink extends StatelessWidget {
             child: Text(
               label,
               maxLines: 1,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
                 letterSpacing: -0.3,
@@ -471,9 +478,9 @@ class _LocationBlock extends StatelessWidget {
                   Container(
                     width: 50,
                     height: 50,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Color(0xFFD6E6F5),
+                      color: AppColors.tintBlue,
                     ),
                     child: const AppSvgIcon(
                       AppSvgGlyph.pinBold,
@@ -490,7 +497,7 @@ class _LocationBlock extends StatelessWidget {
                           location,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w800,
                             letterSpacing: -0.4,
@@ -498,7 +505,7 @@ class _LocationBlock extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        const Text(
+                        Text(
                           'Suggested location - please confirm.',
                           style: TextStyle(
                             fontSize: 13,
@@ -522,6 +529,7 @@ class _LocationBlock extends StatelessWidget {
                     foregroundColor: AppColors.white,
                     shape: const StadiumBorder(),
                     textStyle: const TextStyle(
+                      fontFamily: appFontFamily,
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
                       letterSpacing: -0.3,
@@ -543,6 +551,7 @@ class _LocationBlock extends StatelessWidget {
                   foregroundColor: AppColors.actionBlue,
                   minimumSize: const Size.fromHeight(48),
                   textStyle: const TextStyle(
+                    fontFamily: appFontFamily,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                     letterSpacing: -0.3,
@@ -563,6 +572,7 @@ class _LocationBlock extends StatelessWidget {
               side: const BorderSide(color: AppColors.actionBlue),
               shape: const StadiumBorder(),
               textStyle: const TextStyle(
+                fontFamily: appFontFamily,
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
                 letterSpacing: -0.3,
@@ -584,7 +594,7 @@ class _LocationBlock extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 14),
-        const Text(
+        Text(
           'With your permission, find nearby clinics.',
           textAlign: TextAlign.center,
           style: TextStyle(
@@ -597,7 +607,7 @@ class _LocationBlock extends StatelessWidget {
         SoftCard(
           radius: 12,
           padding: const EdgeInsets.all(14),
-          child: const Row(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppSvgIcon(

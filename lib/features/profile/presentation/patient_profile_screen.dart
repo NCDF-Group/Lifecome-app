@@ -9,6 +9,7 @@ import '../../../core/router/route_paths.dart';
 import '../../../core/services/session_store.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_svg_icons.dart';
+import '../../../core/theme/theme_mode_controller.dart';
 import '../../../core/widgets/design/soft_widgets.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/media/user_avatar.dart';
@@ -16,6 +17,7 @@ import '../../auth/application/auth_controller.dart';
 import '../../notifications/application/notifications_controller.dart';
 import '../application/avatar_controller.dart';
 import '../../dashboard/presentation/widgets/home_header.dart';
+import '../../doctors/presentation/widgets/preferences_card.dart';
 
 /// The Profile tab: the account summary card, then the account, support and
 /// legal links as the same soft rows used across Home, Book and Records, and
@@ -58,6 +60,25 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
     }
   }
 
+  Future<void> _pickAppearance() async {
+    const labels = {
+      ThemeMode.system: 'System',
+      ThemeMode.light: 'Light',
+      ThemeMode.dark: 'Dark',
+    };
+    final picked = await showOptionSheet(
+      context,
+      title: 'Appearance',
+      options: labels.values.toList(),
+      current: labels[ref.read(themeModeProvider)]!,
+    );
+    if (picked == null) return;
+    final mode = labels.entries
+        .firstWhere((entry) => entry.value == picked)
+        .key;
+    await ref.read(themeModeProvider.notifier).select(mode);
+  }
+
   Future<void> _confirmDeleteAccount() async {
     final confirmed = await showConfirmPopup(
       context,
@@ -86,7 +107,7 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
     final country = ref.watch(countryProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -127,6 +148,17 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
               title: 'Country',
               trailingText: country.name,
               onTap: _pickCountry,
+            ),
+            const SizedBox(height: 12),
+            ActionRow(
+              glyph: AppSvgGlyph.themeBold,
+              title: 'Appearance',
+              trailingText: switch (ref.watch(themeModeProvider)) {
+                ThemeMode.system => 'System',
+                ThemeMode.light => 'Light',
+                ThemeMode.dark => 'Dark',
+              },
+              onTap: _pickAppearance,
             ),
             const _SectionLabel('Support'),
             ActionRow(
@@ -177,11 +209,11 @@ class _SectionLabel extends StatelessWidget {
       padding: const EdgeInsets.only(top: 28, bottom: 12),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.4,
-          color: Color(0xFF0B101A),
+          color: AppColors.heading,
         ),
       ),
     );
@@ -218,7 +250,7 @@ class _AccountCard extends StatelessWidget {
                       name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.5,
@@ -231,7 +263,7 @@ class _AccountCard extends StatelessWidget {
                         email,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           letterSpacing: -0.3,
                           color: AppColors.textSecondary,

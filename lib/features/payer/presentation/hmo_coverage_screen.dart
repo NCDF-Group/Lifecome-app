@@ -60,9 +60,9 @@ class HmoCoverageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Your HMO coverage',
           style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
         ),
@@ -71,7 +71,7 @@ class HmoCoverageScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
-            const Text(
+            Text(
               'Your membership has been verified. Here are the services covered under your plan.',
               style: TextStyle(
                 fontSize: 14,
@@ -83,7 +83,7 @@ class HmoCoverageScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF7E8),
+                color: AppColors.tintGreenSoft,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
@@ -95,7 +95,7 @@ class HmoCoverageScreen extends StatelessWidget {
                       children: [
                         Text(
                           hmoName,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
                             color: AppColors.ink,
@@ -123,7 +123,7 @@ class HmoCoverageScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
@@ -147,7 +147,7 @@ class HmoCoverageScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            const Text(
+            Text(
               'Your covered services',
               style: TextStyle(
                 fontSize: 18,
@@ -164,10 +164,10 @@ class HmoCoverageScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFE8F4FC),
+                color: AppColors.tintBlue,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Icon(Icons.info_outline, color: AppColors.blue),
                   SizedBox(width: AppSpacing.sm),
@@ -219,7 +219,7 @@ class _ServiceRow extends StatelessWidget {
               children: [
                 Text(
                   service.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
                     color: AppColors.ink,
@@ -227,10 +227,7 @@ class _ServiceRow extends StatelessWidget {
                 ),
                 Text(
                   service.description,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.inkMuted,
-                  ),
+                  style: TextStyle(fontSize: 12, color: AppColors.inkMuted),
                 ),
               ],
             ),

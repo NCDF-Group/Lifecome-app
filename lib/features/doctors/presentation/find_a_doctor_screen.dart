@@ -104,7 +104,7 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
     final results = _filter(doctors);
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -171,7 +171,7 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  const Row(
+                  Row(
                     children: [
                       IconCircle(glyph: AppSvgGlyph.calendarBold),
                       SizedBox(width: 14),
@@ -213,7 +213,7 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            const Text(
+            Text(
               'Prefer a particular clinician?',
               style: TextStyle(
                 fontSize: 22,
@@ -223,7 +223,7 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Search by name to find a clinician and view their availability.',
               style: TextStyle(
                 fontSize: 13.5,
@@ -234,17 +234,14 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
             const SizedBox(height: 16),
             TextField(
               onChanged: (value) => setState(() => _query = value),
-              style: const TextStyle(
-                fontSize: 17,
-                color: AppColors.textPrimary,
-              ),
+              style: TextStyle(fontSize: 17, color: AppColors.textPrimary),
               decoration: InputDecoration(
                 hintText: 'Search by name',
-                hintStyle: const TextStyle(
+                hintStyle: TextStyle(
                   fontSize: 17,
                   color: AppColors.textSecondary,
                 ),
-                prefixIcon: const Padding(
+                prefixIcon: Padding(
                   padding: EdgeInsets.all(14),
                   child: AppSvgIcon(
                     AppSvgGlyph.searchLine,
@@ -253,7 +250,7 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
                   ),
                 ),
                 filled: true,
-                fillColor: const Color(0xFFF5F7F9),
+                fillColor: AppColors.inputFill,
                 contentPadding: const EdgeInsets.symmetric(vertical: 16),
                 border: _border(AppColors.cardBorder),
                 enabledBorder: _border(AppColors.cardBorder),
@@ -279,7 +276,7 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
                 ),
               )
             else if (results.isEmpty)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(vertical: 24),
                 child: Center(
                   child: Text(
@@ -342,7 +339,7 @@ class _DoctorEntry extends StatelessWidget {
                 children: [
                   Text(
                     doctor.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
                       letterSpacing: -0.5,
@@ -389,7 +386,7 @@ class _Chip extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             letterSpacing: -0.2,
             color: AppColors.textSecondary,

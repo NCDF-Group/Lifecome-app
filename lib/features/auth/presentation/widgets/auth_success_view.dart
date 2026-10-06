@@ -27,7 +27,7 @@ class AuthSuccessView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: Stack(
         children: [
           const Positioned.fill(child: BrandBackdrop()),
@@ -61,7 +61,7 @@ class AuthSuccessView extends StatelessWidget {
                         child: Text(
                           title,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w800,
                             color: AppColors.ink,
@@ -74,7 +74,7 @@ class AuthSuccessView extends StatelessWidget {
                         child: Text(
                           message,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             color: AppColors.inkMuted,
                             height: 1.4,

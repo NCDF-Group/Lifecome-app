@@ -48,7 +48,7 @@ class MyVisitsScreen extends ConsumerWidget {
     final country = ref.watch(countryProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: RefreshIndicator(
@@ -124,11 +124,11 @@ class _SectionTitle extends StatelessWidget {
     padding: const EdgeInsets.only(top: 8, bottom: 12),
     child: Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w700,
         letterSpacing: -0.4,
-        color: Color(0xFF0B101A),
+        color: AppColors.heading,
       ),
     ),
   );
@@ -179,7 +179,7 @@ class _VisitCard extends StatelessWidget {
                     children: [
                       Text(
                         visit.serviceName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w800,
                           letterSpacing: -0.4,
@@ -188,7 +188,7 @@ class _VisitCard extends StatelessWidget {
                       ),
                       Text(
                         'with ${visit.providerName}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           color: AppColors.textSecondary,
                         ),
@@ -211,7 +211,7 @@ class _VisitCard extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               when,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
@@ -222,7 +222,7 @@ class _VisitCard extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 2),
                 child: Text(
                   visit.clinicName ?? '${visit.locationCity} Smart GP',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     color: AppColors.textSecondary,
                   ),
@@ -254,7 +254,7 @@ class _Empty extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: 32),
-        const Text(
+        Text(
           'No visits yet',
           style: TextStyle(
             fontSize: 20,
@@ -263,7 +263,7 @@ class _Empty extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 6),
-        const Text(
+        Text(
           'Your booked appointments will appear here.',
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 15, color: AppColors.textSecondary),

@@ -1,6 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+
+import '../../../core/theme/app_typography.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -141,7 +144,7 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -168,7 +171,7 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
           children: [
             Text(
               'Online ${_selection.service?.title ?? 'GP consultation'}',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.5,
@@ -176,7 +179,7 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
               ),
             ),
             const SizedBox(height: 2),
-            const Text(
+            Text(
               'Video consultation',
               style: TextStyle(
                 fontSize: 14,
@@ -216,7 +219,7 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
         ),
         child: Column(
           children: [
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 20),
               child: Align(
                 alignment: Alignment.centerLeft,
@@ -231,7 +234,7 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
                 ),
               ),
             ),
-            const Divider(height: 1, thickness: 1, color: Color(0xFFE7E9ED)),
+            Divider(height: 1, thickness: 1, color: AppColors.divider),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16),
               child: Row(
@@ -243,14 +246,14 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
                     children: [
                       Text(
                         'Self-pay (${currencyCode(country)})',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w600,
                           letterSpacing: -0.4,
                           color: AppColors.textPrimary,
                         ),
                       ),
-                      const Text(
+                      Text(
                         'Pay securely online',
                         style: TextStyle(
                           fontSize: 15,
@@ -280,7 +283,7 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
               value: _priced ? formatFee(country, fee) : 'Awaiting quote',
               labelMuted: true,
             ),
-            const Divider(height: 1, thickness: 1, color: Color(0xFFE7E9ED)),
+            Divider(height: 1, thickness: 1, color: AppColors.divider),
             _KeyValue(
               label: 'Total to pay',
               value: _priced ? formatFee(country, fee) : 'Not yet calculated',
@@ -293,7 +296,7 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
         radius: 12,
         onTap: () => _comingSoon('Payment information'),
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-        child: const Row(
+        child: Row(
           children: [
             AppSvgIcon(
               AppSvgGlyph.infoBold,
@@ -392,7 +395,7 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
         radius: 12,
         onTap: () => _comingSoon('Cancellation terms'),
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-        child: const Row(
+        child: Row(
           children: [
             AppSvgIcon(
               AppSvgGlyph.infoBold,
@@ -438,7 +441,7 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
           children: [
             _Box(checked: _accepted),
             const SizedBox(width: 16),
-            const Text(
+            Text(
               'I accept the booking terms',
               style: TextStyle(
                 fontSize: 17,
@@ -471,16 +474,16 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
       Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: const Color(0xFFF6FBF3),
+          color: AppColors.tintGreenSoft,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.cardBorder),
         ),
         child: Row(
           children: [
-            const IconCircle(
+            IconCircle(
               glyph: AppSvgGlyph.briefcaseBold,
               color: AppColors.accentGreen,
-              fill: Color(0xFFE2F2D6),
+              fill: AppColors.tintGreen,
               size: 50,
             ),
             const SizedBox(width: 14),
@@ -490,7 +493,7 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
                 children: [
                   Text(
                     _selection.hmoName ?? 'LifeCome Benefits',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
                       letterSpacing: -0.5,
@@ -498,7 +501,7 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
                     ),
                   ),
                   const SizedBox(height: 2),
-                  const Row(
+                  Row(
                     children: [
                       AppSvgIcon(
                         AppSvgGlyph.clockBold,
@@ -601,7 +604,7 @@ class _KeyValue extends StatelessWidget {
           ),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w600,
               letterSpacing: -0.4,
@@ -649,7 +652,7 @@ class _Box extends StatelessWidget {
       width: 30,
       height: 30,
       decoration: BoxDecoration(
-        color: checked ? AppColors.actionBlue : AppColors.white,
+        color: checked ? AppColors.actionBlue : AppColors.background,
         borderRadius: BorderRadius.circular(7),
         border: Border.all(
           color: checked ? AppColors.actionBlue : AppColors.textSecondary,
@@ -706,6 +709,7 @@ class _DisabledAwarePill extends StatelessWidget {
           foregroundColor: AppColors.white,
           shape: const StadiumBorder(),
           textStyle: const TextStyle(
+            fontFamily: appFontFamily,
             fontSize: 19,
             fontWeight: FontWeight.w500,
             letterSpacing: -0.3,

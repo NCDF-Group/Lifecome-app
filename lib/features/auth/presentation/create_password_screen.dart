@@ -68,7 +68,7 @@ class _CreatePasswordScreenState extends ConsumerState<CreatePasswordScreen> {
     final submitting = authState.status == AuthStatus.submitting;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(
@@ -81,7 +81,7 @@ class _CreatePasswordScreenState extends ConsumerState<CreatePasswordScreen> {
               children: [
                 const AuthTopBar(),
                 const SizedBox(height: AppSpacing.xl),
-                const Text(
+                Text(
                   'Create Password',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -91,7 +91,7 @@ class _CreatePasswordScreenState extends ConsumerState<CreatePasswordScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                const Text(
+                Text(
                   'This password is used to sign in to your LifeCome Live account.',
                   textAlign: TextAlign.center,
                   style: TextStyle(

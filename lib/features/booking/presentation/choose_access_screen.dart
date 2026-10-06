@@ -19,7 +19,7 @@ class ChooseAccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -142,7 +142,7 @@ class _AccessCard extends StatelessWidget {
             const SizedBox(height: 18),
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 height: 1.25,
                 fontWeight: FontWeight.w800,
@@ -153,7 +153,7 @@ class _AccessCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               hint,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 letterSpacing: -0.2,
                 color: AppColors.textSecondary,

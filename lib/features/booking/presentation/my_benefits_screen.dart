@@ -22,7 +22,7 @@ class MyBenefitsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -65,7 +65,7 @@ class MyBenefitsScreen extends StatelessWidget {
               onTap: () => showComingSoonPopup(context, feature: 'Plan limits'),
               radius: 12,
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-              child: const Row(
+              child: Row(
                 children: [
                   AppSvgIcon(
                     AppSvgGlyph.documentBold,
@@ -113,16 +113,16 @@ class _VerificationBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFFCEA),
+        color: AppColors.tintYellow,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFFFE346)),
+        border: Border.all(color: AppColors.tintYellowBorder),
       ),
-      child: const Row(
+      child: Row(
         children: [
           IconCircle(
             glyph: AppSvgGlyph.clockBold,
             color: Color(0xFFE08A00),
-            fill: Color(0xFFFFF8C5),
+            fill: AppColors.tintYellowStrong,
             iconSize: 24,
           ),
           SizedBox(width: 14),
@@ -186,7 +186,7 @@ class _BenefitRow extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     height: 1.25,
                     fontWeight: FontWeight.w800,
@@ -197,7 +197,7 @@ class _BenefitRow extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     height: 1.4,
                     letterSpacing: -0.2,
@@ -227,5 +227,5 @@ class _Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      const Divider(height: 1, thickness: 1, color: AppColors.cardBorder);
+      Divider(height: 1, thickness: 1, color: AppColors.cardBorder);
 }

@@ -56,7 +56,8 @@ enum AppSvgGlyph {
   checkCircleBold(_checkCircleBold),
   documentUploadBold(_documentUploadBold),
   trashBold(_trashBold),
-  logoutLine(_logoutLine);
+  logoutLine(_logoutLine),
+  themeBold(_themeBold);
 
   const AppSvgGlyph(this.markup);
 
@@ -391,3 +392,8 @@ const _trashBold =
 const _logoutLine =
     '$_head<g $_line><path d="M9.5 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2.5"/>'
     '<path d="M15 8l4 4-4 4M19 12H9.5"/></g></svg>';
+
+const _themeBold =
+    '$_head<path d="M12 2.8a9.2 9.2 0 0 0 0 18.4Z"/>'
+    '<circle cx="12" cy="12" r="8.4" fill="none" stroke="#000" stroke-width="1.6"/>'
+    '</svg>';

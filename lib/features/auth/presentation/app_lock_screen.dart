@@ -118,7 +118,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
     final name = _displayName;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
@@ -129,7 +129,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                 FadeIn(
                   child: Center(
                     child: SvgPicture.asset(
-                      'assets/images/logo/lifecome-live-logo.svg',
+                      AppColors.logoAsset,
                       height: 32,
                       semanticsLabel: 'LifeCome Live',
                     ),
@@ -140,7 +140,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                   delay: const Duration(milliseconds: 80),
                   child: Text.rich(
                     TextSpan(
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
                         color: AppColors.ink,
@@ -157,7 +157,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                const FadeIn(
+                FadeIn(
                   delay: Duration(milliseconds: 120),
                   child: Text(
                     'Enter password or unlock with biometrics to continue.',
@@ -264,7 +264,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                             ),
                           ),
                           const SizedBox(height: AppSpacing.xs),
-                          const Text(
+                          Text(
                             'Use Face ID',
                             style: TextStyle(
                               fontSize: 13,
@@ -282,7 +282,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                   child: Center(
                     child: TextButton(
                       onPressed: _signInWithAnotherAccount,
-                      child: const Text(
+                      child: Text(
                         'Not you? Sign in with another account',
                         style: TextStyle(
                           color: AppColors.inkMuted,

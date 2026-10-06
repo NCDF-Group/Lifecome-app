@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/app_typography.dart';
+
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 
@@ -28,7 +30,11 @@ class SecondaryButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.pill),
           ),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+          textStyle: const TextStyle(
+            fontFamily: appFontFamily,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         child: Text(label),
       ),

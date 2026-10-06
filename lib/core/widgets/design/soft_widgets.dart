@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../../core/theme/app_typography.dart';
+
 import 'package:go_router/go_router.dart';
 
 import '../../theme/app_colors.dart';
@@ -16,25 +19,27 @@ class SoftCard extends StatelessWidget {
     this.onTap,
     this.padding = const EdgeInsets.all(16),
     this.radius = 16,
-    this.fill = AppColors.cardFill,
-    this.borderColor = AppColors.cardBorder,
+    this.fill,
+    this.borderColor,
   });
 
   final Widget child;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry padding;
   final double radius;
-  final Color fill;
-  final Color borderColor;
+
+  /// Defaults to the theme's card fill / border.
+  final Color? fill;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
     final shape = BorderRadius.circular(radius);
     return Material(
-      color: fill,
+      color: fill ?? AppColors.cardFill,
       shape: RoundedRectangleBorder(
         borderRadius: shape,
-        side: BorderSide(color: borderColor),
+        side: BorderSide(color: borderColor ?? AppColors.cardBorder),
       ),
       child: InkWell(
         onTap: onTap,
@@ -70,6 +75,7 @@ class PillButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textStyle = TextStyle(
+      fontFamily: appFontFamily,
       fontSize: fontSize,
       fontWeight: FontWeight.w500,
       letterSpacing: -0.3,
@@ -144,7 +150,7 @@ class InfoNote extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 height: 1.4,
                 letterSpacing: -0.2,
@@ -172,7 +178,7 @@ class PageHeading extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w800,
             letterSpacing: -0.6,
@@ -183,7 +189,7 @@ class PageHeading extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             subtitle!,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               letterSpacing: -0.2,
               color: AppColors.textSecondary,
@@ -210,7 +216,7 @@ class DesignBackButton extends StatelessWidget {
         tooltip: 'Back',
         padding: EdgeInsets.zero,
         onPressed: () => context.canPop() ? context.pop() : context.go('/home'),
-        icon: const AppSvgIcon(
+        icon: AppSvgIcon(
           AppSvgGlyph.backLine,
           size: 26,
           color: AppColors.textPrimary,
@@ -227,14 +233,14 @@ class IconCircle extends StatelessWidget {
     super.key,
     required this.glyph,
     this.color = AppColors.actionBlue,
-    this.fill = const Color(0xFFD6E6F5),
+    this.fill,
     this.size = 50,
     this.iconSize = 24,
   });
 
   final AppSvgGlyph glyph;
   final Color color;
-  final Color fill;
+  final Color? fill;
   final double size;
   final double iconSize;
 
@@ -243,7 +249,10 @@ class IconCircle extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(shape: BoxShape.circle, color: fill),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: fill ?? AppColors.tintBlue,
+      ),
       child: Center(
         child: AppSvgIcon(glyph, size: iconSize, color: color),
       ),
@@ -356,6 +365,7 @@ class _SegmentLabel extends StatelessWidget {
         AnimatedDefaultTextStyle(
           duration: const Duration(milliseconds: 200),
           style: TextStyle(
+            fontFamily: appFontFamily,
             fontSize: fontSize,
             fontWeight: FontWeight.w600,
             letterSpacing: -0.4,
@@ -415,7 +425,7 @@ class DetailRows extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   title!,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w600,
                     letterSpacing: -0.4,
@@ -425,7 +435,7 @@ class DetailRows extends StatelessWidget {
               ),
             ),
           if (header != null) ...[
-            const Divider(height: 1, thickness: 1, color: Color(0xFFE7E9ED)),
+            Divider(height: 1, thickness: 1, color: AppColors.divider),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16),
               child: header,
@@ -433,7 +443,7 @@ class DetailRows extends StatelessWidget {
           ],
           for (var i = 0; i < rows.length; i++) ...[
             if (i > 0 || title != null || header != null)
-              const Divider(height: 1, thickness: 1, color: Color(0xFFE7E9ED)),
+              Divider(height: 1, thickness: 1, color: AppColors.divider),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16),
               child: Row(
@@ -447,7 +457,7 @@ class DetailRows extends StatelessWidget {
                   const SizedBox(width: 14),
                   Text(
                     rows[i].label,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       letterSpacing: -0.3,
                       color: AppColors.textSecondary,
@@ -461,7 +471,7 @@ class DetailRows extends StatelessWidget {
                         Text(
                           rows[i].value,
                           textAlign: TextAlign.right,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             letterSpacing: -0.4,
@@ -474,7 +484,7 @@ class DetailRows extends StatelessWidget {
                               ? Text(
                                   rows[i].sub!,
                                   textAlign: TextAlign.right,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 15,
                                     letterSpacing: -0.3,
                                     color: AppColors.textSecondary,
@@ -526,7 +536,7 @@ class ActionRow extends StatelessWidget {
     required this.onTap,
     this.soft = false,
     this.color = AppColors.actionBlue,
-    this.titleColor = AppColors.textPrimary,
+    this.titleColor,
     this.trailingText,
   });
 
@@ -535,7 +545,7 @@ class ActionRow extends StatelessWidget {
   final VoidCallback onTap;
   final bool soft;
   final Color color;
-  final Color titleColor;
+  final Color? titleColor;
 
   /// Grey value shown before the chevron (e.g. the current country).
   final String? trailingText;
@@ -545,7 +555,7 @@ class ActionRow extends StatelessWidget {
     return SoftCard(
       onTap: onTap,
       radius: 12,
-      fill: soft ? AppColors.cardFill : AppColors.white,
+      fill: soft ? AppColors.cardFill : AppColors.background,
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
       child: Row(
         children: [
@@ -558,14 +568,14 @@ class ActionRow extends StatelessWidget {
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
                 letterSpacing: -0.4,
-                color: titleColor,
+                color: titleColor ?? AppColors.textPrimary,
               ),
             ),
           ),
           if (trailingText != null) ...[
             Text(
               trailingText!,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 letterSpacing: -0.3,
                 color: AppColors.textSecondary,
@@ -576,9 +586,7 @@ class ActionRow extends StatelessWidget {
           AppSvgIcon(
             AppSvgGlyph.chevronLine,
             size: 22,
-            color: titleColor == AppColors.textPrimary
-                ? AppColors.textPrimary
-                : titleColor,
+            color: titleColor ?? AppColors.textPrimary,
           ),
         ],
       ),
@@ -595,14 +603,14 @@ class LinkRow extends StatelessWidget {
     required this.title,
     required this.onTap,
     this.color = AppColors.actionBlue,
-    this.textColor = AppColors.textPrimary,
+    this.textColor,
   });
 
   final AppSvgGlyph glyph;
   final String title;
   final VoidCallback onTap;
   final Color color;
-  final Color textColor;
+  final Color? textColor;
 
   @override
   Widget build(BuildContext context) {
@@ -621,16 +629,14 @@ class LinkRow extends StatelessWidget {
                   fontSize: 17,
                   fontWeight: FontWeight.w500,
                   letterSpacing: -0.4,
-                  color: textColor,
+                  color: textColor ?? AppColors.textPrimary,
                 ),
               ),
             ),
             AppSvgIcon(
               AppSvgGlyph.chevronLine,
               size: 22,
-              color: textColor == AppColors.textPrimary
-                  ? AppColors.textPrimary
-                  : textColor,
+              color: textColor ?? AppColors.textPrimary,
             ),
           ],
         ),

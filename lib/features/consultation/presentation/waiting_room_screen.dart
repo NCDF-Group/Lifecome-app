@@ -21,9 +21,9 @@ class WaitingRoomScreen extends StatelessWidget {
     final doctor = selection.doctor!;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'You are in the waiting room',
           style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
         ),
@@ -50,7 +50,7 @@ class WaitingRoomScreen extends StatelessWidget {
                     children: [
                       Text(
                         doctor.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: AppColors.ink,
@@ -58,7 +58,7 @@ class WaitingRoomScreen extends StatelessWidget {
                       ),
                       Text(
                         '${selection.service?.title ?? 'Consultation'} · ${selection.time ?? ''}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: AppColors.inkMuted,
                         ),
@@ -72,10 +72,10 @@ class WaitingRoomScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.lg),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF7E8),
+                color: AppColors.tintGreenSoft,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
-              child: const Column(
+              child: Column(
                 children: [
                   Icon(
                     Icons.videocam_outlined,
@@ -95,7 +95,7 @@ class WaitingRoomScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            const Text(
+            Text(
               'Connection check',
               style: TextStyle(
                 fontSize: 16,
@@ -120,7 +120,7 @@ class WaitingRoomScreen extends StatelessWidget {
               status: 'Connected',
             ),
             const SizedBox(height: AppSpacing.md),
-            const Text(
+            Text(
               'Choose a quiet, private place for your visit.',
               style: TextStyle(fontSize: 12, color: AppColors.inkMuted),
             ),
@@ -169,7 +169,7 @@ class _CheckRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: const TextStyle(fontSize: 14, color: AppColors.ink),
+              style: TextStyle(fontSize: 14, color: AppColors.ink),
             ),
           ),
           const Icon(Icons.circle, size: 8, color: AppColors.greenStrong),

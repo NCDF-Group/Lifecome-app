@@ -19,7 +19,7 @@ class AppShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: navigationShell,
       bottomNavigationBar: _FloatingNavBar(
         currentIndex: navigationShell.currentIndex,
@@ -204,7 +204,7 @@ class _FloatingNavBar extends StatelessWidget {
     ];
 
     return ColoredBox(
-      color: AppColors.white,
+      color: AppColors.background,
       child: SafeArea(
         top: false,
         minimum: const EdgeInsets.only(bottom: 8),
@@ -214,7 +214,7 @@ class _FloatingNavBar extends StatelessWidget {
             height: _barHeight,
             padding: const EdgeInsets.all(_barPadding),
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: AppColors.background,
               borderRadius: BorderRadius.circular(999),
               border: Border.all(color: AppColors.cardBorder),
             ),

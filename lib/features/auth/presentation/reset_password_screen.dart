@@ -86,7 +86,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.blue),
@@ -121,7 +121,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                       ),
                     ),
                     const SizedBox(height: AppSpacing.lg),
-                    const FadeIn(
+                    FadeIn(
                       delay: Duration(milliseconds: 80),
                       child: Text(
                         'Enter reset code',
@@ -137,7 +137,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                       delay: const Duration(milliseconds: 120),
                       child: Text(
                         'Enter the 6-digit code sent to ${widget.args.email}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           color: AppColors.inkMuted,
                           height: 1.4,

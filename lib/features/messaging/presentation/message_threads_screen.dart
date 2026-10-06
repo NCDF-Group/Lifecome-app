@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../../core/theme/app_typography.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/animation/fade_in.dart';
@@ -17,7 +20,7 @@ enum _Topic {
     'Questions about appointments and booking.',
     AppSvgGlyph.calendarBold,
     AppColors.actionBlue,
-    Color(0xFFD6E6F5),
+    false,
   ),
   online(
     'online_appointment',
@@ -25,7 +28,7 @@ enum _Topic {
     'Help with your online consultation.',
     AppSvgGlyph.videoBold,
     AppColors.accentGreen,
-    Color(0xFFE2F2D6),
+    true,
   ),
   clinic(
     'clinic_visit',
@@ -33,7 +36,7 @@ enum _Topic {
     'Questions about your in-person appointment.',
     AppSvgGlyph.pinBold,
     AppColors.actionBlue,
-    Color(0xFFD6E6F5),
+    false,
   ),
   followUp(
     'follow_up',
@@ -41,7 +44,7 @@ enum _Topic {
     'Other questions for the care team.',
     AppSvgGlyph.chatBold,
     AppColors.actionBlue,
-    Color(0xFFD6E6F5),
+    false,
   );
 
   const _Topic(
@@ -50,7 +53,7 @@ enum _Topic {
     this.hint,
     this.glyph,
     this.color,
-    this.fill,
+    this.greenTint,
   );
 
   /// What the backend stores as the thread's topic.
@@ -59,7 +62,9 @@ enum _Topic {
   final String hint;
   final AppSvgGlyph glyph;
   final Color color;
-  final Color fill;
+  final bool greenTint;
+
+  Color get fill => greenTint ? AppColors.tintGreen : AppColors.tintBlue;
 }
 
 /// The Messages tab (blueprint view 22): pick a topic, write a message and
@@ -114,7 +119,7 @@ class _MessageThreadsScreenState extends ConsumerState<MessageThreadsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -130,7 +135,7 @@ class _MessageThreadsScreenState extends ConsumerState<MessageThreadsScreen> {
               ),
             ),
             const SizedBox(height: 26),
-            const Text(
+            Text(
               'What do you need help with?',
               style: TextStyle(
                 fontSize: 19,
@@ -150,7 +155,7 @@ class _MessageThreadsScreenState extends ConsumerState<MessageThreadsScreen> {
                 ),
               ),
             const SizedBox(height: 18),
-            const Text(
+            Text(
               'Your message',
               style: TextStyle(
                 fontSize: 16,
@@ -165,18 +170,15 @@ class _MessageThreadsScreenState extends ConsumerState<MessageThreadsScreen> {
               minLines: 4,
               maxLines: 7,
               textCapitalization: TextCapitalization.sentences,
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.textPrimary,
-              ),
+              style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
               decoration: InputDecoration(
                 hintText: 'Type your message here...',
-                hintStyle: const TextStyle(
+                hintStyle: TextStyle(
                   fontSize: 17,
                   color: AppColors.textSecondary,
                 ),
                 filled: true,
-                fillColor: const Color(0xFFF6F7F9),
+                fillColor: AppColors.inputFill,
                 contentPadding: const EdgeInsets.all(18),
                 border: _border(AppColors.cardBorder),
                 enabledBorder: _border(AppColors.cardBorder),
@@ -193,6 +195,7 @@ class _MessageThreadsScreenState extends ConsumerState<MessageThreadsScreen> {
                   foregroundColor: AppColors.white,
                   shape: const StadiumBorder(),
                   textStyle: const TextStyle(
+                    fontFamily: appFontFamily,
                     fontSize: 19,
                     fontWeight: FontWeight.w500,
                     letterSpacing: -0.3,
@@ -227,7 +230,7 @@ class _MessageThreadsScreenState extends ConsumerState<MessageThreadsScreen> {
             LinkRow(
               glyph: AppSvgGlyph.infoBold,
               color: AppColors.error,
-              textColor: const Color(0xFFD3172A),
+              textColor: AppColors.alertRed,
               title: 'Emergency and urgent help',
               onTap: () => showComingSoonPopup(
                 context,
@@ -262,7 +265,7 @@ class _TopicCard extends StatelessWidget {
     return SoftCard(
       onTap: onTap,
       radius: 14,
-      fill: AppColors.white,
+      fill: AppColors.background,
       borderColor: selected ? AppColors.actionBlue : AppColors.cardBorder,
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
       child: Row(
@@ -283,7 +286,7 @@ class _TopicCard extends StatelessWidget {
               children: [
                 Text(
                   topic.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.5,
@@ -293,7 +296,7 @@ class _TopicCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   topic.hint,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     height: 1.3,
                     letterSpacing: -0.3,

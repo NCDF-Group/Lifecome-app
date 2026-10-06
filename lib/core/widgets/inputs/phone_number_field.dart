@@ -74,7 +74,7 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
                 title: Text(country.name),
                 trailing: Text(
                   country.dialCode,
-                  style: const TextStyle(color: AppColors.inkMuted),
+                  style: TextStyle(color: AppColors.inkMuted),
                 ),
                 onTap: () => Navigator.of(context).pop(country),
               ),
@@ -99,7 +99,7 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
       children: [
         Text(
           widget.label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
             color: AppColors.ink,
@@ -128,14 +128,14 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
                       const SizedBox(width: 6),
                       Text(
                         _country.dialCode,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           color: AppColors.ink,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(width: 4),
-                      const Icon(
+                      Icon(
                         Icons.keyboard_arrow_down,
                         size: 18,
                         color: AppColors.inkMuted,
@@ -151,7 +151,7 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
                   keyboardType: TextInputType.phone,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   onChanged: (_) => _emit(),
-                  style: const TextStyle(fontSize: 16, color: AppColors.ink),
+                  style: TextStyle(fontSize: 16, color: AppColors.ink),
                   decoration: const InputDecoration(
                     hintText: 'Enter mobile number',
                     border: InputBorder.none,

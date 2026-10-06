@@ -27,7 +27,7 @@ class SmartGpLocationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -173,11 +173,11 @@ class _LocationCardState extends ConsumerState<_LocationCard> {
                   children: [
                     Text(
                       widget.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.5,
-                        color: AppColors.textPrimary,
+                        color: AppColors.onIllustration,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -192,10 +192,10 @@ class _LocationCardState extends ConsumerState<_LocationCard> {
                       ),
                       child: Text(
                         widget.chip,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           letterSpacing: -0.2,
-                          color: AppColors.textPrimary,
+                          color: AppColors.onIllustration,
                         ),
                       ),
                     ),

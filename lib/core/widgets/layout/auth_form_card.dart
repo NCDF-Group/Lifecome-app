@@ -29,7 +29,7 @@ class AuthFormCard extends StatelessWidget {
             AppSpacing.lg,
           ),
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: AppColors.background,
             borderRadius: BorderRadius.circular(AppRadius.card),
           ),
           child: child,

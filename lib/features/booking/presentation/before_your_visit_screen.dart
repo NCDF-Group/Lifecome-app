@@ -74,7 +74,7 @@ class _BeforeYourVisitScreenState extends State<BeforeYourVisitScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -182,7 +182,7 @@ class _BeforeYourVisitScreenState extends State<BeforeYourVisitScreen> {
                       decoration: BoxDecoration(
                         color: _understood
                             ? AppColors.actionBlue
-                            : AppColors.white,
+                            : AppColors.background,
                         borderRadius: BorderRadius.circular(7),
                         border: Border.all(
                           color: _understood
@@ -199,7 +199,7 @@ class _BeforeYourVisitScreenState extends State<BeforeYourVisitScreen> {
                           : null,
                     ),
                     const SizedBox(width: 14),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'I understand the limits of remote assessment.',
                         style: TextStyle(
@@ -233,7 +233,7 @@ class _BeforeYourVisitScreenState extends State<BeforeYourVisitScreen> {
                                     'appointment is confirmed.'
                               : 'An in-person assessment may be recommended '
                                     'after reviewing your information.',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 17,
                             height: 1.35,
                             fontWeight: FontWeight.w500,
@@ -258,7 +258,7 @@ class _BeforeYourVisitScreenState extends State<BeforeYourVisitScreen> {
                 context,
                 feature: 'Emergency and urgent help',
               ),
-              child: const Padding(
+              child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 8),
                 child: Row(
                   children: [
@@ -350,7 +350,7 @@ class _PrepareCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                       letterSpacing: -0.4,
@@ -378,14 +378,14 @@ class _PrepareCard extends StatelessWidget {
                     TextField(
                       controller: controller,
                       keyboardType: keyboardType,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         color: AppColors.textPrimary,
                       ),
                       decoration: InputDecoration(
                         isDense: true,
                         hintText: hint,
-                        hintStyle: const TextStyle(
+                        hintStyle: TextStyle(
                           fontSize: 15,
                           color: AppColors.textSecondary,
                         ),
@@ -403,7 +403,7 @@ class _PrepareCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(top: 2),
               child: AppSvgIcon(
                 AppSvgGlyph.chevronLine,

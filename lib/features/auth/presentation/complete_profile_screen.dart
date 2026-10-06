@@ -93,7 +93,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppSpacing.lg),
@@ -102,7 +102,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: AppSpacing.xl),
-                const FadeIn(
+                FadeIn(
                   child: Text(
                     'Finish your profile',
                     textAlign: TextAlign.center,
@@ -114,7 +114,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                const Text(
+                Text(
                   'We need a few details so your care team knows who you are.',
                   textAlign: TextAlign.center,
                   style: TextStyle(

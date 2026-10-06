@@ -42,7 +42,7 @@ class PrivacyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -55,7 +55,7 @@ class PrivacyScreen extends StatelessWidget {
               subtitle: 'Last updated: 30 September 2026',
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'This policy explains what information LifeCome Live collects, how we use it, and the choices you have.',
               style: TextStyle(
                 fontSize: 15,
@@ -74,7 +74,7 @@ class PrivacyScreen extends StatelessWidget {
                   children: [
                     Text(
                       section.$1,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.4,
@@ -84,7 +84,7 @@ class PrivacyScreen extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       section.$2,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14.5,
                         height: 1.5,
                         letterSpacing: -0.2,

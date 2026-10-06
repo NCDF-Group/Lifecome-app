@@ -71,7 +71,7 @@ class _ChooseServiceScreenState extends ConsumerState<ChooseServiceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -126,7 +126,7 @@ class _ChooseServiceScreenState extends ConsumerState<ChooseServiceScreen> {
               ),
             ),
             const SizedBox(height: 40),
-            const Text(
+            Text(
               'Preferred care settings',
               style: TextStyle(
                 fontSize: 24,
@@ -207,7 +207,7 @@ class _ServiceCard extends StatelessWidget {
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.5,
@@ -217,7 +217,7 @@ class _ServiceCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               subtitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 height: 1.45,
                 letterSpacing: -0.2,

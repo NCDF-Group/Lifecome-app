@@ -92,6 +92,16 @@ Icons are single-colour SVGs drawn in `lib/core/theme/app_svg_icons.dart` (`AppS
 recoloured at draw time. Colours live in `AppColors` (primary action blue `#016DC3`, card fill `#F5F9FD`,
 border `#D7DAE0`). The font is Manrope, bundled.
 
+## Dark mode
+
+Light, dark, or follow the phone (Profile > Appearance; the choice is remembered). Colours that change with
+the theme live in `AppColors` as getters (`background`, `textPrimary`, `cardFill`, `tintBlue`, ...), backed by a
+light and a dark palette; brand and accent colours (`actionBlue`, `accentGreen`, ...) are constants. The
+palette is global and is switched in `app.dart` before any screen builds, and the whole UI rebuilds when the
+brightness changes - so use the getters, never a hard-coded hex, for anything that should follow the theme.
+Because they are getters, expressions using them can't be `const`. The Online GP / Smart GP Clinic cards stay
+light in both themes because their artwork has a pale background baked in.
+
 ## Navigation
 
 `go_router` with a `StatefulShellRoute`: five tabs (Home, Book, Records, Messages, Profile) in a floating

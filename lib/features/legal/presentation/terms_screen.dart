@@ -39,7 +39,7 @@ class TermsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -52,7 +52,7 @@ class TermsScreen extends StatelessWidget {
               subtitle: 'Last updated: 30 September 2026',
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'These terms govern your use of LifeCome Live. By creating an account, you agree to them.',
               style: TextStyle(
                 fontSize: 15,
@@ -71,7 +71,7 @@ class TermsScreen extends StatelessWidget {
                   children: [
                     Text(
                       section.$1,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.4,
@@ -81,7 +81,7 @@ class TermsScreen extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       section.$2,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14.5,
                         height: 1.5,
                         letterSpacing: -0.2,

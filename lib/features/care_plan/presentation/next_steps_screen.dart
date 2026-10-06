@@ -16,7 +16,7 @@ class NextStepsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -111,7 +111,7 @@ class _StepCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 19,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.4,
@@ -121,7 +121,7 @@ class _StepCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     height: 1.4,
                     letterSpacing: -0.2,
@@ -131,7 +131,7 @@ class _StepCard extends StatelessWidget {
               ],
             ),
           ),
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(top: 2),
             child: AppSvgIcon(
               AppSvgGlyph.chevronLine,

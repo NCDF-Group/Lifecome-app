@@ -85,7 +85,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     final submitting = authState.status == AuthStatus.submitting;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
@@ -96,7 +96,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 FadeIn(
                   child: Center(
                     child: SvgPicture.asset(
-                      'assets/images/logo/lifecome-live-logo.svg',
+                      AppColors.logoAsset,
                       height: 32,
                       semanticsLabel: 'LifeCome Live',
                     ),
@@ -107,7 +107,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   delay: const Duration(milliseconds: 80),
                   child: Text.rich(
                     TextSpan(
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.w800,
                         color: AppColors.ink,
@@ -124,7 +124,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                const FadeIn(
+                FadeIn(
                   delay: Duration(milliseconds: 120),
                   child: Text(
                     'Log in with your email and password.',
@@ -202,7 +202,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                                 ),
                               ),
                               const SizedBox(width: AppSpacing.xs),
-                              const Text(
+                              Text(
                                 'Remember me',
                                 style: TextStyle(
                                   color: AppColors.inkMuted,
@@ -245,7 +245,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     child: Wrap(
                       alignment: WrapAlignment.center,
                       children: [
-                        const Text(
+                        Text(
                           "Don't have an account? ",
                           style: TextStyle(
                             color: AppColors.inkMuted,

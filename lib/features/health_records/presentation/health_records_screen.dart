@@ -36,8 +36,8 @@ class _Record {
   final bool online;
 }
 
-const _blueFill = Color(0xFFD6E6F5);
-const _greenFill = Color(0xFFE2F2D6);
+Color get _blueFill => AppColors.tintBlue;
+Color get _greenFill => AppColors.tintGreen;
 
 /// The Records tab (blueprint view 21): the patient's health records,
 /// filterable by Online / Clinic. The care plan opens from here.
@@ -84,7 +84,7 @@ class _HealthRecordsScreenState extends ConsumerState<HealthRecordsScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -117,7 +117,7 @@ class _HealthRecordsScreenState extends ConsumerState<HealthRecordsScreen> {
                 child: Center(child: CircularProgressIndicator()),
               )
             else if (visible.isEmpty)
-              const SoftCard(
+              SoftCard(
                 padding: EdgeInsets.all(20),
                 child: Column(
                   children: [
@@ -202,7 +202,7 @@ class _RecordCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return SoftCard(
       onTap: onTap,
-      fill: AppColors.white,
+      fill: AppColors.background,
       radius: 14,
       padding: const EdgeInsets.fromLTRB(14, 16, 14, 16),
       child: Row(
@@ -226,7 +226,7 @@ class _RecordCard extends StatelessWidget {
                         record.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w700,
                           letterSpacing: -0.5,
@@ -241,7 +241,7 @@ class _RecordCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   record.date,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     letterSpacing: -0.3,
                     color: AppColors.textSecondary,
@@ -251,7 +251,7 @@ class _RecordCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 6),
-          const AppSvgIcon(
+          AppSvgIcon(
             AppSvgGlyph.chevronLine,
             size: 22,
             color: AppColors.textPrimary,
@@ -273,8 +273,8 @@ class _StatusChip extends StatelessWidget {
       _Status.summaryPending => (
         'Summary pending',
         AppSvgGlyph.clockBold,
-        const Color(0xFFFFF3C4),
-        const Color(0xFFD9820B),
+        AppColors.tintYellowStrong,
+        AppColors.warningText,
       ),
     };
     return Container(

@@ -142,7 +142,7 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
     final submitting = authState.status == AuthStatus.submitting;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(
@@ -160,7 +160,7 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
                   trailing: const StepIndicator(step: 2, totalSteps: 2),
                 ),
                 const SizedBox(height: AppSpacing.xl),
-                const Text(
+                Text(
                   'Tell us about you',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -170,7 +170,7 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                const Text(
+                Text(
                   'Help your care team identify you correctly.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -206,7 +206,7 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
                 const SizedBox(height: AppSpacing.md),
                 Text.rich(
                   TextSpan(
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.inkMuted,
                       fontSize: 12,
                       height: 1.4,

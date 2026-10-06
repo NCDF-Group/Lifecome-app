@@ -54,7 +54,7 @@ class AppTextField extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
             color: AppColors.ink,
@@ -73,7 +73,7 @@ class AppTextField extends StatelessWidget {
           onSubmitted: onSubmitted,
           onTap: onTap,
           inputFormatters: inputFormatters,
-          style: const TextStyle(fontSize: 16, color: AppColors.ink),
+          style: TextStyle(fontSize: 16, color: AppColors.ink),
           decoration: InputDecoration(
             hintText: hintText,
             errorText: errorText,

@@ -20,7 +20,7 @@ class DoctorProfileScreen extends StatelessWidget {
     final doctor = selection.doctor!;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -43,7 +43,7 @@ class DoctorProfileScreen extends StatelessWidget {
               child: Text(
                 doctor.name,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
                   letterSpacing: -0.6,
@@ -57,7 +57,7 @@ class DoctorProfileScreen extends StatelessWidget {
                 doctor.city == null
                     ? doctor.specialty
                     : '${doctor.specialty} · ${doctor.city}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   letterSpacing: -0.3,
                   color: AppColors.textSecondary,

@@ -37,7 +37,7 @@ class HelpCentreScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -51,17 +51,14 @@ class HelpCentreScreen extends StatelessWidget {
             ),
             const SizedBox(height: 22),
             TextField(
-              style: const TextStyle(
-                fontSize: 17,
-                color: AppColors.textPrimary,
-              ),
+              style: TextStyle(fontSize: 17, color: AppColors.textPrimary),
               decoration: InputDecoration(
                 hintText: 'Search help topics',
-                hintStyle: const TextStyle(
+                hintStyle: TextStyle(
                   fontSize: 17,
                   color: AppColors.textSecondary,
                 ),
-                prefixIcon: const Padding(
+                prefixIcon: Padding(
                   padding: EdgeInsets.all(14),
                   child: AppSvgIcon(
                     AppSvgGlyph.searchLine,
@@ -70,7 +67,7 @@ class HelpCentreScreen extends StatelessWidget {
                   ),
                 ),
                 filled: true,
-                fillColor: const Color(0xFFF5F7F9),
+                fillColor: AppColors.inputFill,
                 contentPadding: const EdgeInsets.symmetric(vertical: 16),
                 border: _border(AppColors.cardBorder),
                 enabledBorder: _border(AppColors.cardBorder),
@@ -88,13 +85,13 @@ class HelpCentreScreen extends StatelessWidget {
               const SizedBox(height: 12),
             ],
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Need more help?',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 letterSpacing: -0.4,
-                color: Color(0xFF0B101A),
+                color: AppColors.heading,
               ),
             ),
             const SizedBox(height: 12),
@@ -103,7 +100,7 @@ class HelpCentreScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
+                  Row(
                     children: [
                       IconCircle(glyph: AppSvgGlyph.chatBold, size: 50),
                       SizedBox(width: 14),
@@ -121,7 +118,7 @@ class HelpCentreScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  const Text(
+                  Text(
                     'Message our care team and get help with your account, '
                     'appointments, cover and more.',
                     style: TextStyle(
@@ -143,11 +140,11 @@ class HelpCentreScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFFEF3F3),
+                color: AppColors.tintRed,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFFF3C9CD)),
+                border: Border.all(color: AppColors.tintRedBorder),
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(

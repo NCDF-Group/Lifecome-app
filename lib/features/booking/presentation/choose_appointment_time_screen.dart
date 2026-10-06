@@ -95,7 +95,7 @@ class _ChooseAppointmentTimeScreenState
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -141,7 +141,7 @@ class _ChooseAppointmentTimeScreenState
                                 children: [
                                   Text(
                                     '$_city Smart GP',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 19,
                                       fontWeight: FontWeight.w800,
                                       letterSpacing: -0.5,
@@ -152,7 +152,7 @@ class _ChooseAppointmentTimeScreenState
                                   Text(
                                     'In person appointments at a $_city '
                                     'location',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 13.5,
                                       letterSpacing: -0.3,
                                       color: AppColors.textSecondary,
@@ -180,13 +180,13 @@ class _ChooseAppointmentTimeScreenState
                 ),
                 child: Row(
                   children: [
-                    const AppSvgIcon(
+                    AppSvgIcon(
                       AppSvgGlyph.calendarBold,
                       size: 24,
                       color: AppColors.textSecondary,
                     ),
                     const SizedBox(width: 14),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'Select a date',
                         style: TextStyle(
@@ -199,14 +199,14 @@ class _ChooseAppointmentTimeScreenState
                     ),
                     Text(
                       day == null ? 'No dates' : formatShortDate(day),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         letterSpacing: -0.3,
                         color: AppColors.textSecondary,
                       ),
                     ),
                     const SizedBox(width: 10),
-                    const AppSvgIcon(
+                    AppSvgIcon(
                       AppSvgGlyph.chevronDown,
                       size: 18,
                       color: AppColors.textSecondary,
@@ -224,7 +224,7 @@ class _ChooseAppointmentTimeScreenState
               ),
               child: Column(
                 children: [
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.symmetric(vertical: 18),
                     child: Row(
                       children: [
@@ -246,11 +246,7 @@ class _ChooseAppointmentTimeScreenState
                       ],
                     ),
                   ),
-                  const Divider(
-                    height: 1,
-                    thickness: 1,
-                    color: Color(0xFFE7E9ED),
-                  ),
+                  Divider(height: 1, thickness: 1, color: AppColors.divider),
                   if (slotsAsync.isLoading)
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 24),
@@ -270,7 +266,7 @@ class _ChooseAppointmentTimeScreenState
                       ),
                     )
                   else if (daySlots.isEmpty)
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.symmetric(vertical: 24),
                       child: Center(
                         child: Text(
@@ -294,7 +290,7 @@ class _ChooseAppointmentTimeScreenState
                             const SizedBox(width: 14),
                             Text(
                               formatClock(slot.startsAt, country),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 18,
                                 letterSpacing: -0.4,
                                 color: AppColors.textPrimary,

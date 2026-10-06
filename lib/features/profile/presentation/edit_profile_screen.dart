@@ -143,7 +143,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final hasPhoto = ref.watch(avatarProvider).value != null;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -167,7 +167,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           child: DecoratedBox(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: AppColors.white.withValues(alpha: 0.6),
+                              color: AppColors.background.withValues(
+                                alpha: 0.6,
+                              ),
                             ),
                             child: const Center(
                               child: SizedBox(
@@ -185,8 +187,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         bottom: 0,
                         child: Material(
                           color: AppColors.actionBlue,
-                          shape: const CircleBorder(
-                            side: BorderSide(color: AppColors.white, width: 2),
+                          shape: CircleBorder(
+                            side: BorderSide(
+                              color: AppColors.background,
+                              width: 2,
+                            ),
                           ),
                           child: InkWell(
                             customBorder: const CircleBorder(),

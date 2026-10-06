@@ -67,7 +67,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: IconButton(
@@ -103,7 +103,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       ),
                     ),
                     const SizedBox(height: AppSpacing.lg),
-                    const FadeIn(
+                    FadeIn(
                       delay: Duration(milliseconds: 80),
                       child: Text(
                         'Forgot your password?',
@@ -115,7 +115,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xs),
-                    const FadeIn(
+                    FadeIn(
                       delay: Duration(milliseconds: 120),
                       child: Text(
                         'Enter the email on your account and we will send you a code to reset your password.',

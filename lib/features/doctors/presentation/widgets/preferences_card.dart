@@ -43,7 +43,7 @@ class PreferencesCard extends StatelessWidget {
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.cardBorder),
       ),
@@ -57,11 +57,7 @@ class PreferencesCard extends StatelessWidget {
               children: [
                 for (var i = 0; i < rows.length; i++) ...[
                   if (i > 0)
-                    const Divider(
-                      height: 1,
-                      thickness: 1,
-                      color: Color(0xFFE7E9ED),
-                    ),
+                    Divider(height: 1, thickness: 1, color: AppColors.divider),
                   InkWell(
                     onTap: rows[i].onTap,
                     child: SizedBox(
@@ -79,7 +75,7 @@ class PreferencesCard extends StatelessWidget {
                               rows[i].label,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: -0.4,
@@ -90,14 +86,14 @@ class PreferencesCard extends StatelessWidget {
                           const SizedBox(width: 8),
                           Text(
                             rows[i].value,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               letterSpacing: -0.3,
                               color: AppColors.textSecondary,
                             ),
                           ),
                           const SizedBox(width: 8),
-                          const AppSvgIcon(
+                          AppSvgIcon(
                             AppSvgGlyph.chevronDown,
                             size: 18,
                             color: AppColors.textSecondary,
@@ -126,7 +122,7 @@ Future<String?> showOptionSheet(
 }) {
   return showModalBottomSheet<String>(
     context: context,
-    backgroundColor: AppColors.white,
+    backgroundColor: AppColors.background,
     showDragHandle: true,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -140,7 +136,7 @@ Future<String?> showOptionSheet(
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
             child: Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
                 color: AppColors.textPrimary,

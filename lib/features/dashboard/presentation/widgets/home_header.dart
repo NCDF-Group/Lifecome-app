@@ -66,7 +66,7 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
                 'Hello, $_firstName',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   height: 1.2,
@@ -79,7 +79,7 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const AppSvgIcon(
+                    AppSvgIcon(
                       AppSvgGlyph.pinLine,
                       size: 17,
                       color: AppColors.textSecondary,
@@ -90,7 +90,7 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
                         country.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           color: AppColors.textSecondary,
                         ),

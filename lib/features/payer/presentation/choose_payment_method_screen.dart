@@ -16,9 +16,9 @@ class ChoosePaymentMethodScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Choose how to pay',
           style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
         ),
@@ -27,7 +27,7 @@ class ChoosePaymentMethodScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
-            const Text(
+            Text(
               'Access quality healthcare in a way that works for you. You can use a '
               'participating HMO or pay directly.',
               style: TextStyle(
@@ -84,7 +84,7 @@ class _PaymentOptionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: highlighted ? const Color(0xFFEAF7E8) : AppColors.white,
+      color: highlighted ? AppColors.tintGreenSoft : AppColors.background,
       borderRadius: BorderRadius.circular(AppRadius.card),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.card),
@@ -123,7 +123,7 @@ class _PaymentOptionCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             title,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
                               color: AppColors.ink,
@@ -156,7 +156,7 @@ class _PaymentOptionCard extends StatelessWidget {
                     const SizedBox(height: AppSpacing.xxs),
                     Text(
                       description,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         color: AppColors.inkMuted,
                         height: 1.4,

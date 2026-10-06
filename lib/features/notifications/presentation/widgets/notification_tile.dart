@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_typography.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_svg_icons.dart';
 import '../../domain/models/notification_item.dart';
@@ -37,7 +39,7 @@ class NotificationTile extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.white,
+              color: AppColors.background,
               border: Border.all(color: AppColors.cardBorder),
             ),
             child: Center(
@@ -57,7 +59,7 @@ class NotificationTile extends StatelessWidget {
                   children: [
                     Text(
                       item.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
@@ -66,7 +68,7 @@ class NotificationTile extends StatelessWidget {
                     const SizedBox(width: 10),
                     Text(
                       item.timeLabel,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         color: AppColors.textSecondary,
                       ),
@@ -101,7 +103,7 @@ class NotificationTile extends StatelessWidget {
                       item.preview!,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         color: AppColors.textSecondary,
                       ),
@@ -114,11 +116,12 @@ class NotificationTile extends StatelessWidget {
                     onPressed: onAction,
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.actionBlue,
-                      side: const BorderSide(color: AppColors.cardBorder),
+                      side: BorderSide(color: AppColors.cardBorder),
                       shape: const StadiumBorder(),
                       minimumSize: const Size(0, 44),
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       textStyle: const TextStyle(
+                        fontFamily: appFontFamily,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
@@ -154,12 +157,12 @@ class _RichBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const base = TextStyle(
+    final base = TextStyle(
       fontSize: 16,
       height: 1.4,
       color: AppColors.textSecondary,
     );
-    const bold = TextStyle(
+    final bold = TextStyle(
       fontSize: 16,
       height: 1.4,
       fontWeight: FontWeight.w700,
