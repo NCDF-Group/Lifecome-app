@@ -59,3 +59,33 @@ String _grouped(int value) {
   }
   return buffer.toString();
 }
+
+/// Wall-clock time in [country]'s appointment time zone for a UTC moment: Nigeria is UTC+1 all year,
+/// the UK is UTC+0 (winter) or UTC+1 (summer time: last Sunday of March to last Sunday of October).
+DateTime zonedTime(DateTime utc, AppCountry country) {
+  final moment = utc.toUtc();
+  final offset = switch (country) {
+    AppCountry.nigeria => 1,
+    AppCountry.unitedKingdom => _isUkSummerTime(moment) ? 1 : 0,
+  };
+  // A UTC-flagged DateTime whose clock fields read as the local wall time.
+  return moment.add(Duration(hours: offset));
+}
+
+/// "09:00" - the wall-clock time of [utc] in [country]'s zone.
+String formatClock(DateTime utc, AppCountry country) {
+  final local = zonedTime(utc, country);
+  return '${local.hour.toString().padLeft(2, '0')}:'
+      '${local.minute.toString().padLeft(2, '0')}';
+}
+
+bool _isUkSummerTime(DateTime utc) {
+  DateTime lastSunday(int month) {
+    final lastDay = DateTime.utc(utc.year, month + 1, 0);
+    return lastDay.subtract(Duration(days: lastDay.weekday % 7));
+  }
+
+  final start = lastSunday(3).add(const Duration(hours: 1)); // 01:00 UTC
+  final end = lastSunday(10).add(const Duration(hours: 1));
+  return !utc.isBefore(start) && utc.isBefore(end);
+}

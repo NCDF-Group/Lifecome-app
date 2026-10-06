@@ -62,7 +62,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
     if (!mounted) return;
     if (success) {
-      context.go(RoutePaths.home);
+      context.go(
+        ref.read(authControllerProvider).needsProfile
+            ? RoutePaths.completeProfile
+            : RoutePaths.home,
+      );
     } else {
       final message = ref.read(authControllerProvider).errorMessage;
       if (message != null) {

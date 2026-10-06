@@ -1,14 +1,18 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/country/app_country.dart';
+import '../../../core/network/api_exception.dart';
 import '../../../core/providers/core_providers.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_svg_icons.dart';
 import '../../../core/widgets/design/soft_widgets.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
+import '../application/booking_providers.dart';
 import '../domain/booking_format.dart';
 import '../domain/models/appointment.dart';
 
@@ -50,12 +54,57 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
     });
   }
 
+  /// One key per review screen, so a double tap (or a retry after a dropped connection) can never
+  /// book the same appointment twice.
+  late final String _attemptKey =
+      'bk-${DateTime.now().microsecondsSinceEpoch}-${Random().nextInt(1 << 32)}';
+
+  /// Creates the appointment (holding the time) and confirms it, then shows the confirmation.
   Future<void> _confirm() async {
+    final selection = _selection;
+    final doctor = selection.doctor;
+    final service = selection.service;
+    final slot = selection.slot;
+    if (doctor == null || service == null || slot == null) {
+      showErrorPopup(context, 'Choose a clinician, service and time first.');
+      return;
+    }
+
     setState(() => _loading = true);
-    await Future<void>.delayed(const Duration(milliseconds: 900));
-    if (!mounted) return;
-    setState(() => _loading = false);
-    context.push(RoutePaths.bookingConfirmation, extra: _selection);
+    final repository = ref.read(bookingRepositoryProvider);
+    try {
+      final id = await repository.createAppointment(
+        idempotencyKey: _attemptKey,
+        providerId: doctor.id,
+        clinicalServiceId: service.id,
+        availabilitySlotId: slot.id,
+        consultationMode: selection.apiMode,
+        fundingRoute: selection.apiFundingRoute,
+        presentingConcern: selection.concern,
+        locationCity: selection.isInPerson ? selection.location : null,
+        clinicName: selection.isInPerson && selection.location != null
+            ? '${selection.location} Smart GP'
+            : null,
+        intake: selection.intake,
+      );
+      await repository.confirm(id, idempotencyKey: '$_attemptKey-confirm');
+      ref.invalidate(myAppointmentsProvider);
+      ref.invalidate(availabilityProvider(doctor.id));
+      if (!mounted) return;
+      context.push(RoutePaths.bookingConfirmation, extra: selection);
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      if (error.code == 'SLOT_UNAVAILABLE') {
+        // Someone else took the time: refresh the list and let the patient pick another.
+        ref.invalidate(availabilityProvider(doctor.id));
+        await showErrorPopup(context, error.message);
+        if (mounted) context.pop();
+      } else {
+        await showErrorPopup(context, error.message);
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   void _comingSoon(String feature) =>

@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/auth/data/auth_repository.dart';
+import '../../features/booking/data/booking_repository.dart';
+import '../../features/messaging/data/messaging_repository.dart';
+import '../../features/profile/data/profile_repository.dart';
 import '../network/api_client.dart';
 import '../services/biometric_service.dart';
 import '../services/session_store.dart';
@@ -20,4 +23,19 @@ final sessionStoreProvider = Provider<SessionStore>((ref) => SessionStore());
 /// Face ID / fingerprint unlock for the app-lock screen.
 final biometricServiceProvider = Provider<BiometricService>(
   (ref) => BiometricService(),
+);
+
+/// The signed-in patient's own account, profile and photo (`/me`).
+final profileRepositoryProvider = Provider<ProfileRepository>(
+  (ref) => ProfileRepository(ref.watch(apiClientProvider)),
+);
+
+/// Messages to the care team.
+final messagingRepositoryProvider = Provider<MessagingRepository>(
+  (ref) => MessagingRepository(ref.watch(apiClientProvider)),
+);
+
+/// Services, clinicians, availability and appointments.
+final bookingRepositoryProvider = Provider<BookingRepository>(
+  (ref) => BookingRepository(ref.watch(apiClientProvider)),
 );

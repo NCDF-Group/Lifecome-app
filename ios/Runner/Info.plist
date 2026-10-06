@@ -68,5 +68,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>LifeCome Live uses your photos so you can choose a profile picture.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>LifeCome Live uses the camera so you can take a profile picture.</string>
 </dict>
 </plist>

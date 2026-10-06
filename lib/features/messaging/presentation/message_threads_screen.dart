@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/animation/fade_in.dart';
+import '../../../core/network/api_exception.dart';
+import '../../../core/providers/core_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_svg_icons.dart';
 import '../../../core/widgets/design/soft_widgets.dart';
@@ -9,6 +12,7 @@ import '../../dashboard/presentation/widgets/home_header.dart';
 
 enum _Topic {
   booking(
+    'booking_payments',
     'Booking and payments',
     'Questions about appointments and booking.',
     AppSvgGlyph.calendarBold,
@@ -16,6 +20,7 @@ enum _Topic {
     Color(0xFFD6E6F5),
   ),
   online(
+    'online_appointment',
     'Online appointment',
     'Help with your online consultation.',
     AppSvgGlyph.videoBold,
@@ -23,6 +28,7 @@ enum _Topic {
     Color(0xFFE2F2D6),
   ),
   clinic(
+    'clinic_visit',
     'Clinic visit',
     'Questions about your in-person appointment.',
     AppSvgGlyph.pinBold,
@@ -30,6 +36,7 @@ enum _Topic {
     Color(0xFFD6E6F5),
   ),
   followUp(
+    'follow_up',
     'Follow-up query',
     'Other questions for the care team.',
     AppSvgGlyph.chatBold,
@@ -37,8 +44,17 @@ enum _Topic {
     Color(0xFFD6E6F5),
   );
 
-  const _Topic(this.title, this.hint, this.glyph, this.color, this.fill);
+  const _Topic(
+    this.apiValue,
+    this.title,
+    this.hint,
+    this.glyph,
+    this.color,
+    this.fill,
+  );
 
+  /// What the backend stores as the thread's topic.
+  final String apiValue;
   final String title;
   final String hint;
   final AppSvgGlyph glyph;
@@ -49,14 +65,15 @@ enum _Topic {
 /// The Messages tab (blueprint view 22): pick a topic, write a message and
 /// send it to the care team. No messaging backend exists yet, so sending only
 /// confirms and clears the form.
-class MessageThreadsScreen extends StatefulWidget {
+class MessageThreadsScreen extends ConsumerStatefulWidget {
   const MessageThreadsScreen({super.key});
 
   @override
-  State<MessageThreadsScreen> createState() => _MessageThreadsScreenState();
+  ConsumerState<MessageThreadsScreen> createState() =>
+      _MessageThreadsScreenState();
 }
 
-class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
+class _MessageThreadsScreenState extends ConsumerState<MessageThreadsScreen> {
   final _controller = TextEditingController();
   _Topic _topic = _Topic.booking;
   bool _sending = false;
@@ -73,7 +90,16 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
       return;
     }
     setState(() => _sending = true);
-    await Future<void>.delayed(const Duration(milliseconds: 700));
+    try {
+      await ref
+          .read(messagingRepositoryProvider)
+          .startThread(topic: _topic.apiValue, body: _controller.text.trim());
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      setState(() => _sending = false);
+      await showErrorPopup(context, error.message);
+      return;
+    }
     if (!mounted) return;
     setState(() => _sending = false);
     _controller.clear();

@@ -8,6 +8,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_svg_icons.dart';
 import '../../../core/widgets/design/soft_widgets.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
+import '../../booking/application/booking_providers.dart';
 import '../../booking/domain/models/appointment.dart';
 import '../domain/models/doctor.dart';
 import 'widgets/preferences_card.dart';
@@ -49,7 +50,7 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
         : 'Video consultation',
   );
 
-  List<Doctor> get _results => sampleDoctors.where((doctor) {
+  List<Doctor> _filter(List<Doctor> doctors) => doctors.where((doctor) {
     final query = _query.trim().toLowerCase();
     final matchesQuery =
         query.isEmpty ||
@@ -58,7 +59,12 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
     final matchesLanguage =
         _language == bookingLanguages.first ||
         doctor.languages.contains(_language);
-    return matchesQuery && matchesLanguage;
+    final matchesMode = switch (_mode) {
+      'In person' => doctor.offersInPerson,
+      'Online' => doctor.offersOnline,
+      _ => true, // "Online or clinic"
+    };
+    return matchesQuery && matchesLanguage && matchesMode;
   }).toList();
 
   Future<void> _pick(
@@ -76,8 +82,8 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
     if (picked != null) setState(() => onPicked(picked));
   }
 
-  void _viewAppointments() {
-    final results = _results;
+  void _viewAppointments(List<Doctor> doctors) {
+    final results = _filter(doctors);
     if (results.isEmpty) {
       showErrorPopup(
         context,
@@ -93,7 +99,9 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final results = _results;
+    final doctorsAsync = ref.watch(doctorsProvider);
+    final doctors = doctorsAsync.value ?? const <Doctor>[];
+    final results = _filter(doctors);
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -197,7 +205,9 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
                   const SizedBox(height: 16),
                   PillButton(
                     label: 'View appointments',
-                    onPressed: _viewAppointments,
+                    onPressed: doctorsAsync.isLoading
+                        ? null
+                        : () => _viewAppointments(doctors),
                   ),
                 ],
               ),
@@ -251,7 +261,24 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            if (results.isEmpty)
+            if (doctorsAsync.isLoading)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else if (doctorsAsync.hasError)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Center(
+                  child: TextButton(
+                    onPressed: () => ref.invalidate(doctorsProvider),
+                    child: const Text(
+                      "Couldn't load clinicians. Tap to retry.",
+                    ),
+                  ),
+                ),
+              )
+            else if (results.isEmpty)
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 24),
                 child: Center(

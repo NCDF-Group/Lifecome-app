@@ -49,9 +49,25 @@ class _BeforeYourVisitScreenState extends State<BeforeYourVisitScreen> {
       );
       return;
     }
+    // Only what the patient actually filled in is kept and sent with the booking.
+    final answers = <String, dynamic>{
+      'reason': _reasonController.text.trim(),
+      'medicinesAndAllergies': _medicinesController.text.trim(),
+      if (_inPerson)
+        'accessibilitySupport': _accessibilityController.text.trim()
+      else ...{
+        'patientLocation': _locationController.text.trim(),
+        'callbackNumber': _phoneController.text.trim(),
+        'understoodRemoteLimits': _understood,
+      },
+    }..removeWhere((_, value) => value == '');
+
     context.push(
       RoutePaths.bookingReview,
-      extra: widget.selection.copyWith(concern: _reasonController.text),
+      extra: widget.selection.copyWith(
+        concern: _reasonController.text.trim(),
+        intake: answers,
+      ),
     );
   }
 

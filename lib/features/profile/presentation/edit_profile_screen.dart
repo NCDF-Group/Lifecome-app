@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
+import '../../../core/network/api_exception.dart';
 import '../../../core/providers/core_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_svg_icons.dart';
 import '../../../core/widgets/design/soft_widgets.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
+import '../../../core/widgets/media/user_avatar.dart';
+import '../application/avatar_controller.dart';
+import '../domain/my_profile.dart';
 
-/// View/edit the patient's own profile. No profile-update backend exists
-/// yet (the identity API has no `PATCH` for this), so "Save changes" just
-/// confirms locally - see `IdentityService` for what's actually wired up.
+/// View and edit the signed-in patient's own profile: name (saved to the backend), email (read-only,
+/// it's the sign-in identity) and profile photo (uploaded to the backend).
 class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
 
@@ -19,43 +23,125 @@ class EditProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
-  final _nameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
+  PatientProfile? _profile;
+  bool _loading = true;
   bool _saving = false;
+  bool _photoBusy = false;
 
   @override
   void initState() {
     super.initState();
-    ref.read(sessionStoreProvider).read().then((session) {
-      if (!mounted || session == null) return;
-      setState(() {
-        _nameController.text = session.displayName;
-        _emailController.text = session.email;
-      });
-    });
+    _load();
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _emailController.dispose();
     super.dispose();
   }
 
+  Future<void> _load() async {
+    try {
+      final me = await ref.read(profileRepositoryProvider).getMe();
+      if (!mounted) return;
+      setState(() {
+        _profile = me.profile;
+        _emailController.text = me.email;
+        _firstNameController.text = me.profile?.firstName ?? '';
+        _lastNameController.text = me.profile?.lastName ?? '';
+      });
+    } on ApiException catch (error) {
+      // Offline: still show the email we remember so the screen isn't empty.
+      final session = await ref.read(sessionStoreProvider).read();
+      if (!mounted) return;
+      _emailController.text = session?.email ?? '';
+      showErrorPopup(context, error.message);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
   Future<void> _save() async {
+    final profile = _profile;
+    final first = _firstNameController.text.trim();
+    final last = _lastNameController.text.trim();
+    if (profile == null || first.isEmpty || last.isEmpty) {
+      showErrorPopup(context, 'Enter your first and last name.');
+      return;
+    }
     setState(() => _saving = true);
-    await Future<void>.delayed(const Duration(milliseconds: 500));
-    if (!mounted) return;
-    setState(() => _saving = false);
-    showSuccessPopup(
-      context,
-      title: 'Profile updated',
-      message: 'Your changes have been saved.',
-    );
+    try {
+      final saved = await ref
+          .read(profileRepositoryProvider)
+          .saveProfile(
+            firstName: first,
+            lastName: last,
+            dateOfBirth: profile.dateOfBirth,
+            country: profile.country,
+          );
+      await ref.read(sessionStoreProvider).saveDisplayName(saved.firstName);
+      if (!mounted) return;
+      setState(() => _profile = saved);
+      showSuccessPopup(
+        context,
+        title: 'Profile updated',
+        message: 'Your changes have been saved.',
+      );
+    } on ApiException catch (error) {
+      if (mounted) showErrorPopup(context, error.message);
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  Future<void> _changePhoto() async {
+    final source = await showUploadPhotoPopup(context);
+    if (source == null || !mounted) return;
+    setState(() => _photoBusy = true);
+    try {
+      await ref
+          .read(avatarProvider.notifier)
+          .pickAndUpload(
+            source == PhotoSource.camera
+                ? ImageSource.camera
+                : ImageSource.gallery,
+          );
+    } on AvatarException catch (error) {
+      if (mounted) showErrorPopup(context, error.message);
+    } on ApiException catch (error) {
+      if (mounted) showErrorPopup(context, error.message);
+    } catch (_) {
+      if (mounted) {
+        showErrorPopup(
+          context,
+          'Could not open your photos. Check the app has permission and try again.',
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _photoBusy = false);
+    }
+  }
+
+  Future<void> _removePhoto() async {
+    setState(() => _photoBusy = true);
+    try {
+      await ref.read(avatarProvider.notifier).remove();
+    } on ApiException catch (error) {
+      if (mounted) showErrorPopup(context, error.message);
+    } finally {
+      if (mounted) setState(() => _photoBusy = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final hasPhoto = ref.watch(avatarProvider).value != null;
+
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -71,52 +157,74 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             ),
             const SizedBox(height: 26),
             Center(
-              child: Stack(
+              child: Column(
                 children: [
-                  ClipOval(
-                    child: Image.asset(
-                      'assets/images/home/avatar.png',
-                      width: 96,
-                      height: 96,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: Material(
-                      color: AppColors.actionBlue,
-                      shape: const CircleBorder(
-                        side: BorderSide(color: AppColors.white, width: 2),
-                      ),
-                      child: InkWell(
-                        customBorder: const CircleBorder(),
-                        onTap: () async {
-                          final source = await showUploadPhotoPopup(context);
-                          // No image picker is wired up yet, so a chosen
-                          // source ends at a coming-soon popup for now.
-                          if (source == null || !context.mounted) return;
-                          showComingSoonPopup(context, feature: 'Photo upload');
-                        },
-                        child: const Padding(
-                          padding: EdgeInsets.all(8),
-                          child: AppSvgIcon(
-                            AppSvgGlyph.documentUploadBold,
-                            size: 18,
-                            color: AppColors.white,
+                  Stack(
+                    children: [
+                      const UserAvatar(size: 96),
+                      if (_photoBusy)
+                        Positioned.fill(
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.white.withValues(alpha: 0.6),
+                            ),
+                            child: const Center(
+                              child: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Material(
+                          color: AppColors.actionBlue,
+                          shape: const CircleBorder(
+                            side: BorderSide(color: AppColors.white, width: 2),
+                          ),
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
+                            onTap: _photoBusy ? null : _changePhoto,
+                            child: const Padding(
+                              padding: EdgeInsets.all(8),
+                              child: AppSvgIcon(
+                                AppSvgGlyph.documentUploadBold,
+                                size: 18,
+                                color: AppColors.white,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
+                  if (hasPhoto)
+                    TextButton(
+                      onPressed: _photoBusy ? null : _removePhoto,
+                      child: const Text('Remove photo'),
+                    ),
                 ],
               ),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 24),
             AppTextField(
-              label: 'Full name',
-              controller: _nameController,
-              hintText: 'Enter your full name',
+              label: 'First name',
+              controller: _firstNameController,
+              hintText: 'Enter your first name',
+              enabled: !_loading,
+            ),
+            const SizedBox(height: 16),
+            AppTextField(
+              label: 'Last name',
+              controller: _lastNameController,
+              hintText: 'Enter your last name',
+              enabled: !_loading,
             ),
             const SizedBox(height: 16),
             AppTextField(
@@ -135,7 +243,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             PillButton(
               label: _saving ? 'Saving…' : 'Save changes',
               height: 54,
-              onPressed: _saving ? null : _save,
+              onPressed: (_saving || _loading) ? null : _save,
             ),
           ],
         ),

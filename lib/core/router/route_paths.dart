@@ -16,6 +16,9 @@ abstract final class RoutePaths {
 
   static const signIn = '/sign-in';
 
+  /// Name and date of birth for an account that has no profile yet (see `CompleteProfileScreen`).
+  static const completeProfile = '/complete-profile';
+
   /// Step 1 of 2: full name, email and optional referral code.
   static const createAccount = '/create-account';
 

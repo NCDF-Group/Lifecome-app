@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/animation/fade_in.dart';
+import '../../../core/network/api_exception.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_svg_icons.dart';
 import '../../../core/widgets/design/soft_widgets.dart';
-import '../../doctors/domain/models/doctor.dart';
+import '../../../core/widgets/feedback/app_popup.dart';
 import '../../doctors/presentation/widgets/preferences_card.dart';
+import '../application/booking_providers.dart';
 import '../domain/models/appointment.dart';
 
 /// "Smart GP locations" — the in-person clinics, each a photo card with the
@@ -68,7 +71,7 @@ class SmartGpLocationsScreen extends StatelessWidget {
   }
 }
 
-class _LocationCard extends StatefulWidget {
+class _LocationCard extends ConsumerStatefulWidget {
   const _LocationCard({
     required this.selection,
     required this.name,
@@ -86,10 +89,10 @@ class _LocationCard extends StatefulWidget {
   final Color chipColor;
 
   @override
-  State<_LocationCard> createState() => _LocationCardState();
+  ConsumerState<_LocationCard> createState() => _LocationCardState();
 }
 
-class _LocationCardState extends State<_LocationCard> {
+class _LocationCardState extends ConsumerState<_LocationCard> {
   String _mode = bookingModes.first;
   late String _location = widget.city;
   String _date = bookingDates.first;
@@ -110,15 +113,40 @@ class _LocationCardState extends State<_LocationCard> {
     if (picked != null) setState(() => onPicked(picked));
   }
 
-  void _checkAvailability() {
-    context.push(
-      RoutePaths.bookingAppointmentTime,
-      extra: widget.selection.copyWith(
-        doctor: sampleDoctors.first,
-        consultationType: 'In-person visit',
-        location: _location,
-      ),
-    );
+  /// Picks a clinician who sees patients in person - preferring one based in the chosen city - and
+  /// goes to their available times.
+  Future<void> _checkAvailability() async {
+    try {
+      final doctors = await ref.read(doctorsProvider.future);
+      final inPerson = doctors
+          .where((doctor) => doctor.offersInPerson)
+          .toList();
+      if (inPerson.isEmpty) {
+        if (mounted) {
+          showErrorPopup(
+            context,
+            'No clinicians are offering in-person visits yet.',
+          );
+        }
+        return;
+      }
+      final doctor = inPerson.firstWhere(
+        (doctor) => doctor.city == _location,
+        orElse: () => inPerson.first,
+      );
+      if (!mounted) return;
+      context.push(
+        RoutePaths.bookingAppointmentTime,
+        extra: widget.selection.copyWith(
+          doctor: doctor,
+          consultationType: 'In-person visit',
+          location: _location,
+        ),
+      );
+    } on ApiException catch (error) {
+      ref.invalidate(doctorsProvider);
+      if (mounted) showErrorPopup(context, error.message);
+    }
   }
 
   @override

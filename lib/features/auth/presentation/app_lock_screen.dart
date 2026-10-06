@@ -60,6 +60,15 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
     setState(() => _step = _UnlockStep.checking);
     final success = await ref.read(biometricServiceProvider).authenticate();
     if (!mounted) return;
+    // A fingerprint proves it's you, but the backend still needs a valid session token. If it's gone
+    // (expired, or this device never stored one), fall back to the password.
+    if (success && ref.read(apiClientProvider).accessToken == null) {
+      setState(() {
+        _step = _UnlockStep.idle;
+        _passwordError = 'Enter your password to continue.';
+      });
+      return;
+    }
     if (success) {
       setState(() => _step = _UnlockStep.unlocked);
       await Future<void>.delayed(const Duration(milliseconds: 500));
@@ -87,7 +96,11 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
     setState(() => _passwordSubmitting = false);
 
     if (success) {
-      context.go(RoutePaths.home);
+      context.go(
+        ref.read(authControllerProvider).needsProfile
+            ? RoutePaths.completeProfile
+            : RoutePaths.home,
+      );
     } else {
       final message = ref.read(authControllerProvider).errorMessage;
       setState(() => _passwordError = message ?? 'Incorrect password.');

@@ -106,18 +106,23 @@ each tab keeps its own stack. The booking flow screens stay inside the Book tab 
 | Navigation | `go_router` |
 | State | `flutter_riverpod` |
 | HTTP | `dio` |
-| Storage | `shared_preferences` (session, country, preferences) |
+| Storage | `shared_preferences` (name, country), `flutter_secure_storage` (session token) |
+| Photos | `image_picker` |
 | Biometrics | `local_auth` |
 | Graphics | `flutter_svg` |
 
 ## What's real and what isn't
 
-**Wired to the backend:** sign up, email verification, sign in, password create / reset.
+**Wired to the backend:** sign up and sign in (the greeting uses your name from your profile, never your
+email), your profile and profile photo, the service catalogue, clinicians and their open times, booking,
+confirming and cancelling appointments, My visits, and messages to the care team. The session token is
+kept in the platform's secure storage, so a biometric unlock goes straight back in; if it has expired the
+app asks for your password.
 
-**Built and working locally, backend not connected yet:** booking (choices are carried between screens
-and "confirmed" locally), payments and funding checks, health records, messages, notifications, profile
-edits and account deletion. These use sample data or just confirm on screen. In debug builds the
-notification list shows sample items; release builds show the empty state.
+**Built and working locally, backend not connected yet:** payments and funding checks (while the
+backend's `ALLOW_SELF_CONFIRM_BOOKINGS` is on, "Pay and confirm" books without taking payment), health
+records, the care plan and notifications. These use sample data or just confirm on screen. In debug builds
+the notification list shows sample items; release builds show the empty state.
 
 Some illustrations (avatar, Online GP, Smart GP Clinic, location photos) are placeholders and should be
 replaced with the final artwork.

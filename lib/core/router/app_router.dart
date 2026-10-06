@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/app_lock_screen.dart';
+import '../../features/auth/presentation/complete_profile_screen.dart';
 import '../../features/auth/presentation/create_account_screen.dart';
 import '../../features/auth/presentation/create_password_screen.dart';
 import '../../features/auth/presentation/forgot_password_screen.dart';
@@ -67,6 +68,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.signIn,
         builder: (context, state) => const SignInScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.completeProfile,
+        builder: (context, state) => const CompleteProfileScreen(),
       ),
       GoRoute(
         path: RoutePaths.createAccount,

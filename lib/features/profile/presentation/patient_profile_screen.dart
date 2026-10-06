@@ -11,7 +11,9 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_svg_icons.dart';
 import '../../../core/widgets/design/soft_widgets.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/widgets/media/user_avatar.dart';
 import '../../auth/application/auth_controller.dart';
+import '../application/avatar_controller.dart';
 import '../../dashboard/presentation/widgets/home_header.dart';
 
 /// The Profile tab: the account summary card, then the account, support and
@@ -38,6 +40,8 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
 
   Future<void> _signOut() async {
     await ref.read(sessionStoreProvider).clear();
+    ref.read(apiClientProvider).accessToken = null;
+    ref.invalidate(avatarProvider);
     ref.read(authControllerProvider.notifier).reset();
     if (mounted) context.go(RoutePaths.welcome);
   }
@@ -202,14 +206,7 @@ class _AccountCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              ClipOval(
-                child: Image.asset(
-                  'assets/images/home/avatar.png',
-                  width: 56,
-                  height: 56,
-                  fit: BoxFit.cover,
-                ),
-              ),
+              const UserAvatar(size: 56),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(

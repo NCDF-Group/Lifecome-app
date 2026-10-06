@@ -8,6 +8,7 @@ import '../../../../core/router/route_paths.dart';
 import '../../../../core/services/session_store.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_svg_icons.dart';
+import '../../../../core/widgets/media/user_avatar.dart';
 import '../../../../core/widgets/feedback/app_popup.dart';
 import '../../../notifications/application/notifications_controller.dart';
 
@@ -55,14 +56,7 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
 
     return Row(
       children: [
-        ClipOval(
-          child: Image.asset(
-            'assets/images/home/avatar.png',
-            width: 40,
-            height: 40,
-            fit: BoxFit.cover,
-          ),
-        ),
+        const UserAvatar(size: 40),
         const SizedBox(width: 10),
         Expanded(
           child: Column(

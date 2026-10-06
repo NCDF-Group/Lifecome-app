@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/animation/fade_in.dart';
+import '../../../core/network/api_exception.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_svg_icons.dart';
 import '../../../core/widgets/design/soft_widgets.dart';
+import '../../../core/widgets/feedback/app_popup.dart';
 import '../../dashboard/presentation/widgets/home_header.dart';
+import '../application/booking_providers.dart';
 import '../domain/models/appointment.dart';
-import '../domain/models/clinical_service.dart';
 
 /// "How can we help?" — pick the kind of care, and whether it's online or in
 /// person. One screen serves both the HMO and the direct-pay path (blueprint
 /// views 09/10); the choice flows on into Find a GP via [BookingSelection].
-class ChooseServiceScreen extends StatefulWidget {
+class ChooseServiceScreen extends ConsumerStatefulWidget {
   const ChooseServiceScreen({
     super.key,
     required this.accessType,
@@ -24,26 +27,45 @@ class ChooseServiceScreen extends StatefulWidget {
   final String? hmoName;
 
   @override
-  State<ChooseServiceScreen> createState() => _ChooseServiceScreenState();
+  ConsumerState<ChooseServiceScreen> createState() =>
+      _ChooseServiceScreenState();
 }
 
-class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
+class _ChooseServiceScreenState extends ConsumerState<ChooseServiceScreen> {
   bool _online = true;
 
-  ClinicalService _service(String id) =>
-      clinicalServices.firstWhere((service) => service.id == id);
+  bool _loading = false;
 
-  void _choose(String serviceId) {
-    final selection = BookingSelection(
-      accessType: widget.accessType,
-      hmoName: widget.hmoName,
-      service: _service(serviceId),
-      consultationType: _online ? 'Video consultation' : 'In-person visit',
-    );
-    context.push(
-      _online ? RoutePaths.doctorsFindADoctor : RoutePaths.bookLocations,
-      extra: selection,
-    );
+  /// The service's real record (and price) comes from the backend; [code] is the card that was tapped.
+  Future<void> _choose(String code) async {
+    if (_loading) return;
+    setState(() => _loading = true);
+    try {
+      final services = await ref.read(clinicalServicesProvider.future);
+      final matches = services.where((service) => service.code == code);
+      if (matches.isEmpty) {
+        if (mounted) {
+          showErrorPopup(context, "That service isn't available right now.");
+        }
+        return;
+      }
+      if (!mounted) return;
+      final selection = BookingSelection(
+        accessType: widget.accessType,
+        hmoName: widget.hmoName,
+        service: matches.first,
+        consultationType: _online ? 'Video consultation' : 'In-person visit',
+      );
+      context.push(
+        _online ? RoutePaths.doctorsFindADoctor : RoutePaths.bookLocations,
+        extra: selection,
+      );
+    } on ApiException catch (error) {
+      ref.invalidate(clinicalServicesProvider);
+      if (mounted) showErrorPopup(context, error.message);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   @override
