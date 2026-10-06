@@ -3,14 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/core_providers.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_spacing.dart';
-import '../../../core/widgets/buttons/primary_button.dart';
-import '../../../core/widgets/inputs/app_text_field.dart';
+import '../../../core/theme/app_svg_icons.dart';
+import '../../../core/widgets/design/soft_widgets.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/widgets/inputs/app_text_field.dart';
 
 /// View/edit the patient's own profile. No profile-update backend exists
 /// yet (the identity API has no `PATCH` for this), so "Save changes" just
-/// confirms locally — see `IdentityService` for what's actually wired up.
+/// confirms locally - see `IdentityService` for what's actually wired up.
 class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
 
@@ -58,43 +58,37 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        title: const Text(
-          'My profile',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
-        ),
-      ),
       body: SafeArea(
+        bottom: false,
         child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
           children: [
+            const DesignBackButton(),
+            const SizedBox(height: 14),
+            const PageHeading(
+              'My profile',
+              subtitle: 'View and update your account details.',
+            ),
+            const SizedBox(height: 26),
             Center(
               child: Stack(
                 children: [
-                  Container(
-                    width: 88,
-                    height: 88,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [AppColors.blue, AppColors.greenStrong],
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.person_rounded,
-                      color: AppColors.white,
-                      size: 44,
+                  ClipOval(
+                    child: Image.asset(
+                      'assets/images/home/avatar.png',
+                      width: 96,
+                      height: 96,
+                      fit: BoxFit.cover,
                     ),
                   ),
                   Positioned(
                     right: 0,
                     bottom: 0,
                     child: Material(
-                      color: AppColors.white,
-                      shape: const CircleBorder(),
-                      elevation: 2,
+                      color: AppColors.actionBlue,
+                      shape: const CircleBorder(
+                        side: BorderSide(color: AppColors.white, width: 2),
+                      ),
                       child: InkWell(
                         customBorder: const CircleBorder(),
                         onTap: () async {
@@ -105,11 +99,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           showComingSoonPopup(context, feature: 'Photo upload');
                         },
                         child: const Padding(
-                          padding: EdgeInsets.all(6),
-                          child: Icon(
-                            Icons.camera_alt_rounded,
+                          padding: EdgeInsets.all(8),
+                          child: AppSvgIcon(
+                            AppSvgGlyph.documentUploadBold,
                             size: 18,
-                            color: AppColors.blue,
+                            color: AppColors.white,
                           ),
                         ),
                       ),
@@ -118,13 +112,13 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: AppSpacing.xl),
+            const SizedBox(height: 28),
             AppTextField(
               label: 'Full name',
               controller: _nameController,
               hintText: 'Enter your full name',
             ),
-            const SizedBox(height: AppSpacing.md),
+            const SizedBox(height: 16),
             AppTextField(
               label: 'Email',
               controller: _emailController,
@@ -132,16 +126,16 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               keyboardType: TextInputType.emailAddress,
               enabled: false,
             ),
-            const SizedBox(height: 4),
-            const Text(
+            const SizedBox(height: 8),
+            const InfoNote(
               'Your email is used to sign in and cannot be changed here.',
-              style: TextStyle(fontSize: 12, color: AppColors.inkMuted),
+              centerIcon: true,
             ),
-            const SizedBox(height: AppSpacing.lg),
-            PrimaryButton(
-              label: 'Save changes',
-              loading: _saving,
-              onPressed: _save,
+            const SizedBox(height: 24),
+            PillButton(
+              label: _saving ? 'Saving…' : 'Save changes',
+              height: 54,
+              onPressed: _saving ? null : _save,
             ),
           ],
         ),

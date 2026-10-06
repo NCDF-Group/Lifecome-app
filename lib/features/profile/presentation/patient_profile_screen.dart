@@ -2,17 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/animation/fade_in.dart';
+import '../../../core/country/app_country.dart';
 import '../../../core/providers/core_providers.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/services/session_store.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_radius.dart';
-import '../../../core/theme/app_spacing.dart';
-import '../../auth/application/auth_controller.dart';
+import '../../../core/theme/app_svg_icons.dart';
+import '../../../core/widgets/design/soft_widgets.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
+import '../../auth/application/auth_controller.dart';
+import '../../dashboard/presentation/widgets/home_header.dart';
 
-/// The Profile tab landing screen — account summary plus links into health
-/// records, support, legal pages and account management.
+/// The Profile tab: the account summary card, then the account, support and
+/// legal links as the same soft rows used across Home, Book and Records, and
+/// sign out / delete account at the bottom.
 class PatientProfileScreen extends ConsumerStatefulWidget {
   const PatientProfileScreen({super.key});
 
@@ -36,6 +40,16 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
     await ref.read(sessionStoreProvider).clear();
     ref.read(authControllerProvider.notifier).reset();
     if (mounted) context.go(RoutePaths.welcome);
+  }
+
+  Future<void> _pickCountry() async {
+    final picked = await showCountryPickerPopup(
+      context,
+      current: ref.read(countryProvider),
+    );
+    if (picked != null) {
+      await ref.read(countryProvider.notifier).select(picked);
+    }
   }
 
   Future<void> _confirmDeleteAccount() async {
@@ -63,140 +77,81 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
   Widget build(BuildContext context) {
     final name = _session?.displayName ?? 'Your account';
     final email = _session?.email ?? '';
+    final country = ref.watch(countryProvider);
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        title: const Text(
-          'Profile',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
-        ),
-      ),
       body: SafeArea(
+        bottom: false,
         child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
           children: [
-            InkWell(
-              borderRadius: BorderRadius.circular(AppRadius.card),
-              onTap: () => context.push(RoutePaths.editProfile),
-              child: Container(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AppRadius.card),
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Color(0xFFE8F4FC), Color(0xFFEAF7E8)],
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 56,
-                      height: 56,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [AppColors.blue, AppColors.greenStrong],
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.person_rounded,
-                        color: AppColors.white,
-                        size: 30,
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            name,
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.ink,
-                            ),
-                          ),
-                          if (email.isNotEmpty)
-                            Text(
-                              email,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: AppColors.inkMuted,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    const Icon(Icons.chevron_right, color: AppColors.inkMuted),
-                  ],
-                ),
+            const HomeHeader(),
+            const SizedBox(height: 28),
+            const FadeIn(
+              child: PageHeading(
+                'Your profile',
+                subtitle: 'Manage your account and preferences.',
               ),
             ),
-            const SizedBox(height: AppSpacing.lg),
-            _SectionCard(
-              label: 'Account',
-              tiles: [
-                _MenuTile(
-                  icon: Icons.person_outline_rounded,
-                  label: 'My profile',
-                  onTap: () => context.push(RoutePaths.editProfile),
-                ),
-                _MenuTile(
-                  icon: Icons.folder_shared_outlined,
-                  label: 'Health records',
-                  onTap: () => context.go(RoutePaths.healthRecords),
-                ),
-              ],
+            const SizedBox(height: 22),
+            FadeIn(
+              delay: const Duration(milliseconds: 60),
+              child: _AccountCard(
+                name: name,
+                email: email,
+                onView: () => context.push(RoutePaths.editProfile),
+              ),
             ),
-            const SizedBox(height: AppSpacing.md),
-            _SectionCard(
-              label: 'Support',
-              tiles: [
-                _MenuTile(
-                  icon: Icons.help_outline_rounded,
-                  label: 'Help and support',
-                  onTap: () => context.push(RoutePaths.helpAndSupport),
-                ),
-              ],
+            const _SectionLabel('Account'),
+            ActionRow(
+              glyph: AppSvgGlyph.userBold,
+              title: 'My profile',
+              onTap: () => context.push(RoutePaths.editProfile),
             ),
-            const SizedBox(height: AppSpacing.md),
-            _SectionCard(
-              label: 'Legal',
-              tiles: [
-                _MenuTile(
-                  icon: Icons.privacy_tip_outlined,
-                  label: 'Privacy Policy',
-                  onTap: () => context.push(RoutePaths.privacyPolicy),
-                ),
-                _MenuTile(
-                  icon: Icons.description_outlined,
-                  label: 'Terms and Conditions',
-                  onTap: () => context.push(RoutePaths.termsAndConditions),
-                ),
-              ],
+            const SizedBox(height: 12),
+            ActionRow(
+              glyph: AppSvgGlyph.documentBold,
+              title: 'Health records',
+              onTap: () => context.go(RoutePaths.healthRecords),
             ),
-            const SizedBox(height: AppSpacing.md),
-            _SectionCard(
-              label: 'Danger zone',
-              tiles: [
-                _MenuTile(
-                  icon: Icons.delete_outline_rounded,
-                  label: 'Delete my account',
-                  color: AppColors.error,
-                  onTap: _confirmDeleteAccount,
-                ),
-                _MenuTile(
-                  icon: Icons.logout_rounded,
-                  label: 'Sign out',
-                  color: AppColors.error,
-                  onTap: _signOut,
-                ),
-              ],
+            const SizedBox(height: 12),
+            ActionRow(
+              glyph: AppSvgGlyph.pinBold,
+              title: 'Country',
+              trailingText: country.name,
+              onTap: _pickCountry,
+            ),
+            const _SectionLabel('Support'),
+            ActionRow(
+              glyph: AppSvgGlyph.chatBold,
+              title: 'Help and support',
+              onTap: () => context.push(RoutePaths.helpAndSupport),
+            ),
+            const _SectionLabel('Legal'),
+            ActionRow(
+              glyph: AppSvgGlyph.hexagonBold,
+              title: 'Privacy Policy',
+              onTap: () => context.push(RoutePaths.privacyPolicy),
+            ),
+            const SizedBox(height: 12),
+            ActionRow(
+              glyph: AppSvgGlyph.documentBold,
+              title: 'Terms and Conditions',
+              onTap: () => context.push(RoutePaths.termsAndConditions),
+            ),
+            const SizedBox(height: 28),
+            LinkRow(
+              glyph: AppSvgGlyph.logoutLine,
+              title: 'Sign out',
+              onTap: _signOut,
+            ),
+            LinkRow(
+              glyph: AppSvgGlyph.trashBold,
+              color: AppColors.alertRed,
+              textColor: AppColors.alertRed,
+              title: 'Delete my account',
+              onTap: _confirmDeleteAccount,
             ),
           ],
         ),
@@ -205,94 +160,93 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
   }
 }
 
-/// A titled group of menu rows on a soft tonal background — replaces plain
-/// flat list rows with a "card per section" feel.
-class _SectionCard extends StatelessWidget {
-  const _SectionCard({required this.label, required this.tiles});
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel(this.text);
 
-  final String label;
-  final List<_MenuTile> tiles;
+  final String text;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(
-            bottom: AppSpacing.xs,
-            left: AppSpacing.xxs,
-          ),
-          child: Text(
-            label.toUpperCase(),
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-              color: AppColors.inkMuted,
-              letterSpacing: 0.6,
-            ),
-          ),
+    return Padding(
+      padding: const EdgeInsets.only(top: 28, bottom: 12),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.4,
+          color: Color(0xFF0B101A),
         ),
-        Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFFE8F4FC),
-            borderRadius: BorderRadius.circular(AppRadius.card),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-          child: Column(
-            children: [
-              for (var i = 0; i < tiles.length; i++) ...[
-                tiles[i],
-                if (i != tiles.length - 1)
-                  const Divider(height: 1, color: Color(0xFFD3E6F5)),
-              ],
-            ],
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
 
-class _MenuTile extends StatelessWidget {
-  const _MenuTile({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.color = AppColors.ink,
+/// Avatar, name and email on a soft card, with a "View profile" pill.
+class _AccountCard extends StatelessWidget {
+  const _AccountCard({
+    required this.name,
+    required this.email,
+    required this.onView,
   });
 
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final Color color;
+  final String name;
+  final String email;
+  final VoidCallback onView;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-          child: Row(
+    return SoftCard(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Row(
             children: [
-              Icon(icon, color: color, size: 22),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: color,
-                  ),
+              ClipOval(
+                child: Image.asset(
+                  'assets/images/home/avatar.png',
+                  width: 56,
+                  height: 56,
+                  fit: BoxFit.cover,
                 ),
               ),
-              Icon(Icons.chevron_right, color: color.withValues(alpha: 0.6)),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    if (email.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        email,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          letterSpacing: -0.3,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ],
           ),
-        ),
+          const SizedBox(height: 16),
+          PillButton(label: 'View profile', onPressed: onView),
+        ],
       ),
     );
   }

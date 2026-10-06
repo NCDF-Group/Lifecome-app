@@ -526,6 +526,8 @@ class ActionRow extends StatelessWidget {
     required this.onTap,
     this.soft = false,
     this.color = AppColors.actionBlue,
+    this.titleColor = AppColors.textPrimary,
+    this.trailingText,
   });
 
   final AppSvgGlyph glyph;
@@ -533,6 +535,10 @@ class ActionRow extends StatelessWidget {
   final VoidCallback onTap;
   final bool soft;
   final Color color;
+  final Color titleColor;
+
+  /// Grey value shown before the chevron (e.g. the current country).
+  final String? trailingText;
 
   @override
   Widget build(BuildContext context) {
@@ -548,18 +554,31 @@ class ActionRow extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
                 letterSpacing: -0.4,
-                color: AppColors.textPrimary,
+                color: titleColor,
               ),
             ),
           ),
-          const AppSvgIcon(
+          if (trailingText != null) ...[
+            Text(
+              trailingText!,
+              style: const TextStyle(
+                fontSize: 16,
+                letterSpacing: -0.3,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(width: 8),
+          ],
+          AppSvgIcon(
             AppSvgGlyph.chevronLine,
             size: 22,
-            color: AppColors.textPrimary,
+            color: titleColor == AppColors.textPrimary
+                ? AppColors.textPrimary
+                : titleColor,
           ),
         ],
       ),

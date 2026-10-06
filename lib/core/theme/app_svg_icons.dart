@@ -54,7 +54,9 @@ enum AppSvgGlyph {
   hexagonBold(_hexagonBold),
   calendarPlusBold(_calendarPlusBold),
   checkCircleBold(_checkCircleBold),
-  documentUploadBold(_documentUploadBold);
+  documentUploadBold(_documentUploadBold),
+  trashBold(_trashBold),
+  logoutLine(_logoutLine);
 
   const AppSvgGlyph(this.markup);
 
@@ -378,3 +380,14 @@ const _documentUploadBold =
     'a5.2 5.2 0 0 1-5.2 5.2H8.6a5.2 5.2 0 0 1-5.2-5.2V8.6A5.2 5.2 0 0 1 8.6 3.4Z'
     'M11.2 17.6a.7.7 0 0 0 1.4 0v-3l.8.8a.7.7 0 1 0 1-1l-2-2a.7.7 0 0 0-1 0l-2 2'
     'a.7.7 0 1 0 1 1l.8-.8Z"/></svg>';
+
+const _trashBold =
+    '$_head<path d="M9.6 2.8h4.8a1.2 1.2 0 0 1 1.2 1.2v1h4.2a.8.8 0 0 1 0 1.6H4.2'
+    'a.8.8 0 0 1 0-1.6h4.2V4a1.2 1.2 0 0 1 1.2-1.2Z"/>'
+    '<path fill-rule="evenodd" d="M5.4 8.2h13.2l-.8 10.5A2.6 2.6 0 0 1 15.2 21H8.8'
+    'a2.6 2.6 0 0 1-2.6-2.3Zm4.2 2.4a.7.7 0 0 0-.7.7v6a.7.7 0 0 0 1.4 0v-6a.7.7 0 0 0'
+    '-.7-.7Zm4.8 0a.7.7 0 0 0-.7.7v6a.7.7 0 0 0 1.4 0v-6a.7.7 0 0 0-.7-.7Z"/></svg>';
+
+const _logoutLine =
+    '$_head<g $_line><path d="M9.5 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2.5"/>'
+    '<path d="M15 8l4 4-4 4M19 12H9.5"/></g></svg>';
