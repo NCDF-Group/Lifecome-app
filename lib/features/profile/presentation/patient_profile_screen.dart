@@ -13,6 +13,7 @@ import '../../../core/widgets/design/soft_widgets.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/media/user_avatar.dart';
 import '../../auth/application/auth_controller.dart';
+import '../../notifications/application/notifications_controller.dart';
 import '../application/avatar_controller.dart';
 import '../../dashboard/presentation/widgets/home_header.dart';
 
@@ -42,6 +43,7 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
     await ref.read(sessionStoreProvider).clear();
     ref.read(apiClientProvider).accessToken = null;
     ref.invalidate(avatarProvider);
+    ref.invalidate(notificationsProvider);
     ref.read(authControllerProvider.notifier).reset();
     if (mounted) context.go(RoutePaths.welcome);
   }

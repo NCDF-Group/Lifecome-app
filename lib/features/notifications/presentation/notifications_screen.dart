@@ -14,21 +14,27 @@ import 'widgets/notification_tile.dart';
 class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});
 
+  /// Marks the notification read and takes the patient to what it's about.
   void _open(BuildContext context, WidgetRef ref, NotificationItem item) {
-    ref.read(notificationsProvider.notifier).markRead(item.id);
-    switch (item.kind) {
-      case NotificationKind.booking:
+    if (item.unread) {
+      ref.read(notificationsProvider.notifier).markRead(item.id);
+    }
+    switch (item.target) {
+      case NotificationTarget.booking:
         context.push(RoutePaths.visits);
-      case NotificationKind.record:
+      case NotificationTarget.records:
         context.go(RoutePaths.healthRecords);
-      case NotificationKind.message || NotificationKind.support:
+      case NotificationTarget.messages:
         context.go(RoutePaths.messages);
+      case null:
+        break;
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final items = ref.watch(notificationsProvider);
+    final feed = ref.watch(notificationsProvider);
+    final items = feed.value ?? const <NotificationItem>[];
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -62,9 +68,9 @@ class NotificationsScreen extends ConsumerWidget {
                   ),
                   IconButton(
                     tooltip: 'Mark all as read',
-                    onPressed: items.isEmpty
-                        ? null
-                        : ref.read(notificationsProvider.notifier).markAllRead,
+                    onPressed: items.any((item) => item.unread)
+                        ? ref.read(notificationsProvider.notifier).markAllRead
+                        : null,
                     icon: const AppSvgIcon(
                       AppSvgGlyph.checkLine,
                       color: AppColors.textSecondary,
@@ -74,17 +80,42 @@ class NotificationsScreen extends ConsumerWidget {
               ),
             ),
             Expanded(
-              child: items.isEmpty
-                  ? const _EmptyState()
-                  : ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
-                      itemCount: items.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 36),
-                      itemBuilder: (context, index) => NotificationTile(
-                        item: items[index],
-                        onAction: () => _open(context, ref, items[index]),
-                      ),
+              child: feed.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, _) => Center(
+                  child: TextButton(
+                    onPressed: () => ref.invalidate(notificationsProvider),
+                    child: const Text(
+                      "Couldn't load notifications. Tap to retry.",
                     ),
+                  ),
+                ),
+                data: (items) => RefreshIndicator(
+                  onRefresh: () =>
+                      ref.read(notificationsProvider.notifier).refresh(),
+                  child: items.isEmpty
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            SizedBox(
+                              height: MediaQuery.sizeOf(context).height * 0.6,
+                              child: const _EmptyState(),
+                            ),
+                          ],
+                        )
+                      : ListView.separated(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
+                          itemCount: items.length,
+                          separatorBuilder: (_, _) =>
+                              const SizedBox(height: 36),
+                          itemBuilder: (context, index) => NotificationTile(
+                            item: items[index],
+                            onAction: () => _open(context, ref, items[index]),
+                          ),
+                        ),
+                ),
+              ),
             ),
           ],
         ),

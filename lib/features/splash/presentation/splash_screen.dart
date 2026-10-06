@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/providers/core_providers.dart';
+import '../../notifications/application/notifications_controller.dart';
 import '../../profile/application/avatar_controller.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
@@ -53,6 +54,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // Hand the saved session token back to the API client so a biometric unlock can reach the backend.
     ref.read(apiClientProvider).accessToken = session?.accessToken;
     ref.invalidate(avatarProvider);
+    ref.invalidate(notificationsProvider);
     await Future<void>.delayed(_holdDuration);
     if (!mounted) return;
     context.go(session != null ? RoutePaths.appLock : RoutePaths.welcome);

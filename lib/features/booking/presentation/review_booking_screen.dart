@@ -12,6 +12,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_svg_icons.dart';
 import '../../../core/widgets/design/soft_widgets.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
+import '../../notifications/application/notifications_controller.dart';
 import '../application/booking_providers.dart';
 import '../domain/booking_format.dart';
 import '../domain/models/appointment.dart';
@@ -90,6 +91,8 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
       await repository.confirm(id, idempotencyKey: '$_attemptKey-confirm');
       ref.invalidate(myAppointmentsProvider);
       ref.invalidate(availabilityProvider(doctor.id));
+      // The booking confirmation lands in the notification feed straight away.
+      ref.read(notificationsProvider.notifier).refresh();
       if (!mounted) return;
       context.push(RoutePaths.bookingConfirmation, extra: selection);
     } on ApiException catch (error) {

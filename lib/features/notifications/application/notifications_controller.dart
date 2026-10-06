@@ -1,74 +1,72 @@
-import 'package:flutter/foundation.dart';
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/network/api_exception.dart';
+import '../../../core/providers/core_providers.dart';
 import '../domain/models/notification_item.dart';
 
-/// The user's notifications, newest first.
-///
-/// There is no notifications backend yet, so release builds start empty
-/// (the screen shows its empty state). Debug builds are seeded with sample
-/// items so the screen's design can be reviewed.
-class NotificationsController extends Notifier<List<NotificationItem>> {
-  @override
-  List<NotificationItem> build() => kDebugMode ? _sample : const [];
+/// How often the feed is re-fetched while the app is open, so a booking confirmation or a care-team reply
+/// shows up (and the bell's red dot appears) without the user doing anything.
+const _pollEvery = Duration(seconds: 45);
 
-  void markAllRead() {
-    state = [for (final item in state) item.copyWith(unread: false)];
+/// The patient's notifications, newest first.
+class NotificationsController extends AsyncNotifier<List<NotificationItem>> {
+  @override
+  Future<List<NotificationItem>> build() async {
+    // Nothing to load (or poll) until there is a session token.
+    if (ref.watch(apiClientProvider).accessToken == null) return const [];
+
+    final timer = Timer.periodic(_pollEvery, (_) => refresh());
+    ref.onDispose(timer.cancel);
+
+    return ref.read(notificationsRepositoryProvider).list();
   }
 
-  void markRead(String id) {
-    state = [
-      for (final item in state)
+  /// Re-fetches quietly: the current list stays on screen, and a failed refresh keeps it too.
+  Future<void> refresh() async {
+    if (ref.read(apiClientProvider).accessToken == null) return;
+    try {
+      state = AsyncData(await ref.read(notificationsRepositoryProvider).list());
+    } on ApiException {
+      // Keep what we have; the next poll tries again.
+    }
+  }
+
+  Future<void> markRead(String id) async {
+    final current = state.value ?? const <NotificationItem>[];
+    state = AsyncData([
+      for (final item in current)
         if (item.id == id) item.copyWith(unread: false) else item,
-    ];
+    ]);
+    try {
+      await ref.read(notificationsRepositoryProvider).markRead(id);
+    } on ApiException {
+      await refresh();
+    }
+  }
+
+  Future<void> markAllRead() async {
+    final current = state.value ?? const <NotificationItem>[];
+    state = AsyncData([
+      for (final item in current) item.copyWith(unread: false),
+    ]);
+    try {
+      await ref.read(notificationsRepositoryProvider).markAllRead();
+    } on ApiException {
+      await refresh();
+    }
   }
 }
 
 final notificationsProvider =
-    NotifierProvider<NotificationsController, List<NotificationItem>>(
+    AsyncNotifierProvider<NotificationsController, List<NotificationItem>>(
       NotificationsController.new,
     );
 
-/// True while any notification is unread — drives the red dot on the bell.
+/// True while any notification is unread - drives the red dot on the bell.
 final hasUnreadNotificationsProvider = Provider<bool>(
-  (ref) => ref.watch(notificationsProvider).any((item) => item.unread),
+  (ref) => (ref.watch(notificationsProvider).value ?? const []).any(
+    (item) => item.unread,
+  ),
 );
-
-const _sample = [
-  NotificationItem(
-    id: 'n1',
-    kind: NotificationKind.booking,
-    title: 'Booking',
-    timeLabel: 'Just now',
-    body:
-        'Your booking with Dr. Zainab has been confirmed for 12 October, 2026.',
-    boldParts: ['Dr. Zainab', '12 October, 2026'],
-    actionLabel: 'View Booking',
-  ),
-  NotificationItem(
-    id: 'n2',
-    kind: NotificationKind.message,
-    title: 'Messages',
-    timeLabel: '2 mins ago',
-    body: 'Dr. Samuel Sent you a Message',
-    boldParts: ['Dr. Samuel'],
-    preview: 'Please make sure to stick to the prescription for the month.',
-  ),
-  NotificationItem(
-    id: 'n3',
-    kind: NotificationKind.support,
-    title: 'Support',
-    timeLabel: '2 mins ago',
-    body: 'Sent you a Message',
-    preview:
-        "We've addressed your issue, please let us know if you need more help.",
-  ),
-  NotificationItem(
-    id: 'n4',
-    kind: NotificationKind.record,
-    title: 'Records',
-    timeLabel: '3 hours ago',
-    body: 'Your medical records was just updated.',
-    actionLabel: 'View Records',
-  ),
-];

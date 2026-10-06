@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/country/app_country.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/providers/core_providers.dart';
+import '../../notifications/application/notifications_controller.dart';
 import '../../profile/application/avatar_controller.dart';
 import '../data/auth_repository.dart';
 import '../domain/models/auth_session.dart';
@@ -85,6 +86,7 @@ class AuthController extends Notifier<AuthSessionState> {
         needsProfile = await _profileMissing();
       }
       ref.invalidate(avatarProvider);
+      ref.invalidate(notificationsProvider);
       state = state.copyWith(
         status: AuthStatus.verified,
         needsProfile: needsProfile,

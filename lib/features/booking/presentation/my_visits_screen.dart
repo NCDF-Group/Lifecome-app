@@ -10,6 +10,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_svg_icons.dart';
 import '../../../core/widgets/design/soft_widgets.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
+import '../../notifications/application/notifications_controller.dart';
 import '../application/booking_providers.dart';
 import '../domain/booking_format.dart';
 import '../domain/models/my_appointment.dart';
@@ -35,6 +36,7 @@ class MyVisitsScreen extends ConsumerWidget {
     try {
       await ref.read(bookingRepositoryProvider).cancel(visit.id);
       ref.invalidate(myAppointmentsProvider);
+      ref.read(notificationsProvider.notifier).refresh();
     } on ApiException catch (error) {
       if (context.mounted) showErrorPopup(context, error.message);
     }

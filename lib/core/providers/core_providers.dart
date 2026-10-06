@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/auth/data/auth_repository.dart';
 import '../../features/booking/data/booking_repository.dart';
 import '../../features/messaging/data/messaging_repository.dart';
+import '../../features/notifications/data/notifications_repository.dart';
 import '../../features/profile/data/profile_repository.dart';
 import '../network/api_client.dart';
 import '../services/biometric_service.dart';
@@ -38,4 +39,9 @@ final messagingRepositoryProvider = Provider<MessagingRepository>(
 /// Services, clinicians, availability and appointments.
 final bookingRepositoryProvider = Provider<BookingRepository>(
   (ref) => BookingRepository(ref.watch(apiClientProvider)),
+);
+
+/// The in-app notification feed.
+final notificationsRepositoryProvider = Provider<NotificationsRepository>(
+  (ref) => NotificationsRepository(ref.watch(apiClientProvider)),
 );

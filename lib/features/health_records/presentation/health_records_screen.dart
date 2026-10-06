@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/animation/fade_in.dart';
-import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_svg_icons.dart';
 import '../../../core/widgets/design/soft_widgets.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
+import '../../booking/application/booking_providers.dart';
+import '../../booking/domain/booking_format.dart';
+import '../../booking/domain/models/my_appointment.dart';
+import '../../../core/country/app_country.dart';
 import '../../dashboard/presentation/widgets/home_header.dart';
 
-enum _Status { signed, available, awaitingReview }
+enum _Status { summaryPending }
 
 class _Record {
   const _Record({
@@ -20,7 +23,6 @@ class _Record {
     required this.date,
     required this.status,
     required this.online,
-    this.isCarePlan = false,
   });
 
   final AppSvgGlyph glyph;
@@ -32,69 +34,52 @@ class _Record {
 
   /// Which tab (Online / Clinic) it shows under; everything shows under All.
   final bool online;
-  final bool isCarePlan;
 }
 
 const _blueFill = Color(0xFFD6E6F5);
 const _greenFill = Color(0xFFE2F2D6);
 
-/// Example records only — no records backend exists yet.
-const _records = [
-  _Record(
-    glyph: AppSvgGlyph.stethoscope,
-    color: AppColors.actionBlue,
-    fill: _blueFill,
-    title: 'Online GP consultation',
-    date: '25 September 2026',
-    status: _Status.signed,
-    online: true,
-  ),
-  _Record(
-    glyph: AppSvgGlyph.buildingBold,
-    color: AppColors.accentGreen,
-    fill: _greenFill,
-    title: 'Clinic visit',
-    date: '12 September 2026',
-    status: _Status.signed,
-    online: false,
-  ),
-  _Record(
-    glyph: AppSvgGlyph.documentBold,
-    color: AppColors.actionBlue,
-    fill: _blueFill,
-    title: 'Care plan',
-    date: '10 September 2026',
-    status: _Status.available,
-    online: true,
-    isCarePlan: true,
-  ),
-  _Record(
-    glyph: AppSvgGlyph.documentUploadBold,
-    color: AppColors.actionBlue,
-    fill: _blueFill,
-    title: 'Uploaded result',
-    date: '08 September 2026',
-    status: _Status.awaitingReview,
-    online: false,
-  ),
-];
-
 /// The Records tab (blueprint view 21): the patient's health records,
 /// filterable by Online / Clinic. The care plan opens from here.
-class HealthRecordsScreen extends StatefulWidget {
+class HealthRecordsScreen extends ConsumerStatefulWidget {
   const HealthRecordsScreen({super.key});
 
   @override
-  State<HealthRecordsScreen> createState() => _HealthRecordsScreenState();
+  ConsumerState<HealthRecordsScreen> createState() =>
+      _HealthRecordsScreenState();
 }
 
-class _HealthRecordsScreenState extends State<HealthRecordsScreen> {
+class _HealthRecordsScreenState extends ConsumerState<HealthRecordsScreen> {
   int _tab = 0;
 
   @override
   Widget build(BuildContext context) {
+    final country = ref.watch(countryProvider);
+    final appointments = ref.watch(myAppointmentsProvider);
+    // Real visits that have taken place. Their clinical summaries are written by the clinician after the
+    // visit, so each shows as "Summary pending" until that part of the backend exists.
+    final records = [
+      for (final visit in appointments.value ?? const <MyAppointment>[])
+        if (visit.status == 'confirmed' &&
+            visit.startsAt.isBefore(DateTime.now()))
+          _Record(
+            glyph: visit.isInPerson
+                ? AppSvgGlyph.buildingBold
+                : AppSvgGlyph.stethoscope,
+            color: visit.isInPerson
+                ? AppColors.accentGreen
+                : AppColors.actionBlue,
+            fill: visit.isInPerson ? _greenFill : _blueFill,
+            title: visit.isInPerson
+                ? 'Clinic visit'
+                : 'Online ${visit.serviceName}',
+            date: formatShortDate(zonedTime(visit.startsAt, country)),
+            status: _Status.summaryPending,
+            online: !visit.isInPerson,
+          ),
+    ];
     final visible = [
-      for (final record in _records)
+      for (final record in records)
         if (_tab == 0 || (_tab == 1) == record.online) record,
     ];
 
@@ -126,6 +111,38 @@ class _HealthRecordsScreenState extends State<HealthRecordsScreen> {
               fontSize: 19,
             ),
             const SizedBox(height: 22),
+            if (appointments.isLoading)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 32),
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else if (visible.isEmpty)
+              const SoftCard(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Text(
+                      'No records yet',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    SizedBox(height: 6),
+                    Text(
+                      'Your visits, summaries and care plans appear here '
+                      'after your appointments.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14.5,
+                        height: 1.4,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 220),
               child: Column(
@@ -136,12 +153,10 @@ class _HealthRecordsScreenState extends State<HealthRecordsScreen> {
                       padding: const EdgeInsets.only(bottom: 12),
                       child: _RecordCard(
                         record: record,
-                        onTap: () => record.isCarePlan
-                            ? context.go(RoutePaths.careplan)
-                            : showComingSoonPopup(
-                                context,
-                                feature: record.title,
-                              ),
+                        onTap: () => showComingSoonPopup(
+                          context,
+                          feature: 'Visit summaries',
+                        ),
                       ),
                     ),
                 ],
@@ -255,20 +270,8 @@ class _StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (label, glyph, fill, color) = switch (status) {
-      _Status.signed => (
-        'Signed',
-        AppSvgGlyph.checkCircleBold,
-        const Color(0xFFDDF8E6),
-        const Color(0xFF1B9C4A),
-      ),
-      _Status.available => (
-        'Available',
-        AppSvgGlyph.documentBold,
-        const Color(0xFFE3EEF8),
-        AppColors.actionBlue,
-      ),
-      _Status.awaitingReview => (
-        'Awaiting review',
+      _Status.summaryPending => (
+        'Summary pending',
         AppSvgGlyph.clockBold,
         const Color(0xFFFFF3C4),
         const Color(0xFFD9820B),

@@ -115,14 +115,15 @@ each tab keeps its own stack. The booking flow screens stay inside the Book tab 
 
 **Wired to the backend:** sign up and sign in (the greeting uses your name from your profile, never your
 email), your profile and profile photo, the service catalogue, clinicians and their open times, booking,
-confirming and cancelling appointments, My visits, and messages to the care team. The session token is
+confirming and cancelling appointments, My visits, messages to the care team, and notifications (a
+booking confirmed or cancelled, a care-team reply). The bell checks for new ones every 45 seconds. The session token is
 kept in the platform's secure storage, so a biometric unlock goes straight back in; if it has expired the
 app asks for your password.
 
 **Built and working locally, backend not connected yet:** payments and funding checks (while the
-backend's `ALLOW_SELF_CONFIRM_BOOKINGS` is on, "Pay and confirm" books without taking payment), health
-records, the care plan and notifications. These use sample data or just confirm on screen. In debug builds
-the notification list shows sample items; release builds show the empty state.
+backend's `ALLOW_SELF_CONFIRM_BOOKINGS` is on, "Pay and confirm" books without taking payment), the care
+plan and visit summaries. Records lists your real past visits as "Summary pending" until clinicians can
+write summaries; the care plan screen shows an empty state.
 
 Some illustrations (avatar, Online GP, Smart GP Clinic, location photos) are placeholders and should be
 replaced with the final artwork.
