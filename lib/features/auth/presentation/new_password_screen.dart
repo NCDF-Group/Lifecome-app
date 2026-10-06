@@ -83,7 +83,7 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.white,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.blue),
@@ -118,7 +118,7 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
                       ),
                     ),
                     const SizedBox(height: AppSpacing.lg),
-                    FadeIn(
+                    const FadeIn(
                       delay: Duration(milliseconds: 80),
                       child: Text(
                         'Choose a new password',
@@ -130,7 +130,7 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xs),
-                    FadeIn(
+                    const FadeIn(
                       delay: Duration(milliseconds: 120),
                       child: Text(
                         'Use at least 8 characters. You will use this password to sign in from now on.',

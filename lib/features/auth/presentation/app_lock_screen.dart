@@ -60,15 +60,6 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
     setState(() => _step = _UnlockStep.checking);
     final success = await ref.read(biometricServiceProvider).authenticate();
     if (!mounted) return;
-    // A fingerprint proves it's you, but the backend still needs a valid session token. If it's gone
-    // (expired, or this device never stored one), fall back to the password.
-    if (success && ref.read(apiClientProvider).accessToken == null) {
-      setState(() {
-        _step = _UnlockStep.idle;
-        _passwordError = 'Enter your password to continue.';
-      });
-      return;
-    }
     if (success) {
       setState(() => _step = _UnlockStep.unlocked);
       await Future<void>.delayed(const Duration(milliseconds: 500));
@@ -96,11 +87,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
     setState(() => _passwordSubmitting = false);
 
     if (success) {
-      context.go(
-        ref.read(authControllerProvider).needsProfile
-            ? RoutePaths.completeProfile
-            : RoutePaths.home,
-      );
+      context.go(RoutePaths.home);
     } else {
       final message = ref.read(authControllerProvider).errorMessage;
       setState(() => _passwordError = message ?? 'Incorrect password.');
@@ -118,7 +105,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
     final name = _displayName;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
@@ -129,7 +116,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                 FadeIn(
                   child: Center(
                     child: SvgPicture.asset(
-                      AppColors.logoAsset,
+                      'assets/images/logo/lifecome-live-logo.svg',
                       height: 32,
                       semanticsLabel: 'LifeCome Live',
                     ),
@@ -140,7 +127,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                   delay: const Duration(milliseconds: 80),
                   child: Text.rich(
                     TextSpan(
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
                         color: AppColors.ink,
@@ -157,7 +144,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                FadeIn(
+                const FadeIn(
                   delay: Duration(milliseconds: 120),
                   child: Text(
                     'Enter password or unlock with biometrics to continue.',
@@ -264,7 +251,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                             ),
                           ),
                           const SizedBox(height: AppSpacing.xs),
-                          Text(
+                          const Text(
                             'Use Face ID',
                             style: TextStyle(
                               fontSize: 13,
@@ -282,7 +269,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                   child: Center(
                     child: TextButton(
                       onPressed: _signInWithAnotherAccount,
-                      child: Text(
+                      child: const Text(
                         'Not you? Sign in with another account',
                         style: TextStyle(
                           color: AppColors.inkMuted,

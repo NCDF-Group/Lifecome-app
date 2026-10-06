@@ -16,8 +16,6 @@ class AuthSessionState {
     this.status = AuthStatus.initial,
     this.flow = AuthFlow.createAccount,
     this.fullName,
-    this.dateOfBirth,
-    this.needsProfile = false,
     required this.email,
     this.errorMessage,
     this.resendAvailableAt,
@@ -26,11 +24,6 @@ class AuthSessionState {
   final AuthStatus status;
   final AuthFlow flow;
   final String? fullName;
-  final DateTime? dateOfBirth;
-
-  /// True after signing in to an account that has no profile (name + date of birth) on the
-  /// backend yet, so the app asks for it before going Home.
-  final bool needsProfile;
   final String email;
   final String? errorMessage;
 
@@ -43,8 +36,6 @@ class AuthSessionState {
     AuthStatus? status,
     AuthFlow? flow,
     String? fullName,
-    DateTime? dateOfBirth,
-    bool? needsProfile,
     String? email,
     String? errorMessage,
     bool clearError = false,
@@ -54,8 +45,6 @@ class AuthSessionState {
       status: status ?? this.status,
       flow: flow ?? this.flow,
       fullName: fullName ?? this.fullName,
-      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
-      needsProfile: needsProfile ?? this.needsProfile,
       email: email ?? this.email,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       resendAvailableAt: resendAvailableAt ?? this.resendAvailableAt,

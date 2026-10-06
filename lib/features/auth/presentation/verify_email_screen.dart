@@ -67,7 +67,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
     final verifying = authState.status == AuthStatus.verifying;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(
@@ -96,7 +96,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                Text(
+                const Text(
                   'Verify your email address',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -109,7 +109,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
                 Text(
                   'We sent a 6 digit code to ${_maskEmail(widget.args.email)}',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 15,
                     color: AppColors.inkMuted,
                     height: 1.4,

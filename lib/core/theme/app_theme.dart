@@ -4,42 +4,28 @@ import 'app_colors.dart';
 import 'app_radius.dart';
 import 'app_typography.dart';
 
-/// The app's light and dark themes. Colours come from [AppColors], which reads whichever palette is
-/// active, so each theme is built with its own palette switched on (and the previous one restored).
-ThemeData buildAppTheme([Brightness brightness = Brightness.light]) {
-  final previous = AppColors.brightness;
-  AppColors.useBrightness(brightness);
-  try {
-    return _build(brightness);
-  } finally {
-    AppColors.useBrightness(previous);
-  }
-}
-
-ThemeData _build(Brightness brightness) {
-  final dark = brightness == Brightness.dark;
+/// The app's single light theme. LifeCome Live is light-only for now,
+/// matching the website (see Lifecome-web/src/app/layout.tsx), so there is
+/// no dark ThemeData here yet.
+ThemeData buildAppTheme() {
   final base = ThemeData(
     useMaterial3: true,
-    brightness: brightness,
     fontFamily: appFontFamily,
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.blue,
-      brightness: brightness,
-      primary: dark ? AppColors.actionBlue : AppColors.blue,
+      brightness: Brightness.light,
+      primary: AppColors.blue,
       secondary: AppColors.green,
-      surface: AppColors.background,
-      onSurface: AppColors.textPrimary,
+      surface: AppColors.white,
       error: AppColors.error,
     ),
-    scaffoldBackgroundColor: AppColors.background,
-    canvasColor: AppColors.background,
-    dividerColor: AppColors.divider,
+    scaffoldBackgroundColor: AppColors.white,
   );
 
   return base.copyWith(
     textTheme: buildAppTextTheme(base.textTheme),
     appBarTheme: AppBarTheme(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.white,
       foregroundColor: AppColors.ink,
       elevation: 0,
       centerTitle: true,
@@ -47,22 +33,19 @@ ThemeData _build(Brightness brightness) {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.background,
+      fillColor: AppColors.white,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.control),
-        borderSide: BorderSide(color: AppColors.line, width: 1.5),
+        borderSide: const BorderSide(color: AppColors.line, width: 1.5),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.control),
-        borderSide: BorderSide(color: AppColors.line, width: 1.5),
+        borderSide: const BorderSide(color: AppColors.line, width: 1.5),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.control),
-        borderSide: BorderSide(
-          color: dark ? AppColors.actionBlue : AppColors.blue,
-          width: 2,
-        ),
+        borderSide: const BorderSide(color: AppColors.blue, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.control),
@@ -72,25 +55,41 @@ ThemeData _build(Brightness brightness) {
         borderRadius: BorderRadius.circular(AppRadius.control),
         borderSide: const BorderSide(color: AppColors.error, width: 2),
       ),
-      hintStyle: TextStyle(color: AppColors.inkMuted),
+      hintStyle: const TextStyle(color: AppColors.inkMuted),
     ),
     checkboxTheme: CheckboxThemeData(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
       fillColor: WidgetStateProperty.resolveWith(
         (states) => states.contains(WidgetState.selected)
             ? AppColors.blue
-            : AppColors.background,
+            : AppColors.white,
       ),
-      side: BorderSide(color: AppColors.line, width: 1.5),
+      side: const BorderSide(color: AppColors.line, width: 1.5),
     ),
-    dialogTheme: DialogThemeData(backgroundColor: AppColors.background),
-    bottomSheetTheme: BottomSheetThemeData(
-      backgroundColor: AppColors.background,
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: AppColors.white,
       surfaceTintColor: Colors.transparent,
-    ),
-    datePickerTheme: DatePickerThemeData(
-      backgroundColor: AppColors.background,
-      surfaceTintColor: Colors.transparent,
+      indicatorColor: AppColors.blue.withValues(alpha: 0.12),
+      height: 64,
+      labelTextStyle: WidgetStateProperty.resolveWith(
+        (states) => TextStyle(
+          fontSize: 12,
+          fontWeight: states.contains(WidgetState.selected)
+              ? FontWeight.w700
+              : FontWeight.w700,
+          color: states.contains(WidgetState.selected)
+              ? AppColors.blue
+              : AppColors.inkMuted,
+        ),
+      ),
+      iconTheme: WidgetStateProperty.resolveWith(
+        (states) => IconThemeData(
+          size: 24,
+          color: states.contains(WidgetState.selected)
+              ? AppColors.blue
+              : AppColors.inkMuted,
+        ),
+      ),
     ),
     splashFactory: InkRipple.splashFactory,
   );

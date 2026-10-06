@@ -1,181 +1,167 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_svg_icons.dart';
-import '../../../core/widgets/design/soft_widgets.dart';
-import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/widgets/buttons/primary_button.dart';
 
 class _Topic {
-  const _Topic(this.glyph, this.color, this.label);
+  const _Topic({
+    required this.icon,
+    required this.label,
+    required this.background,
+    required this.color,
+  });
 
-  final AppSvgGlyph glyph;
-  final Color color;
+  final IconData icon;
   final String label;
+  final Color background;
+  final Color color;
 }
 
 const _topics = [
   _Topic(
-    AppSvgGlyph.briefcaseBold,
-    AppColors.accentLime,
-    'HMO membership & cover',
+    icon: Icons.health_and_safety_outlined,
+    label: 'HMO membership\n& cover',
+    background: Color(0xFFEAF7E8),
+    color: AppColors.greenStrong,
   ),
-  _Topic(AppSvgGlyph.walletBold, AppColors.actionBlue, 'Payments & refunds'),
   _Topic(
-    AppSvgGlyph.calendarBold,
-    AppColors.actionBlue,
-    'Appointments & connections',
+    icon: Icons.credit_card,
+    label: 'Payments\n& refunds',
+    background: Color(0xFFFCF3E3),
+    color: AppColors.gold,
   ),
-  _Topic(AppSvgGlyph.userBold, AppColors.accentGreen, 'Account & privacy'),
+  _Topic(
+    icon: Icons.calendar_today_outlined,
+    label: 'Appointments\n& connections',
+    background: Color(0xFFE8F4FC),
+    color: AppColors.blue,
+  ),
+  _Topic(
+    icon: Icons.person_outline,
+    label: 'Account\n& privacy',
+    background: Color(0xFFEAF7E8),
+    color: AppColors.greenStrong,
+  ),
 ];
 
-/// Help and support, under the Profile tab.
+/// Help and support, under the Profile tab. Matches view 20 in the
+/// screenshot set ("How can we help?").
 class HelpCentreScreen extends StatelessWidget {
   const HelpCentreScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.white,
+      appBar: AppBar(
+        title: const Text(
+          'How can we help?',
+          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
+        ),
+      ),
       body: SafeArea(
-        bottom: false,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
-            const DesignBackButton(),
-            const SizedBox(height: 14),
-            const PageHeading(
-              'How can we help?',
-              subtitle: 'Find answers or contact patient support.',
-            ),
-            const SizedBox(height: 22),
             TextField(
-              style: TextStyle(fontSize: 17, color: AppColors.textPrimary),
               decoration: InputDecoration(
                 hintText: 'Search help topics',
-                hintStyle: TextStyle(
-                  fontSize: 17,
-                  color: AppColors.textSecondary,
-                ),
-                prefixIcon: Padding(
-                  padding: EdgeInsets.all(14),
-                  child: AppSvgIcon(
-                    AppSvgGlyph.searchLine,
-                    size: 24,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
+                prefixIcon: const Icon(Icons.search),
                 filled: true,
-                fillColor: AppColors.inputFill,
-                contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                border: _border(AppColors.cardBorder),
-                enabledBorder: _border(AppColors.cardBorder),
-                focusedBorder: _border(AppColors.actionBlue),
+                fillColor: AppColors.surface,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                  borderSide: BorderSide.none,
+                ),
               ),
             ),
-            const SizedBox(height: 22),
-            for (final topic in _topics) ...[
-              ActionRow(
-                glyph: topic.glyph,
-                color: topic.color,
-                title: topic.label,
-                onTap: () => showComingSoonPopup(context, feature: topic.label),
-              ),
-              const SizedBox(height: 12),
-            ],
-            const SizedBox(height: 16),
-            Text(
+            const SizedBox(height: AppSpacing.md),
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: AppSpacing.sm,
+              crossAxisSpacing: AppSpacing.sm,
+              childAspectRatio: 1.5,
+              children: [for (final topic in _topics) _TopicCard(topic: topic)],
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            const Text(
               'Need more help?',
               style: TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.4,
-                color: AppColors.heading,
+                fontWeight: FontWeight.w800,
+                color: AppColors.ink,
               ),
             ),
-            const SizedBox(height: 12),
-            SoftCard(
-              padding: const EdgeInsets.all(16),
+            const SizedBox(height: AppSpacing.sm),
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.line),
+                borderRadius: BorderRadius.circular(AppRadius.card),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  const Row(
                     children: [
-                      IconCircle(glyph: AppSvgGlyph.chatBold, size: 50),
-                      SizedBox(width: 14),
-                      Expanded(
-                        child: Text(
-                          'Contact patient support',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.5,
-                            color: AppColors.textPrimary,
-                          ),
+                      Icon(Icons.headset_mic_outlined, color: AppColors.blue),
+                      SizedBox(width: AppSpacing.sm),
+                      Text(
+                        'Contact patient support',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.ink,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Message our care team and get help with your account, '
-                    'appointments, cover and more.',
-                    style: TextStyle(
-                      fontSize: 14.5,
-                      height: 1.4,
-                      letterSpacing: -0.2,
-                      color: AppColors.textSecondary,
-                    ),
+                  const SizedBox(height: AppSpacing.xs),
+                  const Text(
+                    'Message our care team and get help with your account, appointments, cover and more.',
+                    style: TextStyle(fontSize: 13, color: AppColors.inkMuted),
                   ),
-                  const SizedBox(height: 16),
-                  PillButton(
+                  const SizedBox(height: AppSpacing.sm),
+                  PrimaryButton(
                     label: 'Send a message',
-                    onPressed: () => context.go(RoutePaths.messages),
+                    icon: Icons.send,
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.sm),
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: AppColors.tintRed,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.tintRedBorder),
+                color: const Color(0xFFFCEAEA),
+                borderRadius: BorderRadius.circular(AppRadius.card),
               ),
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      AppSvgIcon(
-                        AppSvgGlyph.infoBold,
-                        size: 22,
-                        color: AppColors.alertRed,
-                      ),
-                      SizedBox(width: 12),
+                      Icon(Icons.warning_amber_rounded, color: AppColors.error),
+                      SizedBox(width: AppSpacing.sm),
                       Text(
                         'Medical emergency?',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.w800,
-                          letterSpacing: -0.4,
-                          color: AppColors.alertRed,
+                          color: AppColors.error,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 6),
+                  SizedBox(height: AppSpacing.xs),
                   Text(
-                    'Seek immediate in-person care. Do not wait for a chat '
-                    'reply.',
-                    style: TextStyle(
-                      fontSize: 14.5,
-                      height: 1.4,
-                      letterSpacing: -0.2,
-                      color: AppColors.textSecondary,
-                    ),
+                    'Seek immediate in-person care. Do not wait for a chat reply.',
+                    style: TextStyle(fontSize: 13, color: AppColors.inkMuted),
                   ),
                 ],
               ),
@@ -185,9 +171,45 @@ class HelpCentreScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  static OutlineInputBorder _border(Color color) => OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
-    borderSide: BorderSide(color: color),
-  );
+class _TopicCard extends StatelessWidget {
+  const _TopicCard({required this.topic});
+
+  final _Topic topic;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.sm),
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColors.line),
+        borderRadius: BorderRadius.circular(AppRadius.card),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: topic.background,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(topic.icon, color: topic.color, size: 20),
+          ),
+          const SizedBox(width: AppSpacing.xs),
+          Expanded(
+            child: Text(
+              topic.label,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: AppColors.ink,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

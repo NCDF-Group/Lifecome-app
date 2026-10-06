@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-
-import '../../../core/theme/app_typography.dart';
-
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
@@ -23,7 +20,7 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.white,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -56,7 +53,7 @@ class WelcomeScreen extends StatelessWidget {
               children: [
                 FadeIn(
                   child: SvgPicture.asset(
-                    AppColors.logoAsset,
+                    'assets/images/logo/lifecome-live-logo.svg',
                     height: 32,
                     semanticsLabel: 'LifeCome Live',
                   ),
@@ -164,11 +161,7 @@ class _WelcomeButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.pill),
           ),
-          textStyle: const TextStyle(
-            fontFamily: appFontFamily,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-          ),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
         child: Text(label),
       ),

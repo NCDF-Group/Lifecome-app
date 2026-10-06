@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/app_typography.dart';
-
 import '../../country/app_country.dart';
 import '../../network/api_exception.dart';
 import '../../theme/app_colors.dart';
@@ -259,7 +257,7 @@ class _AppPopupCard extends StatelessWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 380),
             child: Material(
-              color: AppColors.background,
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(28),
               elevation: 24,
               shadowColor: AppColors.ink.withValues(alpha: 0.25),
@@ -290,7 +288,7 @@ class _AppPopupCard extends StatelessWidget {
                     Text(
                       title,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
                         color: AppColors.ink,
@@ -300,7 +298,7 @@ class _AppPopupCard extends StatelessWidget {
                     Text(
                       message,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         height: 1.45,
                         color: AppColors.inkMuted,
@@ -322,7 +320,6 @@ class _AppPopupCard extends StatelessWidget {
                                 backgroundColor: primaryColor,
                                 shape: const StadiumBorder(),
                                 textStyle: const TextStyle(
-                                  fontFamily: appFontFamily,
                                   fontSize: 15,
                                   fontWeight: FontWeight.w800,
                                 ),
@@ -406,7 +403,7 @@ class _OptionTile<T> extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  style: TextStyle(fontSize: 15, color: AppColors.ink),
+                  style: const TextStyle(fontSize: 15, color: AppColors.ink),
                 ),
               ),
               Icon(

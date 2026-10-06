@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/animation/fade_in.dart';
-import '../../../core/network/api_exception.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_svg_icons.dart';
-import '../../../core/widgets/design/soft_widgets.dart';
-import '../../../core/widgets/feedback/app_popup.dart';
-import '../../dashboard/presentation/widgets/home_header.dart';
-import '../application/booking_providers.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/widgets/buttons/primary_button.dart';
 import '../domain/models/appointment.dart';
+import '../domain/models/clinical_service.dart';
 
-/// "How can we help?" — pick the kind of care, and whether it's online or in
-/// person. One screen serves both the HMO and the direct-pay path (blueprint
-/// views 09/10); the choice flows on into Find a GP via [BookingSelection].
-class ChooseServiceScreen extends ConsumerStatefulWidget {
+/// Blueprint views 09 (Check Service Eligibility, HMO path) and 10 (Choose a
+/// Service, direct-pay path) — the same underlying choice, so one screen
+/// serves both, showing coverage badges only when booking through an HMO.
+class ChooseServiceScreen extends StatefulWidget {
   const ChooseServiceScreen({
     super.key,
     required this.accessType,
@@ -27,126 +23,108 @@ class ChooseServiceScreen extends ConsumerStatefulWidget {
   final String? hmoName;
 
   @override
-  ConsumerState<ChooseServiceScreen> createState() =>
-      _ChooseServiceScreenState();
+  State<ChooseServiceScreen> createState() => _ChooseServiceScreenState();
 }
 
-class _ChooseServiceScreenState extends ConsumerState<ChooseServiceScreen> {
-  bool _online = true;
+class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
+  ClinicalService _selected = clinicalServices.first;
 
-  bool _loading = false;
-
-  /// The service's real record (and price) comes from the backend; [code] is the card that was tapped.
-  Future<void> _choose(String code) async {
-    if (_loading) return;
-    setState(() => _loading = true);
-    try {
-      final services = await ref.read(clinicalServicesProvider.future);
-      final matches = services.where((service) => service.code == code);
-      if (matches.isEmpty) {
-        if (mounted) {
-          showErrorPopup(context, "That service isn't available right now.");
-        }
-        return;
-      }
-      if (!mounted) return;
-      final selection = BookingSelection(
-        accessType: widget.accessType,
-        hmoName: widget.hmoName,
-        service: matches.first,
-        consultationType: _online ? 'Video consultation' : 'In-person visit',
-      );
-      context.push(
-        _online ? RoutePaths.doctorsFindADoctor : RoutePaths.bookLocations,
-        extra: selection,
-      );
-    } on ApiException catch (error) {
-      ref.invalidate(clinicalServicesProvider);
-      if (mounted) showErrorPopup(context, error.message);
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
+  bool get _isHmo => widget.accessType == BookingAccessType.hmo;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.white,
+      appBar: AppBar(
+        title: Text(
+          _isHmo ? 'Check service eligibility' : 'Choose a service',
+          style: const TextStyle(
+            color: AppColors.ink,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
       body: SafeArea(
-        bottom: false,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+        child: Column(
           children: [
-            const HomeHeader(),
-            const SizedBox(height: 28),
-            const FadeIn(
-              child: PageHeading(
-                'How can we help?',
-                subtitle: 'Choose a service to get started.',
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                children: [
+                  Text(
+                    _isHmo
+                        ? 'What care do you need?'
+                        : 'What care do you need?',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.ink,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  if (_isHmo && widget.hmoName != null)
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEAF7E8),
+                        borderRadius: BorderRadius.circular(AppRadius.control),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.health_and_safety_outlined,
+                            color: AppColors.greenStrong,
+                            size: 18,
+                          ),
+                          const SizedBox(width: AppSpacing.xs),
+                          Text(
+                            'Access: ${widget.hmoName}',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.ink,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  for (final service in clinicalServices) ...[
+                    _ServiceTile(
+                      service: service,
+                      selected: service.id == _selected.id,
+                      isHmo: _isHmo,
+                      onTap: () => setState(() => _selected = service),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                  ],
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    _isHmo
+                        ? 'Eligibility may vary by plan type and HMO rules.'
+                        : 'You will see your total before payment.',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.inkMuted,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 22),
-            FadeIn(
-              delay: const Duration(milliseconds: 60),
-              child: _CardRow(
-                left: _ServiceCard(
-                  glyph: AppSvgGlyph.stethoscope,
-                  color: AppColors.actionBlue,
-                  title: 'GP consultation',
-                  subtitle: 'Discuss a suitable health concern.',
-                  onTap: () => _choose('gp-consultation'),
-                ),
-                right: _ServiceCard(
-                  glyph: AppSvgGlyph.heartPlusBold,
-                  color: AppColors.accentLime,
-                  title: 'Follow-up care',
-                  subtitle: 'Review your progress.',
-                  onTap: () => _choose('follow-up'),
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: PrimaryButton(
+                label: 'Continue to find a doctor',
+                icon: Icons.arrow_forward,
+                onPressed: () => context.push(
+                  RoutePaths.doctorsFindADoctor,
+                  extra: BookingSelection(
+                    accessType: widget.accessType,
+                    hmoName: widget.hmoName,
+                    service: _selected,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            FadeIn(
-              delay: const Duration(milliseconds: 120),
-              child: _CardRow(
-                left: _ServiceCard(
-                  glyph: AppSvgGlyph.noteBold,
-                  color: AppColors.accentGreen,
-                  title: 'Results review',
-                  subtitle: 'Discuss an existing report',
-                  onTap: () => _choose('results-review'),
-                ),
-                right: _ServiceCard(
-                  glyph: AppSvgGlyph.idCardBold,
-                  color: AppColors.accentCyan,
-                  title: 'Referral advice',
-                  subtitle: 'Plan the appropriate next step.',
-                  onTap: () => _choose('referral-advice'),
-                ),
-              ),
-            ),
-            const SizedBox(height: 40),
-            Text(
-              'Preferred care settings',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.6,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 12),
-            SlidingSegments(
-              items: const [
-                SegmentItem('Online', glyph: AppSvgGlyph.videoBold),
-                SegmentItem('In Person', glyph: AppSvgGlyph.pinBold),
-              ],
-              selected: _online ? 0 : 1,
-              onChanged: (index) => setState(() => _online = index == 0),
-            ),
-            const SizedBox(height: 32),
-            const InfoNote(
-              'Your clinician will assess the appropriate care settings.',
             ),
           ],
         ),
@@ -155,76 +133,101 @@ class _ChooseServiceScreenState extends ConsumerState<ChooseServiceScreen> {
   }
 }
 
-class _CardRow extends StatelessWidget {
-  const _CardRow({required this.left, required this.right});
-
-  final Widget left;
-  final Widget right;
-
-  @override
-  Widget build(BuildContext context) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(child: left),
-          const SizedBox(width: 12),
-          Expanded(child: right),
-        ],
-      ),
-    );
-  }
-}
-
-class _ServiceCard extends StatelessWidget {
-  const _ServiceCard({
-    required this.glyph,
-    required this.color,
-    required this.title,
-    required this.subtitle,
+class _ServiceTile extends StatelessWidget {
+  const _ServiceTile({
+    required this.service,
+    required this.selected,
+    required this.isHmo,
     required this.onTap,
   });
 
-  final AppSvgGlyph glyph;
-  final Color color;
-  final String title;
-  final String subtitle;
+  final ClinicalService service;
+  final bool selected;
+  final bool isHmo;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return SoftCard(
-      onTap: onTap,
-      padding: const EdgeInsets.fromLTRB(18, 24, 14, 22),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 150),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AppSvgIcon(glyph, size: 56, color: color),
-            const SizedBox(height: 28),
-            Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.5,
-                color: AppColors.textPrimary,
-              ),
+    return Material(
+      color: selected ? const Color(0xFFE8F4FC) : AppColors.white,
+      borderRadius: BorderRadius.circular(AppRadius.card),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.card),
+            border: Border.all(
+              color: selected ? AppColors.blue : AppColors.line,
             ),
-            const SizedBox(height: 6),
-            Text(
-              subtitle,
-              style: TextStyle(
-                fontSize: 14,
-                height: 1.45,
-                letterSpacing: -0.2,
-                color: AppColors.textSecondary,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      service.title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    Text(
+                      service.description,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.inkMuted,
+                      ),
+                    ),
+                    if (!isHmo) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        '₦${service.fee}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.blue,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ),
-            ),
-          ],
+              if (isHmo)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xs,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color:
+                        (service.requiresAuthorisation
+                                ? AppColors.gold
+                                : AppColors.greenStrong)
+                            .withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
+                  ),
+                  child: Text(
+                    service.requiresAuthorisation
+                        ? 'Requires authorisation'
+                        : 'Covered',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: service.requiresAuthorisation
+                          ? AppColors.gold
+                          : AppColors.greenStrong,
+                    ),
+                  ),
+                )
+              else if (selected)
+                const Icon(Icons.check_circle, color: AppColors.blue),
+            ],
+          ),
         ),
       ),
     );

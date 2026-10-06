@@ -62,11 +62,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
     if (!mounted) return;
     if (success) {
-      context.go(
-        ref.read(authControllerProvider).needsProfile
-            ? RoutePaths.completeProfile
-            : RoutePaths.home,
-      );
+      context.go(RoutePaths.home);
     } else {
       final message = ref.read(authControllerProvider).errorMessage;
       if (message != null) {
@@ -85,7 +81,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     final submitting = authState.status == AuthStatus.submitting;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
@@ -96,7 +92,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 FadeIn(
                   child: Center(
                     child: SvgPicture.asset(
-                      AppColors.logoAsset,
+                      'assets/images/logo/lifecome-live-logo.svg',
                       height: 32,
                       semanticsLabel: 'LifeCome Live',
                     ),
@@ -107,7 +103,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   delay: const Duration(milliseconds: 80),
                   child: Text.rich(
                     TextSpan(
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.w800,
                         color: AppColors.ink,
@@ -124,7 +120,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                FadeIn(
+                const FadeIn(
                   delay: Duration(milliseconds: 120),
                   child: Text(
                     'Log in with your email and password.',
@@ -202,7 +198,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                                 ),
                               ),
                               const SizedBox(width: AppSpacing.xs),
-                              Text(
+                              const Text(
                                 'Remember me',
                                 style: TextStyle(
                                   color: AppColors.inkMuted,
@@ -245,7 +241,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     child: Wrap(
                       alignment: WrapAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                           "Don't have an account? ",
                           style: TextStyle(
                             color: AppColors.inkMuted,

@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/app_lock_screen.dart';
-import '../../features/auth/presentation/complete_profile_screen.dart';
 import '../../features/auth/presentation/create_account_screen.dart';
 import '../../features/auth/presentation/create_password_screen.dart';
 import '../../features/auth/presentation/forgot_password_screen.dart';
@@ -17,16 +16,10 @@ import '../../features/booking/domain/models/appointment.dart';
 import '../../features/booking/presentation/before_your_visit_screen.dart';
 import '../../features/booking/presentation/booking_confirmation_screen.dart';
 import '../../features/booking/presentation/choose_appointment_time_screen.dart';
-import '../../features/booking/domain/models/access_option.dart';
-import '../../features/booking/presentation/choose_access_screen.dart';
 import '../../features/booking/presentation/choose_service_screen.dart';
-import '../../features/booking/presentation/connect_access_screen.dart';
-import '../../features/booking/presentation/my_benefits_screen.dart';
 import '../../features/booking/presentation/my_visits_screen.dart';
 import '../../features/booking/presentation/review_booking_screen.dart';
-import '../../features/booking/presentation/smart_gp_locations_screen.dart';
 import '../../features/care_plan/presentation/care_plan_screen.dart';
-import '../../features/care_plan/presentation/next_steps_screen.dart';
 import '../../features/consultation/presentation/consultation_call_screen.dart';
 import '../../features/consultation/presentation/waiting_room_screen.dart';
 import '../../features/dashboard/presentation/dashboard_screen.dart';
@@ -36,7 +29,6 @@ import '../../features/health_records/presentation/health_records_screen.dart';
 import '../../features/legal/presentation/privacy_screen.dart';
 import '../../features/legal/presentation/terms_screen.dart';
 import '../../features/messaging/presentation/message_threads_screen.dart';
-import '../../features/notifications/presentation/notifications_screen.dart';
 import '../../features/payer/presentation/choose_payment_method_screen.dart';
 import '../../features/payer/presentation/hmo_coverage_screen.dart';
 import '../../features/payer/presentation/select_hmo_screen.dart';
@@ -68,10 +60,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.signIn,
         builder: (context, state) => const SignInScreen(),
-      ),
-      GoRoute(
-        path: RoutePaths.completeProfile,
-        builder: (context, state) => const CompleteProfileScreen(),
       ),
       GoRoute(
         path: RoutePaths.createAccount,
@@ -132,6 +120,45 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             HmoCoverageScreen(hmoName: state.extra! as String),
       ),
       GoRoute(
+        path: RoutePaths.bookingChooseService,
+        builder: (context, state) {
+          final args = state.extra! as (BookingAccessType, String?);
+          return ChooseServiceScreen(accessType: args.$1, hmoName: args.$2);
+        },
+      ),
+      GoRoute(
+        path: RoutePaths.doctorsFindADoctor,
+        builder: (context, state) =>
+            FindADoctorScreen(selection: state.extra! as BookingSelection),
+      ),
+      GoRoute(
+        path: RoutePaths.doctorsProfile,
+        builder: (context, state) =>
+            DoctorProfileScreen(selection: state.extra! as BookingSelection),
+      ),
+      GoRoute(
+        path: RoutePaths.bookingAppointmentTime,
+        builder: (context, state) => ChooseAppointmentTimeScreen(
+          selection: state.extra! as BookingSelection,
+        ),
+      ),
+      GoRoute(
+        path: RoutePaths.bookingBeforeYourVisit,
+        builder: (context, state) =>
+            BeforeYourVisitScreen(selection: state.extra! as BookingSelection),
+      ),
+      GoRoute(
+        path: RoutePaths.bookingReview,
+        builder: (context, state) =>
+            ReviewBookingScreen(selection: state.extra! as BookingSelection),
+      ),
+      GoRoute(
+        path: RoutePaths.bookingConfirmation,
+        builder: (context, state) => BookingConfirmationScreen(
+          selection: state.extra! as BookingSelection,
+        ),
+      ),
+      GoRoute(
         path: RoutePaths.consultationWaitingRoom,
         builder: (context, state) =>
             WaitingRoomScreen(selection: state.extra! as BookingSelection),
@@ -142,123 +169,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             ConsultationCallScreen(selection: state.extra! as BookingSelection),
       ),
       GoRoute(
-        path: RoutePaths.visits,
-        builder: (context, state) => const MyVisitsScreen(),
+        path: RoutePaths.careplan,
+        builder: (context, state) =>
+            CarePlanScreen(selection: state.extra as BookingSelection?),
       ),
-      GoRoute(
-        path: RoutePaths.notifications,
-        builder: (context, state) => const NotificationsScreen(),
-      ),
-      StatefulShellRoute(
+      StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
             AppShell(navigationShell: navigationShell),
-        navigatorContainerBuilder: (context, navigationShell, children) =>
-            FadingBranches(
-              currentIndex: navigationShell.currentIndex,
-              children: children,
-            ),
         branches: [
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: RoutePaths.home,
                 builder: (context, state) => const DashboardScreen(),
-                routes: [
-                  GoRoute(
-                    path: 'next-steps',
-                    builder: (context, state) => const NextStepsScreen(),
-                  ),
-                ],
               ),
             ],
           ),
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: RoutePaths.book,
-                builder: (context, state) => const ChooseAccessScreen(),
-                routes: [
-                  GoRoute(
-                    path: 'connect',
-                    builder: (context, state) => ConnectAccessScreen(
-                      initial:
-                          state.extra as AccessOption? ??
-                          AccessOption.lifecomeBenefits,
-                    ),
-                  ),
-                  GoRoute(
-                    path: 'benefits',
-                    builder: (context, state) => const MyBenefitsScreen(),
-                  ),
-                  GoRoute(
-                    path: 'help',
-                    builder: (context, state) {
-                      final args = state.extra! as (BookingAccessType, String?);
-                      return ChooseServiceScreen(
-                        accessType: args.$1,
-                        hmoName: args.$2,
-                      );
-                    },
-                  ),
-                  GoRoute(
-                    path: 'doctor',
-                    builder: (context, state) => DoctorProfileScreen(
-                      selection: state.extra! as BookingSelection,
-                    ),
-                  ),
-                  GoRoute(
-                    path: 'time',
-                    builder: (context, state) => ChooseAppointmentTimeScreen(
-                      selection: state.extra! as BookingSelection,
-                    ),
-                  ),
-                  GoRoute(
-                    path: 'prepare',
-                    builder: (context, state) => BeforeYourVisitScreen(
-                      selection: state.extra! as BookingSelection,
-                    ),
-                  ),
-                  GoRoute(
-                    path: 'review',
-                    builder: (context, state) => ReviewBookingScreen(
-                      selection: state.extra! as BookingSelection,
-                    ),
-                  ),
-                  GoRoute(
-                    path: 'confirmation',
-                    builder: (context, state) => BookingConfirmationScreen(
-                      selection: state.extra! as BookingSelection,
-                    ),
-                  ),
-                  GoRoute(
-                    path: 'locations',
-                    builder: (context, state) => SmartGpLocationsScreen(
-                      selection: state.extra! as BookingSelection,
-                    ),
-                  ),
-                  GoRoute(
-                    path: 'find-gp',
-                    builder: (context, state) => FindADoctorScreen(
-                      selection: state.extra! as BookingSelection,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: RoutePaths.healthRecords,
-                builder: (context, state) => const HealthRecordsScreen(),
-                routes: [
-                  GoRoute(
-                    path: 'care-plan',
-                    builder: (context, state) => CarePlanScreen(
-                      selection: state.extra as BookingSelection?,
-                    ),
-                  ),
-                ],
+                path: RoutePaths.visits,
+                builder: (context, state) => const MyVisitsScreen(),
               ),
             ],
           ),
@@ -276,6 +207,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: RoutePaths.profile,
                 builder: (context, state) => const PatientProfileScreen(),
                 routes: [
+                  GoRoute(
+                    path: 'health-records',
+                    builder: (context, state) => const HealthRecordsScreen(),
+                  ),
                   GoRoute(
                     path: 'help',
                     builder: (context, state) => const HelpCentreScreen(),

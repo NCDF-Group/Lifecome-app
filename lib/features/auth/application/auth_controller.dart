@@ -1,10 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/country/app_country.dart';
-import '../../../core/network/api_exception.dart';
 import '../../../core/providers/core_providers.dart';
-import '../../notifications/application/notifications_controller.dart';
-import '../../profile/application/avatar_controller.dart';
 import '../data/auth_repository.dart';
 import '../domain/models/auth_session.dart';
 
@@ -17,45 +13,15 @@ class AuthController extends Notifier<AuthSessionState> {
   @override
   AuthSessionState build() => AuthSessionState.empty();
 
-  /// The first name to greet the user with (app-lock screen, session store). Only a fallback for
-  /// when the backend has no profile for the account yet - the real name comes from `GET /me`.
-  String _fallbackName(String email) {
+  /// The first name to greet the user with (app-lock screen, session
+  /// store). Falls back to the part of the email before "@" when no full
+  /// name is known, since sign-in alone never collects one.
+  String _displayNameFor(String email, String? fullName) {
+    final parts = fullName?.trim().split(' ') ?? const <String>[];
+    final firstName = parts.isNotEmpty ? parts.first : '';
+    if (firstName.isNotEmpty) return firstName;
     final local = email.split('@').first;
     return local.isEmpty ? email : local[0].toUpperCase() + local.substring(1);
-  }
-
-  /// Loads the signed-in account's profile and remembers the session - with the real first name,
-  /// never the email. Returns whether the account still needs its profile created.
-  Future<bool> _rememberSession(String email) async {
-    final client = ref.read(apiClientProvider);
-    var name = _fallbackName(email);
-    var needsProfile = true;
-    try {
-      final me = await ref.read(profileRepositoryProvider).getMe();
-      final profile = me.profile;
-      if (profile != null) {
-        name = profile.firstName;
-        needsProfile = false;
-      }
-    } on ApiException {
-      // Offline or a hiccup: keep the fallback name; the next sign-in refreshes it.
-      needsProfile = false;
-    }
-    await ref
-        .read(sessionStoreProvider)
-        .save(email: email, displayName: name, accessToken: client.accessToken);
-    return needsProfile;
-  }
-
-  /// Whether the signed-in account has no profile yet. A network failure counts as "no" so a flaky
-  /// connection never traps someone on the profile form.
-  Future<bool> _profileMissing() async {
-    try {
-      return (await ref.read(profileRepositoryProvider).getMe()).profile ==
-          null;
-    } on ApiException {
-      return false;
-    }
   }
 
   /// Email + password sign in. Unlike [requestCode], this resolves
@@ -79,18 +45,12 @@ class AuthController extends Notifier<AuthSessionState> {
       await ref
           .read(authRepositoryProvider)
           .signInWithPassword(email: email, password: password);
-      var needsProfile = false;
       if (rememberMe) {
-        needsProfile = await _rememberSession(email);
-      } else {
-        needsProfile = await _profileMissing();
+        await ref
+            .read(sessionStoreProvider)
+            .save(email: email, displayName: _displayNameFor(email, state.fullName));
       }
-      ref.invalidate(avatarProvider);
-      ref.invalidate(notificationsProvider);
-      state = state.copyWith(
-        status: AuthStatus.verified,
-        needsProfile: needsProfile,
-      );
+      state = state.copyWith(status: AuthStatus.verified);
       return true;
     } on AuthException catch (error) {
       state = state.copyWith(
@@ -120,14 +80,11 @@ class AuthController extends Notifier<AuthSessionState> {
       flow: flow,
       email: email,
       fullName: fullName,
-      dateOfBirth: dateOfBirth,
       clearError: true,
     );
 
     try {
-      await ref
-          .read(authRepositoryProvider)
-          .requestEmailCode(
+      await ref.read(authRepositoryProvider).requestEmailCode(
             email: email,
             fullName: fullName,
             referralCode: referralCode,
@@ -187,38 +144,12 @@ class AuthController extends Notifier<AuthSessionState> {
       await ref
           .read(authRepositoryProvider)
           .completeSignUp(email: state.email, password: password);
-
-      // Create the patient profile (name + date of birth) now that the account has a session.
-      final parts = (state.fullName ?? '').trim().split(RegExp(r'\s+'));
-      final firstName = parts.first;
-      final lastName = parts.length > 1 ? parts.skip(1).join(' ') : '';
-      final dateOfBirth = state.dateOfBirth;
-      var needsProfile = true;
-      if (firstName.isNotEmpty && lastName.isNotEmpty && dateOfBirth != null) {
-        try {
-          await ref
-              .read(profileRepositoryProvider)
-              .saveProfile(
-                firstName: firstName,
-                lastName: lastName,
-                dateOfBirth: dateOfBirth,
-                country: ref.read(countryProvider).code,
-              );
-          needsProfile = false;
-        } on ApiException {
-          // Fall through: the app asks for the details again before going Home.
-        }
-      }
       await ref
           .read(sessionStoreProvider)
           .save(
             email: state.email,
-            displayName: firstName.isNotEmpty
-                ? firstName
-                : _fallbackName(state.email),
-            accessToken: ref.read(apiClientProvider).accessToken,
+            displayName: _displayNameFor(state.email, state.fullName),
           );
-      state = state.copyWith(needsProfile: needsProfile);
       state = state.copyWith(status: AuthStatus.verified);
       return true;
     } on AuthException catch (error) {

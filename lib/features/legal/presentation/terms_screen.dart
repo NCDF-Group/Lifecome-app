@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../../core/widgets/design/soft_widgets.dart';
+import '../../../core/theme/app_spacing.dart';
 
 const _sections = [
   (
@@ -39,56 +39,44 @@ class TermsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.white,
+      appBar: AppBar(
+        title: const Text(
+          'Terms and Conditions',
+          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
+        ),
+      ),
       body: SafeArea(
-        bottom: false,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
-            const DesignBackButton(),
-            const SizedBox(height: 14),
-            const PageHeading(
-              'Terms and Conditions',
-              subtitle: 'Last updated: 30 September 2026',
+            const Text(
+              'Last updated: 30 September 2026',
+              style: TextStyle(fontSize: 12, color: AppColors.inkMuted),
             ),
-            const SizedBox(height: 20),
-            Text(
-              'These terms govern your use of LifeCome Live. By creating an account, you agree to them.',
-              style: TextStyle(
-                fontSize: 15,
-                height: 1.5,
-                letterSpacing: -0.2,
-                color: AppColors.textPrimary,
-              ),
+            const SizedBox(height: AppSpacing.md),
+            const Text(
+              'These terms govern your use of LifeCome Live. By creating an account, you agree '
+              'to them.',
+              style: TextStyle(fontSize: 14, color: AppColors.ink, height: 1.5),
             ),
             for (final section in _sections) ...[
-              const SizedBox(height: 16),
-              SoftCard(
-                radius: 14,
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      section.$1,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.4,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      section.$2,
-                      style: TextStyle(
-                        fontSize: 14.5,
-                        height: 1.5,
-                        letterSpacing: -0.2,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: AppSpacing.lg),
+              Text(
+                section.$1,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.ink,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                section.$2,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.inkMuted,
+                  height: 1.5,
                 ),
               ),
             ],

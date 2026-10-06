@@ -70,7 +70,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(
@@ -90,14 +90,14 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                 FadeIn(
                   child: Center(
                     child: SvgPicture.asset(
-                      AppColors.logoAsset,
+                      'assets/images/logo/lifecome-live-logo.svg',
                       height: 32,
                       semanticsLabel: 'LifeCome Live',
                     ),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                Text(
+                const Text(
                   'Create your Account',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -107,7 +107,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                Text(
+                const Text(
                   'Enter your name and email below to create your account with us.',
                   textAlign: TextAlign.center,
                   style: TextStyle(

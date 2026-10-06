@@ -47,7 +47,7 @@ class _ConsultationCallScreenState extends State<ConsultationCallScreen> {
   }
 
   void _endCall() {
-    context.go(RoutePaths.careplan, extra: widget.selection);
+    context.pushReplacement(RoutePaths.careplan, extra: widget.selection);
   }
 
   @override

@@ -150,7 +150,7 @@ class _OtpBox extends StatelessWidget {
           width: size,
           height: size + 8,
           decoration: BoxDecoration(
-            color: AppColors.background,
+            color: AppColors.white,
             borderRadius: BorderRadius.circular(AppRadius.control),
             border: Border.all(color: ringColor, width: 2),
             boxShadow: [
@@ -170,13 +170,13 @@ class _OtpBox extends StatelessWidget {
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,
         maxLength: 1,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 22,
           fontWeight: FontWeight.w700,
           color: AppColors.ink,
         ),
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           counterText: '',
           contentPadding: EdgeInsets.zero,
           hintText: '0',

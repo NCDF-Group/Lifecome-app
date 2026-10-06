@@ -46,9 +46,9 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.white,
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Verify your HMO membership',
           style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
         ),
@@ -57,7 +57,7 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
-            Text(
+            const Text(
               'Enter your membership details to verify your cover with LifeCome Live.',
               style: TextStyle(
                 fontSize: 14,
@@ -69,7 +69,7 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: AppColors.tintGreenSoft,
+                color: const Color(0xFFEAF7E8),
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
@@ -82,7 +82,7 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
                   Expanded(
                     child: Text(
                       widget.hmoName,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: AppColors.ink,
@@ -122,10 +122,10 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: AppColors.tintBlue,
+                color: const Color(0xFFE8F4FC),
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
-              child: Row(
+              child: const Row(
                 children: [
                   Icon(Icons.info_outline, color: AppColors.blue),
                   SizedBox(width: AppSpacing.sm),

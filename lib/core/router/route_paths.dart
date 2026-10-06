@@ -16,9 +16,6 @@ abstract final class RoutePaths {
 
   static const signIn = '/sign-in';
 
-  /// Name and date of birth for an account that has no profile yet (see `CompleteProfileScreen`).
-  static const completeProfile = '/complete-profile';
-
   /// Step 1 of 2: full name, email and optional referral code.
   static const createAccount = '/create-account';
 
@@ -57,29 +54,8 @@ abstract final class RoutePaths {
   /// bottom-nav shell (see `AppShell`).
   static const home = '/home';
 
-  /// My visits — upcoming/past appointments. A plain pushed screen (opened
-  /// from Home's quick links), not a tab.
+  /// My Visits tab — upcoming/past appointments and their sub-flows.
   static const visits = '/visits';
-
-  /// Book tab — "Choose your access", the start of the booking flow. The
-  /// screens under it (`bookConnectAccess`, `bookBenefits`,
-  /// `bookingChooseService`, `doctorsFindADoctor`) keep the bottom bar.
-  static const book = '/book';
-
-  /// Connect your access — pick LifeCome Benefits / Workplace / Membership
-  /// and verify. Reached with an `AccessOption` passed as `extra`.
-  static const bookConnectAccess = '/book/connect';
-
-  /// Smart GP locations — the in-person clinics. Reached with a
-  /// `BookingSelection`.
-  static const bookLocations = '/book/locations';
-
-  /// My benefits — what the verified plan covers.
-  static const bookBenefits = '/book/benefits';
-
-  /// Your next steps — what the clinician recommended after a visit; a
-  /// child of the Home tab.
-  static const nextSteps = '/home/next-steps';
 
   /// Messages tab — the single LifeCome care team conversation.
   static const messages = '/messages';
@@ -87,11 +63,7 @@ abstract final class RoutePaths {
   /// Profile tab — account, health records, and support.
   static const profile = '/profile';
 
-  /// Notification centre, opened from the bell on Home.
-  static const notifications = '/notifications';
-
-  /// Records tab — the patient's health records; the care plan opens from it.
-  static const healthRecords = '/records';
+  static const healthRecords = '/profile/health-records';
 
   static const helpAndSupport = '/profile/help';
 
@@ -115,33 +87,33 @@ abstract final class RoutePaths {
   /// HMO's name passed as `extra`.
   static const payerCoverage = '/payer/coverage';
 
-  /// "How can we help?" — choose a service (blueprint views 09/10; one
-  /// screen serves both the HMO and direct-pay paths, see
+  /// Blueprint views 09/10 — Check Service Eligibility (HMO) and Choose a
+  /// Service (direct-pay); one screen serves both (see
   /// `ChooseServiceScreen`). Reached with a `BookingAccessType` + optional
   /// HMO name passed as `extra`.
-  static const bookingChooseService = '/book/help';
+  static const bookingChooseService = '/booking/choose-service';
 
   /// Blueprint view 11 — Find a Doctor. Reached with a `BookingSelection`.
-  static const doctorsFindADoctor = '/book/find-gp';
+  static const doctorsFindADoctor = '/doctors/find';
 
   /// Blueprint view 12 — Doctor Profile. Reached with a `BookingSelection`.
-  static const doctorsProfile = '/book/doctor';
+  static const doctorsProfile = '/doctors/profile';
 
   /// Blueprint view 13 — Choose Appointment Time. Reached with a
   /// `BookingSelection`.
-  static const bookingAppointmentTime = '/book/time';
+  static const bookingAppointmentTime = '/booking/appointment-time';
 
   /// Blueprint view 14 — Before Your Visit. Reached with a
   /// `BookingSelection`.
-  static const bookingBeforeYourVisit = '/book/prepare';
+  static const bookingBeforeYourVisit = '/booking/before-your-visit';
 
   /// Blueprint views 15-16 — Review Booking & Payment / HMO Authorisation
   /// (merged into one screen). Reached with a `BookingSelection`.
-  static const bookingReview = '/book/review';
+  static const bookingReview = '/booking/review';
 
   /// Blueprint view 17 — Booking Confirmation. Reached with a
   /// `BookingSelection`.
-  static const bookingConfirmation = '/book/confirmation';
+  static const bookingConfirmation = '/booking/confirmation';
 
   /// Blueprint view 18 — Consultation Waiting Room. Reached with a
   /// `BookingSelection`.
@@ -151,8 +123,8 @@ abstract final class RoutePaths {
   /// `BookingSelection`.
   static const consultationCall = '/consultation/call';
 
-  /// Blueprint view 20 — Care Plan & Visit Summary, a child of the Records tab. Optionally reached with a `BookingSelection` passed
-  /// as `extra` (a just-finished visit); with none, shows the empty state
-  /// instead.
-  static const careplan = '/records/care-plan';
+  /// Blueprint view 20 — Care Plan & Visit Summary. Optionally reached with
+  /// a `BookingSelection` passed as `extra` (a just-finished visit); with
+  /// none, shows the empty state instead.
+  static const careplan = '/care-plan';
 }

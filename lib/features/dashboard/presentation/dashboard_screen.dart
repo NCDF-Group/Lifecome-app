@@ -1,23 +1,26 @@
+import 'dart:async';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
-
-import '../../../core/theme/app_typography.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/animation/fade_in.dart';
 import '../../../core/country/app_country.dart';
+import '../../../core/providers/core_providers.dart';
 import '../../../core/router/route_paths.dart';
+import '../../../core/services/session_store.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_svg_icons.dart';
-import '../../../core/widgets/design/soft_widgets.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
-import '../../booking/application/access_status.dart';
-import '../application/location_confirmation.dart';
-import 'widgets/home_header.dart';
 
-/// The Home tab: greeting header, the two ways to get care, the "Your Care"
-/// call to action, a membership banner and quick links.
+/// The LifeCome Live Dashboard — blueprint view 04, the Home tab of the
+/// bottom-nav shell. Matches the "new patient, nothing booked yet" state:
+/// once a patient has an upcoming visit or an active care plan, those
+/// replace the access-options section (not built yet — no booking backend
+/// exists for this to reflect).
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
@@ -26,130 +29,628 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
-  Future<void> _pickCountry() async {
-    final picked = await showCountryPickerPopup(
-      context,
-      current: ref.read(countryProvider),
-    );
-    if (picked != null) {
-      await ref.read(countryProvider.notifier).select(picked);
-    }
+  StoredSession? _session;
+
+  @override
+  void initState() {
+    super.initState();
+    ref.read(sessionStoreProvider).read().then((session) {
+      if (mounted) setState(() => _session = session);
+    });
+  }
+
+  String get _firstName {
+    final name = _session?.displayName;
+    if (name == null || name.isEmpty) return 'there';
+    return name.split(' ').first;
+  }
+
+  String get _greeting {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
   }
 
   @override
   Widget build(BuildContext context) {
-    final country = ref.watch(countryProvider);
-    final locationConfirmed = ref.watch(locationConfirmationProvider);
-
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        bottom: false,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-          children: [
-            const HomeHeader(),
-            if (!locationConfirmed) ...[
-              const SizedBox(height: 20),
+      backgroundColor: AppColors.white,
+      body: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: [0, 0.22, 0.42],
+            colors: [Color(0xFFE8F4FC), Color(0xFFEAF7E8), AppColors.white],
+          ),
+        ),
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.md,
+              AppSpacing.lg,
+              AppSpacing.xl,
+            ),
+            children: [
+              Row(
+                children: [
+                  SvgPicture.asset(
+                    'assets/images/logo/lifecome-live-logo.svg',
+                    height: 26,
+                    semanticsLabel: 'LifeCome Live',
+                  ),
+                  const Spacer(),
+                  const _CountryBadge(),
+                  const SizedBox(width: AppSpacing.xs),
+                  _NotificationBell(
+                    onTap: () => showNotificationsPopup(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.lg),
               FadeIn(
-                child: _LocationBlock(
-                  location: country.name,
-                  onConfirm: () =>
-                      ref.read(locationConfirmationProvider.notifier).confirm(),
-                  onUpdate: _pickCountry,
-                  onUseDevice: () =>
-                      showComingSoonPopup(context, feature: 'Device location'),
+                child: Text(
+                  '$_greeting, $_firstName',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.inkMuted,
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xxs),
+              FadeIn(
+                delay: const Duration(milliseconds: 40),
+                child: Text.rich(
+                  const TextSpan(
+                    style: TextStyle(
+                      fontSize: 29,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.ink,
+                      height: 1.15,
+                      letterSpacing: -0.5,
+                    ),
+                    children: [
+                      TextSpan(text: 'Care that fits '),
+                      TextSpan(
+                        text: 'your life',
+                        style: TextStyle(color: AppColors.greenStrong),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              FadeIn(
+                delay: const Duration(milliseconds: 80),
+                child: const _TalkToADoctorCard(),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              FadeIn(
+                delay: const Duration(milliseconds: 100),
+                child: _PromoSlider(
+                  onTapSlide: () => showComingSoonPopup(context),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              FadeIn(
+                delay: const Duration(milliseconds: 120),
+                child: const Text(
+                  'How would you like to access care?',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.ink,
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              FadeIn(
+                delay: const Duration(milliseconds: 150),
+                child: _AccessOptionCard(
+                  filled: true,
+                  icon: Icons.health_and_safety_rounded,
+                  title: 'Use my LifeCome HMO',
+                  subtitle: 'Access care covered by your plan',
+                  onTap: () => context.push(RoutePaths.payerSelectHmo),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              FadeIn(
+                delay: const Duration(milliseconds: 180),
+                child: _AccessOptionCard(
+                  filled: false,
+                  icon: Icons.account_balance_wallet_rounded,
+                  title: 'Pay for a one-time service',
+                  subtitle: 'No HMO membership needed',
+                  onTap: () =>
+                      context.push(RoutePaths.payerChoosePaymentMethod),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              FadeIn(
+                delay: const Duration(milliseconds: 210),
+                child: const Text(
+                  'Your care, in one place',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.ink,
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              FadeIn(
+                delay: const Duration(milliseconds: 240),
+                // IntrinsicHeight gives the row a finite height so `stretch`
+                // can match the two cards; a ListView child is unbounded.
+                child: IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: _SmallActionCard(
+                          background: const Color(0xFFEAF7E8),
+                          iconColor: AppColors.greenStrong,
+                          icon: Icons.calendar_month_rounded,
+                          title: 'My visits',
+                          subtitle: 'View and manage your appointments',
+                          onTap: () => context.go(RoutePaths.visits),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: _SmallActionCard(
+                          background: const Color(0xFFE8F4FC),
+                          iconColor: AppColors.blue,
+                          icon: Icons.favorite_rounded,
+                          title: 'My care plan',
+                          subtitle: 'Track your health goals and progress',
+                          onTap: () => context.push(RoutePaths.careplan),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              FadeIn(
+                delay: const Duration(milliseconds: 270),
+                child: _UrgentHelpBanner(
+                  onTap: () => showComingSoonPopup(
+                    context,
+                    feature: 'Emergency guidance',
+                  ),
                 ),
               ),
             ],
-            SizedBox(height: locationConfirmed ? 28 : 36),
-            FadeIn(child: const _Headline()),
-            const SizedBox(height: 22),
-            FadeIn(
-              delay: const Duration(milliseconds: 60),
-              child: IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child: _ServiceCard(
-                        image: 'assets/images/home/online-gp.png',
-                        title: 'Online GP',
-                        subtitle: 'Speak to a GP by video or phone.',
-                        onTap: () => context.go(RoutePaths.book),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A soft, blurred accent circle — the same "glow" treatment `BrandBackdrop`
+/// uses on auth screens, scaled down and clipped to sit inside a card
+/// instead of behind a whole screen.
+class _CardGlow extends StatelessWidget {
+  const _CardGlow({required this.color, required this.size});
+
+  final Color color;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: ImageFiltered(
+        imageFilter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+      ),
+    );
+  }
+}
+
+/// The user's country (flag + name) in the header. Tapping it lets them
+/// switch between the countries LifeCome Live serves.
+class _CountryBadge extends ConsumerWidget {
+  const _CountryBadge();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final country = ref.watch(countryProvider);
+
+    return Material(
+      color: AppColors.white.withValues(alpha: 0.85),
+      shape: const StadiumBorder(side: BorderSide(color: AppColors.line)),
+      child: InkWell(
+        customBorder: const StadiumBorder(),
+        onTap: () async {
+          final picked = await showCountryPickerPopup(
+            context,
+            current: country,
+          );
+          if (picked != null) {
+            ref.read(countryProvider.notifier).select(picked);
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(10, 7, 8, 7),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(country.flag, style: const TextStyle(fontSize: 18)),
+              const SizedBox(width: 6),
+              Text(
+                country.name,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.ink,
+                ),
+              ),
+              const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                size: 18,
+                color: AppColors.inkMuted,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NotificationBell extends StatelessWidget {
+  const _NotificationBell({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.blue.withValues(alpha: 0.08),
+      shape: const CircleBorder(),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              const Icon(
+                Icons.notifications_rounded,
+                color: AppColors.blue,
+                size: 22,
+              ),
+              Positioned(
+                top: -2,
+                right: -2,
+                child: Container(
+                  width: 9,
+                  height: 9,
+                  decoration: BoxDecoration(
+                    color: AppColors.green,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.white, width: 1.5),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TalkToADoctorCard extends StatelessWidget {
+  const _TalkToADoctorCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadius.card),
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFEAF6FF), Color(0xFFD9EDFB)],
+          ),
+          borderRadius: BorderRadius.circular(AppRadius.card),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.blue.withValues(alpha: 0.10),
+              blurRadius: 24,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Stack(
+          // The photo reaches into the card's padding so it sits flush with
+          // the bottom and right edges; the ClipRRect above trims it.
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(
+              right: -30,
+              top: -30,
+              child: _CardGlow(
+                color: AppColors.cyan.withValues(alpha: 0.22),
+                size: 120,
+              ),
+            ),
+            Positioned(
+              right: 10,
+              bottom: -20,
+              child: _CardGlow(
+                color: AppColors.lime.withValues(alpha: 0.18),
+                size: 90,
+              ),
+            ),
+            Positioned(
+              top: -AppSpacing.xs,
+              right: -AppSpacing.md,
+              bottom: -AppSpacing.md,
+              width: 150,
+              child: Image.asset(
+                'assets/images/home/doctor.png',
+                fit: BoxFit.contain,
+                alignment: Alignment.bottomRight,
+                semanticLabel: 'A LifeCome Live doctor',
+              ),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Talk to a doctor',
+                        style: TextStyle(
+                          fontSize: 19,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.ink,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _ServiceCard(
-                        image: 'assets/images/home/smart-clinic.png',
-                        title: 'Smart GP Clinic',
-                        subtitle: 'In-person care at a local clinic.',
-                        onTap: () => context.go(RoutePaths.book),
+                      const Text(
+                        'From wherever you are',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.blue,
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: AppSpacing.sm),
+                      const _FeatureRow(
+                        icon: Icons.videocam_rounded,
+                        label: 'Video consultations',
+                      ),
+                      const SizedBox(height: AppSpacing.xxs),
+                      const _FeatureRow(
+                        icon: Icons.call_rounded,
+                        label: 'Phone calls',
+                        color: AppColors.greenStrong,
+                      ),
+                      const SizedBox(height: AppSpacing.xxs),
+                      const _FeatureRow(
+                        icon: Icons.chat_bubble_rounded,
+                        label: 'Secure messaging',
+                      ),
+                    ],
+                  ),
+                ),
+                // Room for the doctor photo, drawn by the Stack below.
+                const Spacer(flex: 2),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PromoSlide {
+  const _PromoSlide({
+    required this.image,
+    required this.title,
+    required this.subtitle,
+  });
+
+  final String image;
+  final String title;
+  final String subtitle;
+}
+
+const _promoSlides = [
+  _PromoSlide(
+    image: 'assets/images/home/promo-1.png',
+    title: 'Talk to a doctor',
+    subtitle: 'Video consultations, anytime',
+  ),
+  _PromoSlide(
+    image: 'assets/images/home/promo-2.png',
+    title: 'Covered by your HMO',
+    subtitle: 'Check your plan and book care',
+  ),
+  _PromoSlide(
+    image: 'assets/images/home/promo-3.png',
+    title: 'Your care, in one place',
+    subtitle: 'Records, prescriptions, follow-ups',
+  ),
+];
+
+/// A swipeable promo carousel beneath the hero card — announcements, offers
+/// or seasonal campaigns. Backed by static assets for now (no CMS/promo
+/// backend exists yet), so the three slides are fixed.
+class _PromoSlider extends StatefulWidget {
+  const _PromoSlider({required this.onTapSlide});
+
+  final VoidCallback onTapSlide;
+
+  @override
+  State<_PromoSlider> createState() => _PromoSliderState();
+}
+
+class _PromoSliderState extends State<_PromoSlider> {
+  static const _autoSlideEvery = Duration(seconds: 4);
+
+  // The PageView is "infinite": it starts far into a large page range and
+  // maps each index back onto the three slides, so auto-sliding can always
+  // move forward and wrap from the last slide to the first without
+  // rewinding.
+  static const _loopStart = 3000;
+  final _controller = PageController(initialPage: _loopStart);
+  Timer? _timer;
+  int _page = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _startAutoSlide();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _startAutoSlide() {
+    _timer?.cancel();
+    _timer = Timer.periodic(_autoSlideEvery, (_) {
+      if (!_controller.hasClients) return;
+      _controller.nextPage(
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.easeInOutCubic,
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // One rounded container holds the slides: each slide fills it exactly
+        // and the container clips them, so nothing ever spills past its
+        // edges while sliding. The shadow sits on the container, not on the
+        // slides, so clipping doesn't cut it off.
+        Container(
+          height: 130,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.card),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.ink.withValues(alpha: 0.12),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(AppRadius.card),
+            // Pause auto-sliding while the user drags, and restart the countdown
+            // once they let go so it never jumps right after a manual swipe.
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (notification) {
+                if (notification is ScrollStartNotification &&
+                    notification.dragDetails != null) {
+                  _timer?.cancel();
+                } else if (notification is ScrollEndNotification) {
+                  _startAutoSlide();
+                }
+                return false;
+              },
+              child: PageView.builder(
+                controller: _controller,
+                onPageChanged: (index) =>
+                    setState(() => _page = index % _promoSlides.length),
+                itemBuilder: (context, index) =>
+                    _buildSlideCard(_promoSlides[index % _promoSlides.length]),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (var i = 0; i < _promoSlides.length; i++)
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                width: i == _page ? 18 : 6,
+                height: 6,
+                decoration: BoxDecoration(
+                  color: i == _page ? AppColors.blue : AppColors.line,
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSlideCard(_PromoSlide slide) {
+    return Material(
+      color: AppColors.blue,
+      child: InkWell(
+        onTap: widget.onTapSlide,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(slide.image, fit: BoxFit.cover),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.55),
+                    Colors.black.withValues(alpha: 0.0),
                   ],
+                  stops: const [0, 0.75],
                 ),
               ),
             ),
-            const SizedBox(height: 32),
-            FadeIn(
-              delay: const Duration(milliseconds: 120),
-              child: _YourCareCard(onTap: () => context.go(RoutePaths.book)),
-            ),
-            const SizedBox(height: 32),
-            FadeIn(
-              delay: const Duration(milliseconds: 180),
-              child: _MembershipBanner(
-                pending:
-                    ref.watch(accessStatusProvider) == AccessStatus.pending,
-                onTap: () => context.go(RoutePaths.book),
-              ),
-            ),
-            const SizedBox(height: 32),
-            Text(
-              'Quick Links',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: AppColors.heading,
-              ),
-            ),
-            const SizedBox(height: 14),
-            FadeIn(
-              delay: const Duration(milliseconds: 240),
-              child: IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child: _QuickLink(
-                        glyph: AppSvgGlyph.briefcaseBold,
-                        color: AppColors.actionBlue,
-                        label: 'My access',
-                        onTap: () => context.go(RoutePaths.bookConnectAccess),
-                      ),
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    slide.title,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.white,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _QuickLink(
-                        glyph: AppSvgGlyph.calendarSearchBold,
-                        color: const Color(0xFFA2D610),
-                        label: 'Appointments',
-                        onTap: () => context.push(RoutePaths.visits),
-                      ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    slide.subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.white.withValues(alpha: 0.9),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _QuickLink(
-                        glyph: AppSvgGlyph.noteBold,
-                        color: const Color(0xFF49AA02),
-                        label: 'Care Plan',
-                        onTap: () => context.go(RoutePaths.careplan),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -159,477 +660,292 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 }
 
-class _Headline extends StatelessWidget {
-  const _Headline();
+class _FeatureRow extends StatelessWidget {
+  const _FeatureRow({
+    required this.icon,
+    required this.label,
+    this.color = AppColors.blue,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        Text(
-          'Care online or in person',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w800,
-            letterSpacing: -0.6,
-            color: AppColors.textPrimary,
+        Container(
+          width: 22,
+          height: 22,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.14),
+            shape: BoxShape.circle,
           ),
+          child: Icon(icon, size: 13, color: color),
         ),
-        SizedBox(height: 6),
-        Text(
-          'Access quality healthcare in a way that works for you.',
-          style: TextStyle(
-            fontSize: 14,
-            letterSpacing: -0.2,
-            color: AppColors.textSecondary,
-          ),
-        ),
+        const SizedBox(width: AppSpacing.xs),
+        Text(label, style: const TextStyle(fontSize: 13, color: AppColors.ink)),
       ],
     );
   }
 }
 
-class _ServiceCard extends StatelessWidget {
-  const _ServiceCard({
-    required this.image,
+class _AccessOptionCard extends StatelessWidget {
+  const _AccessOptionCard({
+    required this.filled,
+    required this.icon,
     required this.title,
     required this.subtitle,
     required this.onTap,
   });
 
-  final String image;
+  final bool filled;
+  final IconData icon;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return SoftCard(
-      onTap: onTap,
-      padding: const EdgeInsets.fromLTRB(18, 20, 14, 22),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 80,
-            width: double.infinity,
-            child: Image.asset(
-              image,
-              fit: BoxFit.contain,
-              alignment: Alignment.centerLeft,
+    final foreground = filled ? AppColors.white : AppColors.ink;
+    final subtitleColor = filled
+        ? AppColors.white.withValues(alpha: 0.85)
+        : AppColors.inkMuted;
+    final chipBackground = filled
+        ? AppColors.white.withValues(alpha: 0.18)
+        : const Color(0xFFFCF3E3);
+    final accent = filled ? AppColors.white : AppColors.gold;
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        gradient: filled
+            ? const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [AppColors.blue, AppColors.blueStrong],
+              )
+            : null,
+        color: filled ? null : AppColors.white,
+        border: filled ? null : Border.all(color: AppColors.line),
+        boxShadow: [
+          BoxShadow(
+            color: (filled ? AppColors.blue : Colors.black).withValues(
+              alpha: filled ? 0.22 : 0.04,
             ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 19,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.4,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            subtitle,
-            style: TextStyle(
-              fontSize: 13.5,
-              height: 1.45,
-              letterSpacing: -0.2,
-              color: AppColors.textSecondary,
-            ),
+            blurRadius: filled ? 20 : 12,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _YourCareCard extends StatelessWidget {
-  const _YourCareCard({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return SoftCard(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.tintBlue,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppRadius.card),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: chipBackground,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: accent, size: 20),
                 ),
-                child: const AppSvgIcon(
-                  AppSvgGlyph.calendarBold,
-                  size: 24,
-                  color: AppColors.actionBlue,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Your Care',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.4,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      'See available services and appointment times.',
-                      style: TextStyle(
-                        fontSize: 13,
-                        letterSpacing: -0.2,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: FilledButton(
-              onPressed: onTap,
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.actionBlue,
-                foregroundColor: AppColors.white,
-                shape: const StadiumBorder(),
-                textStyle: const TextStyle(
-                  fontFamily: appFontFamily,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: -0.3,
-                ),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Find an appointment'),
-                  SizedBox(width: 12),
-                  AppSvgIcon(AppSvgGlyph.chevronLine, size: 22),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MembershipBanner extends StatelessWidget {
-  const _MembershipBanner({required this.pending, required this.onTap});
-
-  /// True while a funded-access check is awaiting approval.
-  final bool pending;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return SoftCard(
-      onTap: onTap,
-      radius: 12,
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-      child: Row(
-        children: [
-          AppSvgIcon(
-            pending ? AppSvgGlyph.heartPlusBold : AppSvgGlyph.calendarBold,
-            size: 24,
-            color: pending ? AppColors.green : AppColors.actionBlue,
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: pending
-                ? Column(
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'HMO route - approval pending',
+                        title,
                         style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: -0.3,
-                          color: AppColors.textPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: foreground,
                         ),
                       ),
-                      SizedBox(height: 2),
                       Text(
-                        'Pay per visit - no membership required.',
-                        style: TextStyle(
-                          fontSize: 14,
-                          letterSpacing: -0.2,
-                          color: AppColors.textSecondary,
-                        ),
+                        subtitle,
+                        style: TextStyle(fontSize: 13, color: subtitleColor),
                       ),
                     ],
-                  )
-                : Text(
-                    'Membership optional - pay per visit',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: -0.3,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-          ),
-          const AppSvgIcon(
-            AppSvgGlyph.chevronLine,
-            size: 22,
-            color: AppColors.actionBlue,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _QuickLink extends StatelessWidget {
-  const _QuickLink({
-    required this.glyph,
-    required this.color,
-    required this.label,
-    required this.onTap,
-  });
-
-  final AppSvgGlyph glyph;
-  final Color color;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return SoftCard(
-      onTap: onTap,
-      fill: AppColors.background,
-      radius: 12,
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 16),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          AppSvgIcon(glyph, size: 34, color: color),
-          const SizedBox(height: 14),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              label,
-              maxLines: 1,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                letterSpacing: -0.3,
-                color: AppColors.textPrimary,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// The "Suggested location - please confirm" block shown at the top of Home
-/// until the user confirms (or changes) their location.
-class _LocationBlock extends StatelessWidget {
-  const _LocationBlock({
-    required this.location,
-    required this.onConfirm,
-    required this.onUpdate,
-    required this.onUseDevice,
-  });
-
-  final String location;
-  final VoidCallback onConfirm;
-  final VoidCallback onUpdate;
-  final VoidCallback onUseDevice;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SoftCard(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.tintBlue,
-                    ),
-                    child: const AppSvgIcon(
-                      AppSvgGlyph.pinBold,
-                      size: 24,
-                      color: AppColors.actionBlue,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          location,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.4,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Suggested location - please confirm.',
-                          style: TextStyle(
-                            fontSize: 13,
-                            letterSpacing: -0.2,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: FilledButton(
-                  onPressed: onConfirm,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.actionBlue,
-                    foregroundColor: AppColors.white,
-                    shape: const StadiumBorder(),
-                    textStyle: const TextStyle(
-                      fontFamily: appFontFamily,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: -0.3,
-                    ),
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Confirm Location'),
-                      SizedBox(width: 12),
-                      AppSvgIcon(AppSvgGlyph.chevronLine, size: 22),
-                    ],
                   ),
                 ),
-              ),
-              TextButton(
-                onPressed: onUpdate,
-                style: TextButton.styleFrom(
-                  foregroundColor: AppColors.actionBlue,
-                  minimumSize: const Size.fromHeight(48),
-                  textStyle: const TextStyle(
-                    fontFamily: appFontFamily,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-                child: const Text('Location incorrect? Update it'),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 20),
-        SizedBox(
-          height: 50,
-          child: OutlinedButton(
-            onPressed: onUseDevice,
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.actionBlue,
-              side: const BorderSide(color: AppColors.actionBlue),
-              shape: const StadiumBorder(),
-              textStyle: const TextStyle(
-                fontFamily: appFontFamily,
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                letterSpacing: -0.3,
-              ),
-            ),
-            child: const Row(
-              children: [
-                SizedBox(width: 12),
-                AppSvgIcon(AppSvgGlyph.targetLine, size: 24),
-                Expanded(
-                  child: Text(
-                    'Use device location',
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                AppSvgIcon(AppSvgGlyph.chevronLine, size: 22),
+                Icon(Icons.arrow_forward_ios_rounded, color: accent, size: 16),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 14),
-        Text(
-          'With your permission, find nearby clinics.',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14,
-            letterSpacing: -0.2,
-            color: AppColors.textSecondary,
+      ),
+    );
+  }
+}
+
+class _SmallActionCard extends StatelessWidget {
+  const _SmallActionCard({
+    required this.background,
+    required this.iconColor,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final Color background;
+  final Color iconColor;
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        boxShadow: [
+          BoxShadow(
+            color: iconColor.withValues(alpha: 0.08),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
           ),
-        ),
-        const SizedBox(height: 20),
-        SoftCard(
-          radius: 12,
-          padding: const EdgeInsets.all(14),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AppSvgIcon(
-                AppSvgGlyph.infoBold,
-                size: 22,
-                color: AppColors.actionBlue,
-              ),
-              SizedBox(width: 14),
-              Expanded(
-                child: Text(
-                  'We use your location to show relevant services. We do not '
-                  'track you in the background or automatically upload your '
-                  'full address.',
-                  style: TextStyle(
-                    fontSize: 13.5,
-                    height: 1.4,
-                    letterSpacing: -0.2,
-                    color: AppColors.textSecondary,
+        ],
+      ),
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppRadius.card),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.sm),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 34,
+                      height: 34,
+                      decoration: const BoxDecoration(
+                        color: AppColors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(icon, color: iconColor, size: 18),
+                    ),
+                    const Spacer(),
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      color: iconColor,
+                      size: 14,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.ink,
                   ),
                 ),
-              ),
-            ],
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.inkMuted,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ],
+      ),
+    );
+  }
+}
+
+class _UrgentHelpBanner extends StatelessWidget {
+  const _UrgentHelpBanner({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFFCEAEA),
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.error.withValues(alpha: 0.08),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppRadius.card),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.sm),
+            child: Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: const BoxDecoration(
+                    color: AppColors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.emergency_rounded,
+                    color: AppColors.error,
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Need urgent help?',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.error,
+                        ),
+                      ),
+                      Text(
+                        'View emergency guidance',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.inkMuted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: AppColors.error,
+                  size: 14,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
