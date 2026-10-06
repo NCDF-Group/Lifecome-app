@@ -1,0 +1,65 @@
+name: lifecome_mobile
+description: "LifeCome Live patient app: online consultations, care plans and health records."
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Navigation
+  go_router: ^18.0.1
+
+  # State management
+  flutter_riverpod: ^3.4.3
+
+  # SVG logo assets, shared with the website
+  flutter_svg: ^2.3.0
+  local_auth: ^3.0.2
+  shared_preferences: ^2.5.5
+
+  # HTTP client for Lifecome-Backen (see core/network/api_client.dart)
+  dio: ^5.9.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/logo/
+    - assets/images/welcome/
+    - assets/images/home/
+
+  # Manrope, bundled so every weight is a real font file and the app never
+  # waits on a font CDN. Static instances of Google Fonts' Manrope[wght].ttf
+  # (OFL), one per weight the UI uses.
+  fonts:
+    - family: Manrope
+      fonts:
+        - asset: assets/fonts/Manrope/Manrope-Regular.ttf
+        - asset: assets/fonts/Manrope/Manrope-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Manrope/Manrope-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Manrope/Manrope-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Manrope/Manrope-ExtraBold.ttf
+          weight: 800
+
+flutter_launcher_icons:
+  # Regenerate with `dart run flutter_launcher_icons` after changing the mark
+  # (assets/icons/app_icon.png, rasterised from assets/images/logo/lifecome-live-mark.svg).
+  android: true
+  ios: true
+  image_path: "assets/icons/app_icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/icons/app_icon_foreground.png"
+  remove_alpha_ios: true
