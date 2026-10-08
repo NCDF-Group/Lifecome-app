@@ -16,20 +16,13 @@ abstract final class RoutePaths {
 
   static const signIn = '/sign-in';
 
-  /// Step 1 of 2: full name, email and optional referral code.
+  /// One page: name, email, mobile number and password together.
   static const createAccount = '/create-account';
 
-  /// Step 2 of 2: date of birth and phone number. Reached with a
-  /// [PersonalDetailsArgs] passed as `extra`, carrying what step 1 collected.
-  static const personalDetails = '/personal-details';
-
-  /// Reached with a [VerifyEmailArgs] passed as the route's `extra`, so it
-  /// knows which email to show and which flow to return to.
-  static const verifyEmail = '/verify-email';
-
-  /// Sets the account's password once its email is verified. Reached with a
-  /// [CreatePasswordArgs] passed as `extra`.
-  static const createPassword = '/create-password';
+  /// Sign-up's last step — verifies the SMS code sent to the mobile number
+  /// collected on [createAccount], then signs the account straight in.
+  /// Reached with a [VerifyMobileArgs] passed as the route's `extra`.
+  static const verifyMobile = '/verify-mobile';
 
   /// Shown once sign-up finishes. Reached with an [AuthSuccessArgs] passed
   /// as `extra`.

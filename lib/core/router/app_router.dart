@@ -3,15 +3,13 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/app_lock_screen.dart';
 import '../../features/auth/presentation/create_account_screen.dart';
-import '../../features/auth/presentation/create_password_screen.dart';
 import '../../features/auth/presentation/forgot_password_screen.dart';
 import '../../features/auth/presentation/new_password_screen.dart';
 import '../../features/auth/presentation/password_changed_screen.dart';
-import '../../features/auth/presentation/personal_details_screen.dart';
 import '../../features/auth/presentation/reset_password_screen.dart';
 import '../../features/auth/presentation/sign_in_screen.dart';
 import '../../features/auth/presentation/sign_up_success_screen.dart';
-import '../../features/auth/presentation/verify_email_screen.dart';
+import '../../features/auth/presentation/verify_mobile_screen.dart';
 import '../../features/booking/domain/models/appointment.dart';
 import '../../features/booking/presentation/before_your_visit_screen.dart';
 import '../../features/booking/presentation/booking_confirmation_screen.dart';
@@ -66,18 +64,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const CreateAccountScreen(),
       ),
       GoRoute(
-        path: RoutePaths.personalDetails,
+        path: RoutePaths.verifyMobile,
         builder: (context, state) =>
-            PersonalDetailsScreen(args: state.extra! as PersonalDetailsArgs),
-      ),
-      GoRoute(
-        path: RoutePaths.verifyEmail,
-        builder: (context, state) =>
-            VerifyEmailScreen(args: state.extra! as VerifyEmailArgs),
-      ),
-      GoRoute(
-        path: RoutePaths.createPassword,
-        builder: (context, state) => const CreatePasswordScreen(),
+            VerifyMobileScreen(args: state.extra! as VerifyMobileArgs),
       ),
       GoRoute(
         path: RoutePaths.signUpSuccess,

@@ -6,9 +6,9 @@ import '../domain/models/auth_session.dart';
 
 const _resendCooldown = Duration(seconds: 30);
 
-/// Holds the state for the sign-in, create-account and verify-email screens.
+/// Holds the state for the sign-in, create-account and verify-mobile screens.
 /// One controller for the whole flow, since the three screens are really one
-/// journey: request a code, then verify it.
+/// journey: register, then verify the code.
 class AuthController extends Notifier<AuthSessionState> {
   @override
   AuthSessionState build() => AuthSessionState.empty();
@@ -48,7 +48,10 @@ class AuthController extends Notifier<AuthSessionState> {
       if (rememberMe) {
         await ref
             .read(sessionStoreProvider)
-            .save(email: email, displayName: _displayNameFor(email, state.fullName));
+            .save(
+              email: email,
+              displayName: _displayNameFor(email, state.fullName),
+            );
       }
       state = state.copyWith(status: AuthStatus.verified);
       return true;
@@ -67,29 +70,34 @@ class AuthController extends Notifier<AuthSessionState> {
     }
   }
 
-  Future<bool> requestCode({
-    required AuthFlow flow,
+  /// Registers with everything the single-page sign-up form collects, and
+  /// triggers the first SMS code. The account already has its password at
+  /// this point — [verifyCode] is sign-up's last step, not a separate
+  /// "create password" screen after it.
+  Future<bool> signUp({
+    required String firstName,
+    required String lastName,
     required String email,
-    String? fullName,
-    String? referralCode,
-    String? phoneNumber,
-    DateTime? dateOfBirth,
+    required String phoneNumber,
+    required String password,
   }) async {
     state = state.copyWith(
       status: AuthStatus.submitting,
-      flow: flow,
+      flow: AuthFlow.createAccount,
       email: email,
-      fullName: fullName,
+      fullName: '$firstName $lastName',
       clearError: true,
     );
 
     try {
-      await ref.read(authRepositoryProvider).requestEmailCode(
+      await ref
+          .read(authRepositoryProvider)
+          .register(
+            firstName: firstName,
+            lastName: lastName,
             email: email,
-            fullName: fullName,
-            referralCode: referralCode,
             phoneNumber: phoneNumber,
-            dateOfBirth: dateOfBirth,
+            password: password,
           );
       state = state.copyWith(
         status: AuthStatus.codeSent,
@@ -111,39 +119,15 @@ class AuthController extends Notifier<AuthSessionState> {
     }
   }
 
+  /// Verifies the SMS code and, since the password was already set at
+  /// [signUp], signs the account straight in.
   Future<bool> verifyCode(String code) async {
     state = state.copyWith(status: AuthStatus.verifying, clearError: true);
 
     try {
       await ref
           .read(authRepositoryProvider)
-          .verifyEmailCode(email: state.email, code: code);
-      state = state.copyWith(status: AuthStatus.verified);
-      return true;
-    } on AuthException catch (error) {
-      state = state.copyWith(
-        status: AuthStatus.codeSent,
-        errorMessage: error.message,
-      );
-      return false;
-    } catch (_) {
-      state = state.copyWith(
-        status: AuthStatus.codeSent,
-        errorMessage: 'Something went wrong. Please try again.',
-      );
-      return false;
-    }
-  }
-
-  /// Sets the new account's password, finishing sign-up. Only valid after
-  /// [verifyCode] has succeeded for the current [AuthSessionState.email].
-  Future<bool> completeSignUp(String password) async {
-    state = state.copyWith(status: AuthStatus.submitting, clearError: true);
-
-    try {
-      await ref
-          .read(authRepositoryProvider)
-          .completeSignUp(email: state.email, password: password);
+          .verifyPhoneCode(email: state.email, code: code);
       await ref
           .read(sessionStoreProvider)
           .save(
@@ -171,7 +155,7 @@ class AuthController extends Notifier<AuthSessionState> {
     try {
       await ref
           .read(authRepositoryProvider)
-          .resendEmailCode(email: state.email);
+          .resendPhoneCode(email: state.email);
       state = state.copyWith(
         resendAvailableAt: DateTime.now().add(_resendCooldown),
         clearError: true,

@@ -1,170 +1,365 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/animation/fade_in.dart';
+import '../../../core/country/app_country.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_radius.dart';
-import '../../../core/theme/app_spacing.dart';
+import '../../../core/widgets/buttons/primary_button.dart';
+import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
 
-/// The single static screen shown after the splash screen when there is no
-/// remembered session — the app's front door. A full-bleed photo behind the
-/// headline and both CTAs (rather than a photo-then-white-card layout)
-/// matches the app's actual welcome design, not the website's boxed hero
-/// section.
-class WelcomeScreen extends StatelessWidget {
+/// Copy that differs between the UK and Nigeria markets. [AppHeaderBar]
+/// already shows the selected [AppCountry] as a chip; this is the rest of
+/// the welcome screen reacting to that same selection.
+class _WelcomeCopy {
+  const _WelcomeCopy({
+    required this.headlineTail,
+    required this.subtitle,
+    required this.features,
+    required this.eligibility,
+    required this.audience,
+  });
+
+  final String headlineTail;
+  final String subtitle;
+  final List<_FeatureIcon> features;
+  final String eligibility;
+  final String audience;
+
+  static const unitedKingdom = _WelcomeCopy(
+    headlineTail: 'connected.',
+    subtitle:
+        'GP appointments and practical support for healthier routines, '
+        'eating well and relaxation.',
+    features: [
+      _FeatureIcon(
+        icon: Icons.videocam_outlined,
+        background: Color(0xFFE3EEFB),
+        color: AppColors.blue,
+        label: 'Online GP',
+      ),
+      _FeatureIcon(
+        icon: Icons.location_on_outlined,
+        background: Color(0xFFE6F6E2),
+        color: AppColors.greenStrong,
+        label: 'Clinic care',
+      ),
+      _FeatureIcon(
+        icon: Icons.spa_outlined,
+        background: Color(0xFFE3EEFB),
+        color: AppColors.blue,
+        label: 'Wellbeing',
+      ),
+    ],
+    eligibility: 'For adults aged 18 and over. GP care in England.',
+    audience: 'For members and non-members',
+  );
+
+  static const nigeria = _WelcomeCopy(
+    headlineTail: 'closer to home.',
+    subtitle:
+        'GP appointments and practical support for healthier routines, '
+        'eating well and relaxation — with or without an HMO.',
+    features: [
+      _FeatureIcon(
+        icon: Icons.videocam_outlined,
+        background: Color(0xFFE3EEFB),
+        color: AppColors.blue,
+        label: 'Online GP',
+      ),
+      _FeatureIcon(
+        icon: Icons.verified_user_outlined,
+        background: Color(0xFFE6F6E2),
+        color: AppColors.greenStrong,
+        label: 'HMO cover',
+      ),
+      _FeatureIcon(
+        icon: Icons.spa_outlined,
+        background: Color(0xFFE3EEFB),
+        color: AppColors.blue,
+        label: 'Wellbeing',
+      ),
+    ],
+    eligibility: 'For adults aged 18 and over. GP care in Nigeria.',
+    audience: 'For HMO members and one-time visits',
+  );
+
+  static _WelcomeCopy forCountry(AppCountry country) =>
+      country == AppCountry.nigeria ? nigeria : unitedKingdom;
+}
+
+/// The welcome screen shown after the splash screen when there is no
+/// remembered session — the app's front door. Its copy follows the
+/// selected [AppCountry] (the same chip shown in [AppHeaderBar]).
+class WelcomeScreen extends ConsumerWidget {
   const WelcomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final copy = _WelcomeCopy.forCountry(ref.watch(countryProvider));
+
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            'assets/images/welcome/welcome-hero.webp',
-            fit: BoxFit.cover,
-            alignment: const Alignment(0.7, -0.3),
-            semanticLabel: 'A woman smiling as she uses her phone at home',
-          ),
-          // Fades the photo into white at the very top (so the logo sits on
-          // a soft blend rather than a hard-edged bar) and darkens it at the
-          // bottom so the white headline, subtext and buttons stay readable.
-          const DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                stops: [0, 0.16, 0.4, 1],
-                colors: [
-                  Color(0xF2FFFFFF),
-                  Color(0x00FFFFFF),
-                  Color(0x00000000),
-                  Color(0xCC0B2540),
-                ],
-              ),
-            ),
-          ),
-          SafeArea(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+          child: MaxContentWidth(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                const AppHeaderBar(),
+                const SizedBox(height: 20),
+                const FadeIn(child: _HeroPhotos()),
+                const SizedBox(height: 24),
                 FadeIn(
-                  child: SvgPicture.asset(
-                    'assets/images/logo/lifecome-live-logo.svg',
-                    height: 32,
-                    semanticsLabel: 'LifeCome Live',
-                  ),
-                ),
-                const Spacer(),
-                MaxContentWidth(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.lg,
-                    ),
-                    child: Column(
+                  delay: const Duration(milliseconds: 60),
+                  child: Text.rich(
+                    TextSpan(
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w800,
+                        height: 1.15,
+                        letterSpacing: -0.6,
+                        color: AppColors.ink,
+                      ),
                       children: [
-                        FadeIn(
-                          delay: const Duration(milliseconds: 80),
-                          child: const Text(
-                            'Quality Healthcare, Anytime, Anywhere.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.white,
-                              height: 1.2,
-                            ),
-                          ),
+                        const TextSpan(text: 'GP care and\n'),
+                        const TextSpan(
+                          text: 'everyday wellbeing,\n',
+                          style: TextStyle(color: AppColors.greenStrong),
                         ),
-                        const SizedBox(height: AppSpacing.sm),
-                        FadeIn(
-                          delay: const Duration(milliseconds: 120),
-                          child: const Text(
-                            'Talk to trusted doctors and access coordinated care, '
-                            'all in one place. Use your HMO or pay directly.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.white70,
-                              height: 1.5,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.xl),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                          child: Column(
-                            children: [
-                              FadeIn(
-                                delay: const Duration(milliseconds: 160),
-                                child: _WelcomeButton(
-                                  label: 'Log In',
-                                  color: AppColors.green,
-                                  onPressed: () =>
-                                      context.go(RoutePaths.signIn),
-                                ),
-                              ),
-                              const SizedBox(height: AppSpacing.sm),
-                              FadeIn(
-                                delay: const Duration(milliseconds: 200),
-                                child: _WelcomeButton(
-                                  label: 'Get Started',
-                                  color: AppColors.blue,
-                                  onPressed: () =>
-                                      context.go(RoutePaths.createAccount),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        TextSpan(text: copy.headlineTail),
                       ],
                     ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                FadeIn(
+                  delay: const Duration(milliseconds: 100),
+                  child: Text(
+                    copy.subtitle,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: AppColors.inkMuted,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                FadeIn(
+                  delay: const Duration(milliseconds: 140),
+                  child: Row(
+                    children: [
+                      for (var i = 0; i < copy.features.length; i++) ...[
+                        if (i != 0) const SizedBox(width: 12),
+                        Expanded(child: copy.features[i]),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 28),
+                FadeIn(
+                  delay: const Duration(milliseconds: 180),
+                  child: PrimaryButton(
+                    label: 'Create an account',
+                    icon: Icons.arrow_forward,
+                    onPressed: () => context.go(RoutePaths.createAccount),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                FadeIn(
+                  delay: const Duration(milliseconds: 220),
+                  child: SizedBox(
+                    height: 52,
+                    child: OutlinedButton(
+                      onPressed: () => context.go(RoutePaths.signIn),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.ink,
+                        side: const BorderSide(
+                          color: AppColors.line,
+                          width: 1.5,
+                        ),
+                        shape: const StadiumBorder(),
+                        textStyle: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      child: const Text('Log in'),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                FadeIn(
+                  delay: const Duration(milliseconds: 260),
+                  child: Column(
+                    children: [
+                      Text(
+                        copy.eligibility,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.inkMuted,
+                        ),
+                      ),
+                      Text(
+                        copy.audience,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.inkMuted,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'Terms of use  |  Privacy notice',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.blue,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HeroPhotos extends StatelessWidget {
+  const _HeroPhotos();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 230,
+      child: Stack(
+        children: [
+          Positioned(
+            left: 0,
+            top: 0,
+            width: 200,
+            height: 180,
+            child: _PhotoCard(
+              asset: 'assets/images/home/doctor.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+          Positioned(
+            right: 0,
+            bottom: 0,
+            width: 190,
+            height: 170,
+            child: _PhotoCard(
+              asset: 'assets/images/welcome/welcome-hero.webp',
+              fit: BoxFit.cover,
+            ),
+          ),
+          const Positioned(right: 90, top: 70, child: _PlusBadge()),
         ],
       ),
     );
   }
 }
 
-/// A filled pill button in either of the welcome screen's two brand colours
-/// — matching [PrimaryButton]'s size and shape, but this screen is the only
-/// place a green CTA sits next to a blue one, so it isn't worth generalising
-/// the shared button for.
-class _WelcomeButton extends StatelessWidget {
-  const _WelcomeButton({
-    required this.label,
-    required this.color,
-    required this.onPressed,
-  });
+class _PhotoCard extends StatelessWidget {
+  const _PhotoCard({required this.asset, required this.fit});
 
-  final String label;
-  final Color color;
-  final VoidCallback onPressed;
+  final String asset;
+  final BoxFit fit;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 52,
-      child: FilledButton(
-        onPressed: onPressed,
-        style: FilledButton.styleFrom(
-          backgroundColor: color,
-          foregroundColor: AppColors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.pill),
-          ),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-        ),
-        child: Text(label),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(28),
+      child: Stack(
+        children: [
+          Positioned.fill(child: Container(color: const Color(0xFFE8F4FC))),
+          Positioned.fill(child: Image.asset(asset, fit: fit)),
+          const Positioned(left: 10, top: 10, child: _VideoBadge()),
+        ],
       ),
+    );
+  }
+}
+
+class _VideoBadge extends StatelessWidget {
+  const _VideoBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 34,
+      height: 34,
+      decoration: const BoxDecoration(
+        color: AppColors.blue,
+        shape: BoxShape.circle,
+      ),
+      child: const Icon(Icons.videocam, color: AppColors.white, size: 16),
+    );
+  }
+}
+
+class _PlusBadge extends StatelessWidget {
+  const _PlusBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 38,
+      height: 38,
+      decoration: BoxDecoration(
+        color: AppColors.greenStrong,
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.white, width: 3),
+      ),
+      child: const Icon(Icons.add, color: AppColors.white, size: 20),
+    );
+  }
+}
+
+class _FeatureIcon extends StatelessWidget {
+  const _FeatureIcon({
+    required this.icon,
+    required this.background,
+    required this.color,
+    required this.label,
+  });
+
+  final IconData icon;
+  final Color background;
+  final Color color;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(color: background, shape: BoxShape.circle),
+          child: Icon(icon, color: color, size: 24),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: AppColors.ink,
+          ),
+        ),
+      ],
     );
   }
 }

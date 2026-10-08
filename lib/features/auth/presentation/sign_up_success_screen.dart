@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/router/route_paths.dart';
 import 'widgets/auth_success_view.dart';
 
-/// Shown once [CreatePasswordScreen] finishes sign-up.
+/// Shown once [VerifyMobileScreen] finishes sign-up.
 class SignUpSuccessScreen extends StatelessWidget {
   const SignUpSuccessScreen({super.key});
 

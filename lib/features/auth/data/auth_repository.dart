@@ -12,31 +12,25 @@ abstract interface class AuthRepository {
     required String password,
   });
 
-  /// Registers by email and triggers a verification code. The account has
-  /// no password yet at this point — [completeSignUp] sets one once the
-  /// code is verified. Returns the id of the account the code was sent for.
-  Future<String> requestEmailCode({
+  /// Registers with name, email, phone number and password all at once, and
+  /// sends the first verification code by SMS to [phoneNumber]. Returns the
+  /// id of the account the code was sent for.
+  Future<String> register({
+    required String firstName,
+    required String lastName,
     required String email,
-    String? fullName,
-    String? referralCode,
-    String? phoneNumber,
-    DateTime? dateOfBirth,
-  });
-
-  /// Verifies a 6-digit code sent to [email]. Throws an [AuthException] if
-  /// the code is wrong, expired, or has been tried too many times.
-  Future<void> verifyEmailCode({required String email, required String code});
-
-  /// Requests a new code for an email that already has one pending.
-  Future<void> resendEmailCode({required String email});
-
-  /// Sets the new account's password once its email is verified, finishing
-  /// sign-up. Throws an [AuthException] if the password doesn't meet the
-  /// account's password rules.
-  Future<void> completeSignUp({
-    required String email,
+    required String phoneNumber,
     required String password,
   });
+
+  /// Verifies the 6-digit code sent to [email]'s phone number. The password
+  /// was already set at [register], so a successful verify signs the
+  /// account straight in — throws an [AuthException] if the code is wrong,
+  /// expired, or has been tried too many times.
+  Future<void> verifyPhoneCode({required String email, required String code});
+
+  /// Requests a new code for an account that already has one pending.
+  Future<void> resendPhoneCode({required String email});
 
   /// Step 1 of the forgot-password flow: sends a reset code to [email] if
   /// an account exists for it. Never reveals whether the account exists.
@@ -90,19 +84,22 @@ class FakeAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<String> requestEmailCode({
+  Future<String> register({
+    required String firstName,
+    required String lastName,
     required String email,
-    String? fullName,
-    String? referralCode,
-    String? phoneNumber,
-    DateTime? dateOfBirth,
+    required String phoneNumber,
+    required String password,
   }) async {
     await Future<void>.delayed(const Duration(milliseconds: 700));
+    if (password.length < 8) {
+      throw const AuthException('Your password must be at least 8 characters.');
+    }
     return 'demo-account-id';
   }
 
   @override
-  Future<void> verifyEmailCode({
+  Future<void> verifyPhoneCode({
     required String email,
     required String code,
   }) async {
@@ -115,19 +112,8 @@ class FakeAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> resendEmailCode({required String email}) async {
+  Future<void> resendPhoneCode({required String email}) async {
     await Future<void>.delayed(const Duration(milliseconds: 500));
-  }
-
-  @override
-  Future<void> completeSignUp({
-    required String email,
-    required String password,
-  }) async {
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-    if (password.length < 8) {
-      throw const AuthException('Your password must be at least 8 characters.');
-    }
   }
 
   @override
@@ -171,11 +157,9 @@ class DioAuthRepository implements AuthRepository {
   final ApiClient _client;
 
   /// The identity endpoints key everything past registration off `userAccountId`, not
-  /// email — but this repository's own interface only carries email past
-  /// [requestEmailCode]. Caches the id that call returns; [_accountIdFor] falls back to
-  /// `register`'s idempotent lookup (an already-registered email never re-triggers an OTP
-  /// send — see `IdentityService.register`) if the app restarted mid-flow and the cache is
-  /// empty.
+  /// email — but this repository's own interface only carries email past [register].
+  /// Caches the id that call returns; [_accountIdFor] throws if the app restarted
+  /// mid-flow and the cache is empty, since re-registering needs the full form again.
   final Map<String, String> _accountIdByEmail = {};
 
   @override
@@ -195,23 +179,22 @@ class DioAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<String> requestEmailCode({
+  Future<String> register({
+    required String firstName,
+    required String lastName,
     required String email,
-    String? fullName,
-    String? referralCode,
-    String? phoneNumber,
-    DateTime? dateOfBirth,
+    required String phoneNumber,
+    required String password,
   }) async {
-    // fullName/referralCode/dateOfBirth aren't accepted by this endpoint yet (see
-    // Lifecome-Backen's `RegisterDto`) — they belong to a patient-profile step that doesn't
-    // exist on the backend yet, so they're collected here but not sent anywhere.
     try {
       final response = await _client.post(
         '/identity/register',
         data: {
+          'firstName': firstName,
+          'lastName': lastName,
           'email': email,
-          if (phoneNumber != null && phoneNumber.isNotEmpty)
-            'phoneNumber': phoneNumber,
+          'phoneNumber': phoneNumber,
+          'password': password,
         },
       );
       final id = response['id'] as String;
@@ -223,46 +206,30 @@ class DioAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> verifyEmailCode({
+  Future<void> verifyPhoneCode({
     required String email,
     required String code,
   }) async {
     try {
       final accountId = await _accountIdFor(email);
-      await _client.post(
+      final response = await _client.post(
         '/identity/otp/verify',
         data: {'userAccountId': accountId, 'code': code},
       );
+      _client.accessToken = response['accessToken'] as String?;
     } on ApiException catch (error) {
       throw AuthException(error.message);
     }
   }
 
   @override
-  Future<void> resendEmailCode({required String email}) async {
+  Future<void> resendPhoneCode({required String email}) async {
     try {
       final accountId = await _accountIdFor(email);
       await _client.post(
         '/identity/otp/request',
         data: {'userAccountId': accountId},
       );
-    } on ApiException catch (error) {
-      throw AuthException(error.message);
-    }
-  }
-
-  @override
-  Future<void> completeSignUp({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      final accountId = await _accountIdFor(email);
-      final response = await _client.post(
-        '/identity/password',
-        data: {'userAccountId': accountId, 'password': password},
-      );
-      _client.accessToken = response['accessToken'] as String?;
     } on ApiException catch (error) {
       throw AuthException(error.message);
     }
@@ -314,6 +281,6 @@ class DioAuthRepository implements AuthRepository {
   Future<String> _accountIdFor(String email) async {
     final cached = _accountIdByEmail[email];
     if (cached != null) return cached;
-    return requestEmailCode(email: email);
+    throw const AuthException('Your session expired. Please start again.');
   }
 }

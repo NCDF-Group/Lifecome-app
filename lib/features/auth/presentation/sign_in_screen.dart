@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,15 +9,16 @@ import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
+import '../../../core/widgets/buttons/secondary_button.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
-import '../../../core/widgets/layout/auth_form_card.dart';
+import '../../../core/widgets/layout/max_content_width.dart';
 import '../application/auth_controller.dart';
 import '../domain/models/auth_session.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
 
 /// View 01 (Sign In). Email and password, matching a conventional login
-/// form. The passwordless email-code flow lives on [CreateAccountScreen]
-/// and [VerifyEmailScreen] instead, for first-time sign-up.
+/// form. The single-page sign-up flow lives on [CreateAccountScreen] and
+/// [VerifyMobileScreen] instead, for first-time sign-up.
 class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
 
@@ -28,7 +30,6 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
-  bool _rememberMe = false;
   String? _emailError;
   String? _passwordError;
 
@@ -58,7 +59,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
     final success = await ref
         .read(authControllerProvider.notifier)
-        .signIn(email: email, password: password, rememberMe: _rememberMe);
+        .signIn(email: email, password: password);
 
     if (!mounted) return;
     if (success) {
@@ -84,51 +85,42 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       backgroundColor: AppColors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
-          child: AuthFormCard(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.md,
+            AppSpacing.lg,
+            AppSpacing.lg,
+          ),
+          child: MaxContentWidth(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 FadeIn(
-                  child: Center(
-                    child: SvgPicture.asset(
-                      'assets/images/logo/lifecome-live-logo.svg',
-                      height: 32,
-                      semanticsLabel: 'LifeCome Live',
+                  child: SvgPicture.asset(
+                    'assets/images/logo/lifecome-live-logo.svg',
+                    height: 28,
+                    semanticsLabel: 'LifeCome Live',
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                const FadeIn(
+                  delay: Duration(milliseconds: 80),
+                  child: Text(
+                    'Welcome to LifeCome Live.',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.ink,
+                      height: 1.2,
                     ),
                   ),
                 ),
-                const SizedBox(height: AppSpacing.xxl),
-                FadeIn(
-                  delay: const Duration(milliseconds: 80),
-                  child: Text.rich(
-                    TextSpan(
-                      style: const TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.ink,
-                        height: 1.15,
-                      ),
-                      children: [
-                        const TextSpan(text: 'Welcome '),
-                        const TextSpan(
-                          text: 'back',
-                          style: TextStyle(color: AppColors.blue),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xs),
+                const SizedBox(height: AppSpacing.xxs),
                 const FadeIn(
                   delay: Duration(milliseconds: 120),
                   child: Text(
-                    'Log in with your email and password.',
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: AppColors.inkMuted,
-                      height: 1.4,
-                    ),
+                    'Your care, connected.',
+                    style: TextStyle(fontSize: 16, color: AppColors.inkMuted),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xl),
@@ -137,7 +129,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   child: AppTextField(
                     label: 'Email',
                     controller: _emailController,
-                    hintText: 'you@example.com',
+                    hintText: 'Enter your email',
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
                     autofillHints: const [AutofillHints.email],
@@ -174,92 +166,94 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 const SizedBox(height: AppSpacing.xs),
                 FadeIn(
                   delay: const Duration(milliseconds: 220),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      InkWell(
-                        onTap: () => setState(() => _rememberMe = !_rememberMe),
-                        borderRadius: BorderRadius.circular(6),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: Checkbox(
-                                  value: _rememberMe,
-                                  onChanged: (value) => setState(
-                                    () => _rememberMe = value ?? false,
-                                  ),
-                                  materialTapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                ),
-                              ),
-                              const SizedBox(width: AppSpacing.xs),
-                              const Text(
-                                'Remember me',
-                                style: TextStyle(
-                                  color: AppColors.inkMuted,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
-                          ),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: _forgotPassword,
+                      style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                      child: const Text(
+                        'Forgot password?',
+                        style: TextStyle(
+                          color: AppColors.blue,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
                         ),
                       ),
-                      TextButton(
-                        onPressed: _forgotPassword,
-                        style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                        child: const Text(
-                          'Forgot password?',
-                          style: TextStyle(
-                            color: AppColors.blue,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-                const SizedBox(height: AppSpacing.sm),
+                const SizedBox(height: AppSpacing.lg),
                 FadeIn(
                   delay: const Duration(milliseconds: 240),
                   child: PrimaryButton(
-                    label: 'Login',
+                    label: 'Sign in',
                     loading: submitting,
                     onPressed: _login,
                   ),
                 ),
-                const SizedBox(height: AppSpacing.xl),
+                const SizedBox(height: AppSpacing.sm),
                 FadeIn(
                   delay: const Duration(milliseconds: 260),
+                  child: SecondaryButton(
+                    label: 'Create an account',
+                    onPressed: () => context.push(RoutePaths.createAccount),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                const Divider(color: AppColors.line),
+                const SizedBox(height: AppSpacing.md),
+                FadeIn(
+                  delay: const Duration(milliseconds: 280),
                   child: Center(
-                    child: Wrap(
-                      alignment: WrapAlignment.center,
-                      children: [
-                        const Text(
-                          "Don't have an account? ",
-                          style: TextStyle(
-                            color: AppColors.inkMuted,
-                            fontSize: 14,
-                          ),
+                    child: Text.rich(
+                      TextSpan(
+                        style: const TextStyle(
+                          color: AppColors.inkMuted,
+                          fontSize: 12,
                         ),
-                        GestureDetector(
-                          onTap: () => context.push(RoutePaths.createAccount),
-                          child: const Text(
-                            'Create one',
-                            style: TextStyle(
+                        children: [
+                          const TextSpan(
+                            text: 'By continuing, you agree to our ',
+                          ),
+                          TextSpan(
+                            text: 'Privacy notice',
+                            style: const TextStyle(
                               color: AppColors.blue,
                               fontWeight: FontWeight.w700,
-                              fontSize: 14,
                             ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () => showComingSoonPopup(
+                                context,
+                                feature: 'The privacy notice',
+                              ),
                           ),
+                          const TextSpan(text: '.'),
+                        ],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                FadeIn(
+                  delay: const Duration(milliseconds: 300),
+                  child: Center(
+                    child: TextButton.icon(
+                      onPressed: () =>
+                          showComingSoonPopup(context, feature: 'Get help'),
+                      icon: const Icon(
+                        Icons.chat_bubble_outline,
+                        size: 16,
+                        color: AppColors.blue,
+                      ),
+                      label: const Text(
+                        'Get help',
+                        style: TextStyle(
+                          color: AppColors.blue,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
