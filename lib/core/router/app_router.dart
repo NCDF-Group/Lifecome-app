@@ -13,6 +13,7 @@ import '../../features/auth/presentation/verify_mobile_screen.dart';
 import '../../features/booking/domain/models/appointment.dart';
 import '../../features/booking/presentation/before_your_visit_screen.dart';
 import '../../features/booking/presentation/booking_confirmation_screen.dart';
+import '../../features/booking/presentation/booking_location_screen.dart';
 import '../../features/booking/presentation/choose_appointment_time_screen.dart';
 import '../../features/booking/presentation/choose_service_screen.dart';
 import '../../features/booking/presentation/my_visits_screen.dart';
@@ -27,12 +28,14 @@ import '../../features/health_records/presentation/health_records_screen.dart';
 import '../../features/legal/presentation/privacy_screen.dart';
 import '../../features/legal/presentation/terms_screen.dart';
 import '../../features/messaging/presentation/message_threads_screen.dart';
-import '../../features/payer/presentation/choose_payment_method_screen.dart';
 import '../../features/payer/presentation/hmo_coverage_screen.dart';
 import '../../features/payer/presentation/select_hmo_screen.dart';
 import '../../features/payer/presentation/verify_hmo_membership_screen.dart';
 import '../../features/profile/presentation/edit_profile_screen.dart';
 import '../../features/profile/presentation/patient_profile_screen.dart';
+import '../../features/services/domain/models/wellbeing_service.dart';
+import '../../features/services/presentation/services_screen.dart';
+import '../../features/services/presentation/wellbeing_service_screen.dart';
 import '../../features/splash/presentation/splash_screen.dart';
 import '../../features/support/presentation/help_centre_screen.dart';
 import '../../features/welcome/presentation/welcome_screen.dart';
@@ -91,10 +94,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const PasswordChangedScreen(),
       ),
       GoRoute(
-        path: RoutePaths.payerChoosePaymentMethod,
-        builder: (context, state) => const ChoosePaymentMethodScreen(),
-      ),
-      GoRoute(
         path: RoutePaths.payerSelectHmo,
         builder: (context, state) => const SelectHmoScreen(),
       ),
@@ -114,6 +113,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final args = state.extra! as (BookingAccessType, String?);
           return ChooseServiceScreen(accessType: args.$1, hmoName: args.$2);
         },
+      ),
+      GoRoute(
+        path: RoutePaths.bookingLocation,
+        builder: (context, state) =>
+            BookingLocationScreen(selection: state.extra! as BookingSelection),
+      ),
+      GoRoute(
+        path: RoutePaths.wellbeingService,
+        builder: (context, state) =>
+            WellbeingServiceScreen(service: state.extra! as WellbeingService),
       ),
       GoRoute(
         path: RoutePaths.doctorsFindADoctor,
@@ -171,6 +180,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: RoutePaths.home,
                 builder: (context, state) => const DashboardScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutePaths.services,
+                builder: (context, state) => const ServicesScreen(),
               ),
             ],
           ),

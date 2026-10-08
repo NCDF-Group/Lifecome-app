@@ -47,6 +47,14 @@ abstract final class RoutePaths {
   /// bottom-nav shell (see `AppShell`).
   static const home = '/home';
 
+  /// Services tab — Explore our services (GP care + everyday wellbeing).
+  static const services = '/services';
+
+  /// A wellbeing service's detail page (see
+  /// `lib/features/services/domain/models/wellbeing_service.dart`). Reached
+  /// with a `WellbeingService` passed as `extra`.
+  static const wellbeingService = '/services/wellbeing';
+
   /// My Visits tab — upcoming/past appointments and their sub-flows.
   static const visits = '/visits';
 
@@ -66,10 +74,11 @@ abstract final class RoutePaths {
 
   static const termsAndConditions = '/profile/terms';
 
-  /// Blueprint view 05 — Choose How to Pay.
-  static const payerChoosePaymentMethod = '/payer/choose-payment-method';
-
-  /// Blueprint view 06 — Select Your HMO.
+  /// Blueprint view 06 — Select Your HMO. The entry point for the
+  /// employer/HMO-covered path (Home and Services' "Employer access" link
+  /// straight here) — "choose how to pay" no longer gates it; the direct-pay
+  /// path reached from "Online GP"/"Clinic care" goes straight to
+  /// [bookingChooseService] instead.
   static const payerSelectHmo = '/payer/select-hmo';
 
   /// Blueprint view 07 — Verify HMO Membership. Reached with the chosen
@@ -85,6 +94,11 @@ abstract final class RoutePaths {
   /// `ChooseServiceScreen`). Reached with a `BookingAccessType` + optional
   /// HMO name passed as `extra`.
   static const bookingChooseService = '/booking/choose-service';
+
+  /// Between choosing a service and finding a doctor: confirms where the
+  /// patient is, so availability can be shown for their area. Reached with
+  /// a `BookingSelection`.
+  static const bookingLocation = '/booking/location';
 
   /// Blueprint view 11 — Find a Doctor. Reached with a `BookingSelection`.
   static const doctorsFindADoctor = '/doctors/find';

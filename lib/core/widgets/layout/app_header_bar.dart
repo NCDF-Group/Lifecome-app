@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../country/app_country.dart';
 import '../../theme/app_colors.dart';
 import '../feedback/app_popup.dart';
 
-/// The header shared by the welcome screen, Home and the services screens:
-/// the logo, a tappable country chip, and the notification bell. Matches
-/// the consistent top bar across those design screenshots.
+/// The header shared by the welcome screen, Home, Services and the
+/// wellbeing detail screens: an optional back arrow, the logo, a tappable
+/// country chip, and the notification bell. Matches the consistent top bar
+/// across those design screenshots.
 class AppHeaderBar extends ConsumerWidget {
-  const AppHeaderBar({super.key});
+  const AppHeaderBar({super.key, this.showBack = false, this.onBack});
+
+  final bool showBack;
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,6 +23,19 @@ class AppHeaderBar extends ConsumerWidget {
 
     return Row(
       children: [
+        if (showBack) ...[
+          IconButton(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            onPressed: onBack ?? () => context.pop(),
+            icon: const Icon(
+              Icons.arrow_back_ios_new,
+              size: 18,
+              color: AppColors.ink,
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
         SvgPicture.asset(
           'assets/images/logo/lifecome-live-logo.svg',
           height: 24,

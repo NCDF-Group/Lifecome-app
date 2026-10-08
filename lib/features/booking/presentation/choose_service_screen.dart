@@ -114,10 +114,10 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
             Padding(
               padding: const EdgeInsets.all(AppSpacing.lg),
               child: PrimaryButton(
-                label: 'Continue to find a doctor',
+                label: 'Continue',
                 icon: Icons.arrow_forward,
                 onPressed: () => context.push(
-                  RoutePaths.doctorsFindADoctor,
+                  RoutePaths.bookingLocation,
                   extra: BookingSelection(
                     accessType: widget.accessType,
                     hmoName: widget.hmoName,

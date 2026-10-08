@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 
 import '../theme/app_icons.dart';
 
-/// Hosts the four bottom-nav tabs (Home, Visits, Messages, Profile — view 04
-/// onward in the blueprint) behind a `StatefulShellRoute`, so switching tabs
+/// Hosts the five bottom-nav tabs (Home, Services, Visits, Messages, Profile
+/// — view 04 onward in the blueprint) behind a `StatefulShellRoute`, so switching tabs
 /// keeps each one's own navigation stack instead of losing it. Uses Material
 /// 3's own `NavigationBar` (styled via `navigationBarTheme` in app_theme.dart)
 /// rather than a hand-rolled bar, for its built-in indicator pill, motion and
@@ -29,6 +29,11 @@ class AppShell extends StatelessWidget {
             icon: HouseNavIcon(),
             selectedIcon: HouseNavIcon(filled: true),
             label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.grid_view_outlined),
+            selectedIcon: Icon(Icons.grid_view_rounded),
+            label: 'Services',
           ),
           NavigationDestination(
             icon: Icon(Icons.calendar_month_outlined),
