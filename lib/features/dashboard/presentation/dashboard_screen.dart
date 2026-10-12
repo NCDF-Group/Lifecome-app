@@ -95,31 +95,33 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               onPressed: _openDirectBooking,
             ),
             const SizedBox(height: 12),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: _QuickCard(
-                    icon: Icons.computer_outlined,
-                    background: const Color(0xFFEAF7E8),
-                    iconColor: AppColors.greenStrong,
-                    title: 'Online GP',
-                    subtitle: 'Care while in $countryName',
-                    onTap: _openDirectBooking,
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: _QuickCard(
+                      icon: Icons.computer_outlined,
+                      background: const Color(0xFFEAF7E8),
+                      iconColor: AppColors.greenStrong,
+                      title: 'Online GP',
+                      subtitle: 'Care while in $countryName',
+                      onTap: _openDirectBooking,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _QuickCard(
-                    icon: Icons.apartment_outlined,
-                    background: const Color(0xFFE3EEFB),
-                    iconColor: AppColors.blue,
-                    title: 'Clinic care',
-                    subtitle: 'Find a clinic',
-                    onTap: _openDirectBooking,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _QuickCard(
+                      icon: Icons.apartment_outlined,
+                      background: const Color(0xFFE3EEFB),
+                      iconColor: AppColors.blue,
+                      title: 'Clinic care',
+                      subtitle: 'Find a clinic',
+                      onTap: _openDirectBooking,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             const SizedBox(height: 18),
             Container(
@@ -187,31 +189,33 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
             ),
             const SizedBox(height: 14),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: _QuickCard(
-                    icon: Icons.calendar_month_outlined,
-                    background: const Color(0xFFEAF7E8),
-                    iconColor: AppColors.greenStrong,
-                    title: 'My bookings',
-                    subtitle: 'Appointments and sessions',
-                    onTap: () => context.go(RoutePaths.visits),
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: _QuickCard(
+                      icon: Icons.calendar_month_outlined,
+                      background: const Color(0xFFEAF7E8),
+                      iconColor: AppColors.greenStrong,
+                      title: 'My bookings',
+                      subtitle: 'Appointments and sessions',
+                      onTap: () => context.go(RoutePaths.visits),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _QuickCard(
-                    icon: Icons.description_outlined,
-                    background: const Color(0xFFE3EEFB),
-                    iconColor: AppColors.blue,
-                    title: 'Health records',
-                    subtitle: 'Your clinical care',
-                    onTap: () => context.go(RoutePaths.healthRecords),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _QuickCard(
+                      icon: Icons.description_outlined,
+                      background: const Color(0xFFE3EEFB),
+                      iconColor: AppColors.blue,
+                      title: 'Health records',
+                      subtitle: 'Your clinical care',
+                      onTap: () => context.go(RoutePaths.healthRecords),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             const SizedBox(height: 10),
             _WideRow(
