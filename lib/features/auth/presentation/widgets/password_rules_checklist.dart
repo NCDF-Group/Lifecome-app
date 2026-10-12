@@ -14,7 +14,8 @@ class PasswordRulesChecklist extends StatelessWidget {
 
   bool get _hasMinLength => password.length >= 8;
   bool get _hasMixedCase =>
-      RegExp(r'[a-z]').hasMatch(password) && RegExp(r'[A-Z]').hasMatch(password);
+      RegExp(r'[a-z]').hasMatch(password) &&
+      RegExp(r'[A-Z]').hasMatch(password);
   bool get _hasNumber => RegExp(r'\d').hasMatch(password);
   bool get _hasSymbol => RegExp(r'[^A-Za-z0-9]').hasMatch(password);
 

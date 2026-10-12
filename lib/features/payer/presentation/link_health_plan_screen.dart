@@ -12,11 +12,11 @@ import '../../../core/widgets/layout/app_header_bar.dart';
 const _providers = [
   'LifeCome Benefits',
   'LifeCome HMO',
-  'AXA Mansard Health',
-  'Avon HMO',
-  'Hygeia HMO',
-  'Reliance HMO',
-  'Total Health Trust',
+  'Bupa',
+  'AXA Health',
+  'Vitality',
+  'Aviva',
+  'WPA',
 ];
 
 /// "Link your health plan" — confirm cover with LifeCome Benefits or a

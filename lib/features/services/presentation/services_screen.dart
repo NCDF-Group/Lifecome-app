@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/country/app_country.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
@@ -12,13 +10,12 @@ import '../domain/models/wellbeing_service.dart';
 /// The Services tab — "Explore our services". GP care (medical, direct-pay
 /// by default) and Everyday wellbeing (non-medical) side by side, plus the
 /// entry point into the employer/HMO-covered path.
-class ServicesScreen extends ConsumerWidget {
+class ServicesScreen extends StatelessWidget {
   const ServicesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final country = ref.watch(countryProvider);
-    final countryName = country == AppCountry.nigeria ? 'Nigeria' : 'England';
+  Widget build(BuildContext context) {
+    const countryName = 'England';
 
     return Scaffold(
       backgroundColor: AppColors.white,

@@ -1,105 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/animation/fade_in.dart';
-import '../../../core/country/app_country.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
 
-/// Copy that differs between the UK and Nigeria markets. [AppHeaderBar]
-/// already shows the selected [AppCountry] as a chip; this is the rest of
-/// the welcome screen reacting to that same selection.
-class _WelcomeCopy {
-  const _WelcomeCopy({
-    required this.headlineTail,
-    required this.subtitle,
-    required this.features,
-    required this.eligibility,
-    required this.audience,
-  });
-
-  final String headlineTail;
-  final String subtitle;
-  final List<_FeatureIcon> features;
-  final String eligibility;
-  final String audience;
-
-  static const unitedKingdom = _WelcomeCopy(
-    headlineTail: 'connected.',
-    subtitle:
-        'GP appointments and practical support for healthier routines, '
-        'eating well and relaxation.',
-    features: [
-      _FeatureIcon(
-        icon: Icons.videocam_outlined,
-        background: Color(0xFFE3EEFB),
-        color: AppColors.blue,
-        label: 'Online GP',
-      ),
-      _FeatureIcon(
-        icon: Icons.location_on_outlined,
-        background: Color(0xFFE6F6E2),
-        color: AppColors.greenStrong,
-        label: 'Clinic care',
-      ),
-      _FeatureIcon(
-        icon: Icons.spa_outlined,
-        background: Color(0xFFE3EEFB),
-        color: AppColors.blue,
-        label: 'Wellbeing',
-      ),
-    ],
-    eligibility: 'For adults aged 18 and over. GP care in England.',
-    audience: 'For members and non-members',
-  );
-
-  static const nigeria = _WelcomeCopy(
-    headlineTail: 'closer to home.',
-    subtitle:
-        'GP appointments and practical support for healthier routines, '
-        'eating well and relaxation — with or without an HMO.',
-    features: [
-      _FeatureIcon(
-        icon: Icons.videocam_outlined,
-        background: Color(0xFFE3EEFB),
-        color: AppColors.blue,
-        label: 'Online GP',
-      ),
-      _FeatureIcon(
-        icon: Icons.verified_user_outlined,
-        background: Color(0xFFE6F6E2),
-        color: AppColors.greenStrong,
-        label: 'HMO cover',
-      ),
-      _FeatureIcon(
-        icon: Icons.spa_outlined,
-        background: Color(0xFFE3EEFB),
-        color: AppColors.blue,
-        label: 'Wellbeing',
-      ),
-    ],
-    eligibility: 'For adults aged 18 and over. GP care in Nigeria.',
-    audience: 'For HMO members and one-time visits',
-  );
-
-  static _WelcomeCopy forCountry(AppCountry country) =>
-      country == AppCountry.nigeria ? nigeria : unitedKingdom;
-}
-
 /// The welcome screen shown after the splash screen when there is no
-/// remembered session — the app's front door. Its copy follows the
-/// selected [AppCountry] (the same chip shown in [AppHeaderBar]).
-class WelcomeScreen extends ConsumerWidget {
+/// remembered session — the app's front door.
+class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final copy = _WelcomeCopy.forCountry(ref.watch(countryProvider));
-
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -115,9 +30,9 @@ class WelcomeScreen extends ConsumerWidget {
                 const SizedBox(height: 24),
                 FadeIn(
                   delay: const Duration(milliseconds: 60),
-                  child: Text.rich(
+                  child: const Text.rich(
                     TextSpan(
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w800,
                         height: 1.15,
@@ -125,12 +40,12 @@ class WelcomeScreen extends ConsumerWidget {
                         color: AppColors.ink,
                       ),
                       children: [
-                        const TextSpan(text: 'GP care and\n'),
-                        const TextSpan(
+                        TextSpan(text: 'GP care and\n'),
+                        TextSpan(
                           text: 'everyday wellbeing,\n',
                           style: TextStyle(color: AppColors.greenStrong),
                         ),
-                        TextSpan(text: copy.headlineTail),
+                        TextSpan(text: 'connected.'),
                       ],
                     ),
                   ),
@@ -138,9 +53,10 @@ class WelcomeScreen extends ConsumerWidget {
                 const SizedBox(height: 12),
                 FadeIn(
                   delay: const Duration(milliseconds: 100),
-                  child: Text(
-                    copy.subtitle,
-                    style: const TextStyle(
+                  child: const Text(
+                    'GP appointments and practical support for healthier '
+                    'routines, eating well and relaxation.',
+                    style: TextStyle(
                       fontSize: 15,
                       color: AppColors.inkMuted,
                       height: 1.4,
@@ -150,12 +66,34 @@ class WelcomeScreen extends ConsumerWidget {
                 const SizedBox(height: 24),
                 FadeIn(
                   delay: const Duration(milliseconds: 140),
-                  child: Row(
+                  child: const Row(
                     children: [
-                      for (var i = 0; i < copy.features.length; i++) ...[
-                        if (i != 0) const SizedBox(width: 12),
-                        Expanded(child: copy.features[i]),
-                      ],
+                      Expanded(
+                        child: _FeatureIcon(
+                          icon: Icons.videocam_outlined,
+                          background: Color(0xFFE3EEFB),
+                          color: AppColors.blue,
+                          label: 'Online GP',
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: _FeatureIcon(
+                          icon: Icons.location_on_outlined,
+                          background: Color(0xFFE6F6E2),
+                          color: AppColors.greenStrong,
+                          label: 'Clinic care',
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: _FeatureIcon(
+                          icon: Icons.spa_outlined,
+                          background: Color(0xFFE3EEFB),
+                          color: AppColors.blue,
+                          label: 'Wellbeing',
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -194,26 +132,26 @@ class WelcomeScreen extends ConsumerWidget {
                 const SizedBox(height: 20),
                 FadeIn(
                   delay: const Duration(milliseconds: 260),
-                  child: Column(
+                  child: const Column(
                     children: [
                       Text(
-                        copy.eligibility,
+                        'For adults aged 18 and over. GP care in England.',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: AppColors.inkMuted,
                         ),
                       ),
                       Text(
-                        copy.audience,
+                        'For members and non-members',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: AppColors.inkMuted,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      const Text(
+                      SizedBox(height: 4),
+                      Text(
                         'Terms of use  |  Privacy notice',
                         textAlign: TextAlign.center,
                         style: TextStyle(
@@ -234,57 +172,149 @@ class WelcomeScreen extends ConsumerWidget {
   }
 }
 
+/// Two overlapping "blob" photo cards with soft decorative circles and a
+/// connecting arc behind them, matching the reference design's organic
+/// (not plain-rectangular) photo shapes.
 class _HeroPhotos extends StatelessWidget {
   const _HeroPhotos();
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 230,
+      height: 260,
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
+          // Soft decorative blobs behind the photos.
+          Positioned(
+            right: -20,
+            top: -10,
+            child: _SoftBlob(diameter: 150, color: const Color(0xFFDCF3D6)),
+          ),
+          Positioned(
+            left: -10,
+            bottom: -10,
+            child: _SoftBlob(diameter: 120, color: const Color(0xFFDCEEFA)),
+          ),
+          // Connecting arc between the two photos.
+          const Positioned(
+            right: 24,
+            top: 60,
+            width: 90,
+            height: 90,
+            child: CustomPaint(painter: _ArcPainter()),
+          ),
+          // Doctor photo (top-left, larger).
           Positioned(
             left: 0,
             top: 0,
-            width: 200,
-            height: 180,
-            child: _PhotoCard(
+            width: 210,
+            height: 192,
+            child: _BlobPhoto(
               asset: 'assets/images/home/doctor.png',
-              fit: BoxFit.cover,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(96),
+                topRight: Radius.circular(96),
+                bottomLeft: Radius.circular(96),
+                bottomRight: Radius.circular(26),
+              ),
+              badgeAlignment: Alignment.topLeft,
             ),
           ),
+          // Wellbeing photo (bottom-right, smaller, overlapping).
           Positioned(
             right: 0,
             bottom: 0,
-            width: 190,
-            height: 170,
-            child: _PhotoCard(
+            width: 192,
+            height: 172,
+            child: _BlobPhoto(
               asset: 'assets/images/welcome/welcome-hero.webp',
-              fit: BoxFit.cover,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(22),
+                topRight: Radius.circular(86),
+                bottomLeft: Radius.circular(86),
+                bottomRight: Radius.circular(86),
+              ),
+              badgeAlignment: Alignment.bottomRight,
             ),
           ),
-          const Positioned(right: 90, top: 70, child: _PlusBadge()),
+          const Positioned(right: 72, top: 36, child: _PlusBadge()),
         ],
       ),
     );
   }
 }
 
-class _PhotoCard extends StatelessWidget {
-  const _PhotoCard({required this.asset, required this.fit});
+class _SoftBlob extends StatelessWidget {
+  const _SoftBlob({required this.diameter, required this.color});
+
+  final double diameter;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: diameter,
+      height: diameter,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    );
+  }
+}
+
+class _ArcPainter extends CustomPainter {
+  const _ArcPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = AppColors.blue.withValues(alpha: 0.45)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.6
+      ..strokeCap = StrokeCap.round;
+
+    final path = Path()
+      ..moveTo(size.width * 0.75, 0)
+      ..quadraticBezierTo(
+        size.width * 0.1,
+        size.height * 0.35,
+        size.width * 0.3,
+        size.height,
+      );
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _BlobPhoto extends StatelessWidget {
+  const _BlobPhoto({
+    required this.asset,
+    required this.borderRadius,
+    required this.badgeAlignment,
+  });
 
   final String asset;
-  final BoxFit fit;
+  final BorderRadius borderRadius;
+  final Alignment badgeAlignment;
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(28),
+      borderRadius: borderRadius,
       child: Stack(
         children: [
           Positioned.fill(child: Container(color: const Color(0xFFE8F4FC))),
-          Positioned.fill(child: Image.asset(asset, fit: fit)),
-          const Positioned(left: 10, top: 10, child: _VideoBadge()),
+          Positioned.fill(child: Image.asset(asset, fit: BoxFit.cover)),
+          Positioned.fill(
+            child: Align(
+              alignment: badgeAlignment,
+              child: const Padding(
+                padding: EdgeInsets.all(10),
+                child: _VideoBadge(),
+              ),
+            ),
+          ),
         ],
       ),
     );

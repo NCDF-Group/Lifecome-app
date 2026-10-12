@@ -30,25 +30,25 @@ const sampleDoctors = [
     id: 'dr-adaeze-okafor',
     name: 'Dr Adaeze Okafor',
     specialty: 'General Practitioner',
-    credentials: 'MBBS, FMCGP',
+    credentials: 'MBBS, MRCGP',
     yearsExperience: 10,
     rating: 4.9,
     reviewCount: 328,
-    languages: ['English', 'Yoruba', 'Igbo'],
+    languages: ['English', 'French'],
     about:
         'A compassionate and experienced General Practitioner with a special interest in '
         'preventive care, chronic disease management and family health. Provides '
-        'high-quality virtual consultations to patients across Nigeria.',
+        'high-quality virtual consultations to patients across the UK.',
   ),
   Doctor(
     id: 'dr-musa-bello',
     name: 'Dr Musa Bello',
     specialty: 'General Practitioner',
-    credentials: 'MBBS, MWACP',
+    credentials: 'MBBS, MRCGP',
     yearsExperience: 7,
     rating: 4.8,
     reviewCount: 201,
-    languages: ['English', 'Hausa'],
+    languages: ['English', 'Urdu'],
     about:
         'Focuses on general health concerns, follow-up care and results review, with '
         'particular experience supporting patients managing hypertension and diabetes.',
@@ -57,11 +57,11 @@ const sampleDoctors = [
     id: 'dr-ngozi-eze',
     name: 'Dr Ngozi Eze',
     specialty: "Women's Health",
-    credentials: 'MBBS, FWACS',
+    credentials: 'MBBS, MRCOG',
     yearsExperience: 12,
     rating: 4.9,
     reviewCount: 412,
-    languages: ['English', 'Igbo'],
+    languages: ['English', 'Polish'],
     about:
         "Specialises in women's health and family planning, with a warm, unhurried "
         'approach to virtual consultations.',

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/country/app_country.dart';
 import '../../../core/providers/core_providers.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/services/session_store.dart';
@@ -60,8 +59,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final country = ref.watch(countryProvider);
-    final countryName = country == AppCountry.nigeria ? 'Nigeria' : 'England';
+    const countryName = 'England';
 
     return Scaffold(
       backgroundColor: AppColors.white,

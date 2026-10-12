@@ -4,26 +4,11 @@ import 'package:flutter/services.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 
-class PhoneCountry {
-  const PhoneCountry({
-    required this.flag,
-    required this.dialCode,
-    required this.name,
-  });
+const _ukDialCode = '+44';
 
-  final String flag;
-  final String dialCode;
-  final String name;
-}
-
-const phoneCountries = [
-  PhoneCountry(flag: '🇳🇬', dialCode: '+234', name: 'Nigeria'),
-  PhoneCountry(flag: '🇬🇧', dialCode: '+44', name: 'United Kingdom'),
-];
-
-/// A phone number field with a country selector (flag + dial code) ahead of
-/// the local number, matching the app's single bordered field look. Only
-/// Nigeria and the UK are offered for now — see `phoneCountries`.
+/// A phone number field with a static UK (+44) prefix ahead of the local
+/// number, matching the app's single bordered field look. LifeCome Live
+/// serves the UK only, so there's no country selector here.
 class PhoneNumberField extends StatefulWidget {
   const PhoneNumberField({
     super.key,
@@ -35,7 +20,7 @@ class PhoneNumberField extends StatefulWidget {
   final String label;
 
   /// Called with the full number (dial code + local digits, e.g.
-  /// `+2348012345678`) whenever either part changes.
+  /// `+447700900123`) whenever the number changes.
   final ValueChanged<String> onChanged;
   final String? errorText;
 
@@ -45,7 +30,6 @@ class PhoneNumberField extends StatefulWidget {
 
 class _PhoneNumberFieldState extends State<PhoneNumberField> {
   final _numberController = TextEditingController();
-  PhoneCountry _country = phoneCountries.first;
 
   @override
   void dispose() {
@@ -55,37 +39,7 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
 
   void _emit() {
     final digits = _numberController.text.trim();
-    widget.onChanged(digits.isEmpty ? '' : '${_country.dialCode}$digits');
-  }
-
-  Future<void> _pickCountry() async {
-    final selected = await showModalBottomSheet<PhoneCountry>(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final country in phoneCountries)
-              ListTile(
-                leading: Text(
-                  country.flag,
-                  style: const TextStyle(fontSize: 22),
-                ),
-                title: Text(country.name),
-                trailing: Text(
-                  country.dialCode,
-                  style: const TextStyle(color: AppColors.inkMuted),
-                ),
-                onTap: () => Navigator.of(context).pop(country),
-              ),
-          ],
-        ),
-      ),
-    );
-    if (selected != null) {
-      setState(() => _country = selected);
-      _emit();
-    }
+    widget.onChanged(digits.isEmpty ? '' : '$_ukDialCode$digits');
   }
 
   @override
@@ -113,35 +67,22 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
           ),
           child: Row(
             children: [
-              InkWell(
-                borderRadius: BorderRadius.circular(AppRadius.control),
-                onTap: _pickCountry,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 16,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(_country.flag, style: const TextStyle(fontSize: 18)),
-                      const SizedBox(width: 6),
-                      Text(
-                        _country.dialCode,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: AppColors.ink,
-                          fontWeight: FontWeight.w700,
-                        ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('🇬🇧', style: TextStyle(fontSize: 18)),
+                    SizedBox(width: 6),
+                    Text(
+                      _ukDialCode,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColors.ink,
+                        fontWeight: FontWeight.w700,
                       ),
-                      const SizedBox(width: 4),
-                      const Icon(
-                        Icons.keyboard_arrow_down,
-                        size: 18,
-                        color: AppColors.inkMuted,
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               Container(width: 1, height: 28, color: AppColors.line),

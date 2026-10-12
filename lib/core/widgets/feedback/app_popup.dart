@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../country/app_country.dart';
 import '../../network/api_exception.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
@@ -10,7 +9,7 @@ import '../../theme/app_spacing.dart';
 /// popup card. Used in place of SnackBars everywhere, so every message —
 /// coming soon, success, an error, no network, notifications, photo upload,
 /// a destructive confirmation — looks and behaves the same.
-enum AppPopupKind { info, success, error, offline, notifications, country }
+enum AppPopupKind { info, success, error, offline, notifications }
 
 class _KindStyle {
   const _KindStyle(this.icon, this.color);
@@ -30,7 +29,6 @@ const _styles = {
     Icons.notifications_rounded,
     AppColors.blue,
   ),
-  AppPopupKind.country: _KindStyle(Icons.public_rounded, AppColors.blue),
 };
 
 /// Shows a popup and resolves to the value the tapped action popped with
@@ -156,36 +154,6 @@ Future<bool> showConfirmPopup(
     destructive: destructive,
   );
   return confirmed ?? false;
-}
-
-/// Lets the user pick their country; resolves `null` if dismissed.
-Future<AppCountry?> showCountryPickerPopup(
-  BuildContext context, {
-  required AppCountry current,
-}) {
-  return showAppPopup<AppCountry>(
-    context,
-    kind: AppPopupKind.country,
-    title: 'Choose your country',
-    message: 'We\'ll show care and services available where you are.',
-    primaryLabel: 'Cancel',
-    body: Column(
-      children: [
-        for (final country in AppCountry.values) ...[
-          if (country != AppCountry.values.first)
-            const SizedBox(height: AppSpacing.xs),
-          _OptionTile<AppCountry>(
-            value: country,
-            leading: Text(country.flag, style: const TextStyle(fontSize: 22)),
-            label: country == AppCountry.unitedKingdom
-                ? 'United Kingdom'
-                : country.name,
-            selected: country == current,
-          ),
-        ],
-      ],
-    ),
-  );
 }
 
 enum PhotoSource { camera, library }

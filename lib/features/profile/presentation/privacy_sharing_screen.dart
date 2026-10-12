@@ -100,7 +100,8 @@ class PrivacySharingScreen extends StatelessWidget {
               iconColor: AppColors.greenStrong,
               background: const Color(0xFFEAF7E8),
               title: 'Review permissions',
-              subtitle: 'See who can access your records and what they '
+              subtitle:
+                  'See who can access your records and what they '
                   'can see.',
               onTap: () =>
                   showComingSoonPopup(context, feature: 'Review permissions'),
@@ -111,7 +112,8 @@ class PrivacySharingScreen extends StatelessWidget {
               iconColor: AppColors.blue,
               background: const Color(0xFFE3EEFB),
               title: 'Revoke access',
-              subtitle: "Remove a person or organisation's access to your "
+              subtitle:
+                  "Remove a person or organisation's access to your "
                   'records.',
               onTap: () =>
                   showComingSoonPopup(context, feature: 'Revoke access'),

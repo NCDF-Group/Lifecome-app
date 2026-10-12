@@ -26,7 +26,7 @@ class BookingConfirmationScreen extends StatelessWidget {
         'LCL-${date.year}${date.month.toString().padLeft(2, '0')}${date.day.toString().padLeft(2, '0')}-${1000 + doctor.name.length}';
     final payment = covered
         ? 'Covered by ${selection.hmoName}'
-        : 'Payment received ₦${service.fee}';
+        : 'Payment received £${service.fee}';
 
     return Scaffold(
       backgroundColor: AppColors.white,

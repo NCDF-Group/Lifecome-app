@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/country/app_country.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
@@ -54,18 +52,18 @@ const _fullWeekdays = [
 enum _ConsultationMode { video, telephone }
 
 /// Blueprint view 13 — Choose Appointment Time.
-class ChooseAppointmentTimeScreen extends ConsumerStatefulWidget {
+class ChooseAppointmentTimeScreen extends StatefulWidget {
   const ChooseAppointmentTimeScreen({super.key, required this.selection});
 
   final BookingSelection selection;
 
   @override
-  ConsumerState<ChooseAppointmentTimeScreen> createState() =>
+  State<ChooseAppointmentTimeScreen> createState() =>
       _ChooseAppointmentTimeScreenState();
 }
 
 class _ChooseAppointmentTimeScreenState
-    extends ConsumerState<ChooseAppointmentTimeScreen> {
+    extends State<ChooseAppointmentTimeScreen> {
   late final _days = List.generate(
     3,
     (i) => DateTime.now().add(Duration(days: i)),
@@ -77,8 +75,6 @@ class _ChooseAppointmentTimeScreenState
   @override
   Widget build(BuildContext context) {
     final doctor = widget.selection.doctor!;
-    final isUk = ref.watch(countryProvider) == AppCountry.unitedKingdom;
-    final timezoneLabel = isUk ? 'UK time (BST)' : 'West Africa Time (WAT)';
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -238,7 +234,7 @@ class _ChooseAppointmentTimeScreenState
                       ),
                       const Spacer(),
                       Text(
-                        timezoneLabel,
+                        'UK time (BST)',
                         style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.inkMuted,

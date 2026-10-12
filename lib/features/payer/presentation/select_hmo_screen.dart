@@ -16,14 +16,11 @@ class _Hmo {
 
 const _hmos = [
   _Hmo(name: 'LifeCome HMO', tagline: 'People. Health. Brighter Lives.'),
-  _Hmo(
-    name: 'AXA Mansard Health',
-    tagline: 'Redefining healthcare for a better tomorrow.',
-  ),
-  _Hmo(name: 'Avon HMO', tagline: 'Healthcare for a better you.'),
-  _Hmo(name: 'Hygeia HMO', tagline: 'Healthier lives, brighter futures.'),
-  _Hmo(name: 'Reliance HMO', tagline: 'Your health, our priority.'),
-  _Hmo(name: 'Total Health Trust', tagline: 'Healthcare you can trust.'),
+  _Hmo(name: 'Bupa', tagline: 'A healthier world needs you.'),
+  _Hmo(name: 'AXA Health', tagline: 'Health for the real world.'),
+  _Hmo(name: 'Vitality', tagline: 'The more you engage, the more you get.'),
+  _Hmo(name: 'Aviva', tagline: 'Take control of your health.'),
+  _Hmo(name: 'WPA', tagline: "Britain's specialist health insurer."),
 ];
 
 /// Blueprint view 06 — Select Your HMO. LifeCome HMO is always listed first
@@ -57,7 +54,7 @@ class SelectHmoScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
             TextField(
               decoration: InputDecoration(
-                hintText: 'Search for your HMO (e.g. AXA, Avon, Hygeia)',
+                hintText: 'Search for your HMO (e.g. Bupa, AXA, Vitality)',
                 prefixIcon: const Icon(Icons.search),
                 filled: true,
                 fillColor: AppColors.surface,

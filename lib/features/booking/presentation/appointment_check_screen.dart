@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/country/app_country.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
@@ -11,25 +9,20 @@ import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../domain/models/appointment.dart';
 
-const _defaultCity = {
-  AppCountry.unitedKingdom: 'London',
-  AppCountry.nigeria: 'Lagos',
-};
-
 /// "Check your appointment" — the checklist shown right after booking,
 /// before the visit itself: confirm the clinical suitability questions
 /// and the funding/cover check. Reached from Booking confirmation's
 /// "Prepare for your visit" row.
-class AppointmentCheckScreen extends ConsumerWidget {
+class AppointmentCheckScreen extends StatelessWidget {
   const AppointmentCheckScreen({super.key, required this.selection});
 
   final BookingSelection selection;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final doctor = selection.doctor;
     final date = selection.date;
-    final city = _defaultCity[ref.watch(countryProvider)] ?? 'your area';
+    const city = 'London';
 
     return Scaffold(
       backgroundColor: AppColors.white,

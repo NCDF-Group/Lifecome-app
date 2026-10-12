@@ -5,7 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/animation/fade_in.dart';
-import '../../../core/country/app_country.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
@@ -113,8 +112,6 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
 
     if (!mounted) return;
     if (sent) {
-      final country = AppCountry.fromPhoneNumber(_phoneNumber);
-      if (country != null) ref.read(countryProvider.notifier).select(country);
       context.push(
         RoutePaths.verifyMobile,
         extra: VerifyMobileArgs(email: email, phoneNumber: _phoneNumber),

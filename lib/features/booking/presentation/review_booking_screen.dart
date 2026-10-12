@@ -145,7 +145,7 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
                         : 'Card or bank transfer',
                     trailing: covered
                         ? 'No payment required'
-                        : '₦${service.fee}',
+                        : '£${service.fee}',
                     trailingColor: covered
                         ? AppColors.greenStrong
                         : AppColors.ink,
