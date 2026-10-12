@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -234,57 +236,163 @@ class WelcomeScreen extends ConsumerWidget {
   }
 }
 
+/// The two-photo hero collage — sized from the available width so its
+/// proportions match the design (nearly square overall, the doctor photo
+/// large and top-left, the second photo smaller and overlapping it at the
+/// bottom-right), not a fixed small box.
 class _HeroPhotos extends StatelessWidget {
   const _HeroPhotos();
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 230,
-      child: Stack(
-        children: [
-          Positioned(
-            left: 0,
-            top: 0,
-            width: 200,
-            height: 180,
-            child: _PhotoCard(
-              asset: 'assets/images/home/doctor.png',
-              fit: BoxFit.cover,
-            ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final doctorWidth = width * 0.70;
+        final doctorHeight = width * 0.66;
+        final secondWidth = width * 0.56;
+        final secondHeight = width * 0.50;
+        // The second photo tucks up into the doctor photo's bottom-right
+        // corner rather than merely touching it, so the two read as one
+        // connected collage instead of two separate cards with a gap.
+        final secondTop = doctorHeight - doctorHeight * 0.32;
+        final height = secondTop + secondHeight;
+
+        return SizedBox(
+          height: height,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              // Soft blurred accent shapes peeking from behind both photos.
+              Positioned(
+                left: -width * 0.1,
+                bottom: 0,
+                child: _Glow(
+                  color: const Color(0xFFBFE6C8),
+                  size: width * 0.48,
+                ),
+              ),
+              Positioned(
+                right: -width * 0.12,
+                top: height * 0.1,
+                child: _Glow(color: const Color(0xFFBEE0F2), size: width * 0.4),
+              ),
+              Positioned(
+                left: 0,
+                top: 0,
+                width: doctorWidth,
+                height: doctorHeight,
+                child: _PhotoCard(
+                  asset: 'assets/images/home/doctor.png',
+                  fit: BoxFit.cover,
+                  radius: BorderRadius.only(
+                    topLeft: Radius.circular(width * 0.16),
+                    topRight: Radius.circular(width * 0.16),
+                    bottomLeft: Radius.circular(width * 0.16),
+                    bottomRight: Radius.circular(width * 0.04),
+                  ),
+                  badgeAlignment: Alignment.topLeft,
+                ),
+              ),
+              Positioned(
+                left: width - secondWidth,
+                top: secondTop,
+                width: secondWidth,
+                height: secondHeight,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(width * 0.04),
+                      topRight: Radius.circular(width * 0.16),
+                      bottomLeft: Radius.circular(width * 0.16),
+                      bottomRight: Radius.circular(width * 0.16),
+                    ),
+                    border: Border.all(color: AppColors.white, width: 4),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.ink.withValues(alpha: 0.12),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: _PhotoCard(
+                    asset: 'assets/images/welcome/welcome-hero.webp',
+                    fit: BoxFit.cover,
+                    radius: BorderRadius.only(
+                      topLeft: Radius.circular(width * 0.03),
+                      topRight: Radius.circular(width * 0.13),
+                      bottomLeft: Radius.circular(width * 0.13),
+                      bottomRight: Radius.circular(width * 0.13),
+                    ),
+                    badgeAlignment: Alignment.topRight,
+                  ),
+                ),
+              ),
+              Positioned(
+                left: width - secondWidth - width * 0.03,
+                top: secondTop - width * 0.055,
+                child: const _PlusBadge(),
+              ),
+            ],
           ),
-          Positioned(
-            right: 0,
-            bottom: 0,
-            width: 190,
-            height: 170,
-            child: _PhotoCard(
-              asset: 'assets/images/welcome/welcome-hero.webp',
-              fit: BoxFit.cover,
-            ),
+        );
+      },
+    );
+  }
+}
+
+class _Glow extends StatelessWidget {
+  const _Glow({required this.color, required this.size});
+
+  final Color color;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: ImageFiltered(
+        imageFilter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.6),
+            shape: BoxShape.circle,
           ),
-          const Positioned(right: 90, top: 70, child: _PlusBadge()),
-        ],
+        ),
       ),
     );
   }
 }
 
 class _PhotoCard extends StatelessWidget {
-  const _PhotoCard({required this.asset, required this.fit});
+  const _PhotoCard({
+    required this.asset,
+    required this.fit,
+    required this.radius,
+    required this.badgeAlignment,
+  });
 
   final String asset;
   final BoxFit fit;
+  final BorderRadius radius;
+  final Alignment badgeAlignment;
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(28),
+      borderRadius: radius,
       child: Stack(
         children: [
           Positioned.fill(child: Container(color: const Color(0xFFE8F4FC))),
           Positioned.fill(child: Image.asset(asset, fit: fit)),
-          const Positioned(left: 10, top: 10, child: _VideoBadge()),
+          Positioned(
+            left: badgeAlignment == Alignment.topLeft ? 10 : null,
+            right: badgeAlignment == Alignment.topRight ? 10 : null,
+            top: 10,
+            child: const _VideoBadge(),
+          ),
         ],
       ),
     );
