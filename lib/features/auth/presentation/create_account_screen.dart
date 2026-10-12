@@ -18,7 +18,6 @@ import '../../../core/widgets/layout/max_content_width.dart';
 import '../application/auth_controller.dart';
 import '../domain/models/auth_session.dart';
 import 'verify_mobile_screen.dart';
-import 'widgets/password_rules_checklist.dart';
 
 /// View 01 (Create Account) — one page: name, email, mobile number and
 /// password together, matching the app's current single-step sign-up
@@ -41,7 +40,6 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
   final _confirmController = TextEditingController();
 
   String _phoneNumber = '';
-  String _password = '';
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   bool _agreedToTerms = false;
@@ -231,7 +229,6 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                   textInputAction: TextInputAction.next,
                   autofillHints: const [AutofillHints.newPassword],
                   errorText: _passwordError,
-                  onChanged: (value) => setState(() => _password = value),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword
@@ -244,8 +241,6 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                         setState(() => _obscurePassword = !_obscurePassword),
                   ),
                 ),
-                const SizedBox(height: AppSpacing.xs),
-                PasswordRulesChecklist(password: _password),
                 const SizedBox(height: AppSpacing.md),
                 AppTextField(
                   label: 'Confirm password',

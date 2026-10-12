@@ -70,7 +70,7 @@ class ChooseAccessScreen extends StatelessWidget {
               icon: Icons.apartment_outlined,
               title: 'Employer access',
               subtitle: 'Activate employer or sponsor access.',
-              onTap: () => context.push(RoutePaths.payerSelectHmo),
+              onTap: () => context.push(RoutePaths.activateAccess),
             ),
             const SizedBox(height: AppSpacing.sm),
             _AccessRow(

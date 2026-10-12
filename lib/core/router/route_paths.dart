@@ -96,6 +96,11 @@ abstract final class RoutePaths {
   /// Search for an in-person Smart GP clinic. Reached from the Visit tab.
   static const findSmartGpClinic = '/visits/find-clinic';
 
+  /// "Activate your access" — enter an employer/scheme invitation code (or
+  /// a personal membership code) to link funding to the account. Reached
+  /// from [chooseAccess]'s "Employer access" row.
+  static const activateAccess = '/payer/activate-access';
+
   /// Blueprint view 06 — Select Your HMO. The entry point for the
   /// employer/HMO-covered path (Home and Services' "Employer access" link
   /// straight here) — "choose how to pay" no longer gates it; the direct-pay

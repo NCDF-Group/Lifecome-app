@@ -35,6 +35,7 @@ import '../../features/membership/presentation/membership_billing_screen.dart';
 import '../../features/membership/presentation/membership_plans_screen.dart';
 import '../../features/membership/presentation/my_benefits_screen.dart';
 import '../../features/messaging/presentation/message_threads_screen.dart';
+import '../../features/payer/presentation/activate_access_screen.dart';
 import '../../features/payer/presentation/hmo_coverage_screen.dart';
 import '../../features/payer/presentation/link_health_plan_screen.dart';
 import '../../features/payer/presentation/select_hmo_screen.dart';
@@ -101,6 +102,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.passwordChanged,
         builder: (context, state) => const PasswordChangedScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.activateAccess,
+        builder: (context, state) => const ActivateAccessScreen(),
       ),
       GoRoute(
         path: RoutePaths.payerSelectHmo,
