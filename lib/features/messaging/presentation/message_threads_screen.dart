@@ -283,7 +283,6 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
                                   color: AppColors.error.withValues(
                                     alpha: 0.85,
                                   ),
-                                  decoration: TextDecoration.underline,
                                 ),
                               ),
                             ],
