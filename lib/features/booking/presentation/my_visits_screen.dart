@@ -5,7 +5,6 @@ import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
-import '../../../core/widgets/feedback/app_popup.dart';
 
 /// The Visits tab landing screen. No visits backend exists yet, so this
 /// only ever shows the empty state — the booking flow itself (views 05-17
@@ -65,10 +64,7 @@ class MyVisitsScreen extends StatelessWidget {
               const SizedBox(height: AppSpacing.lg),
               PrimaryButton(
                 label: 'Book a consultation',
-                onPressed: () => showComingSoonPopup(
-                  context,
-                  feature: 'Booking a consultation',
-                ),
+                onPressed: () => context.push(RoutePaths.chooseAccess),
               ),
               const SizedBox(height: AppSpacing.sm),
               TextButton.icon(

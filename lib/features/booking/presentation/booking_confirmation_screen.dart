@@ -171,10 +171,8 @@ class BookingConfirmationScreen extends StatelessWidget {
               icon: Icons.videocam_outlined,
               label: 'Prepare for your visit',
               filled: true,
-              onTap: () => context.push(
-                RoutePaths.bookingBeforeYourVisit,
-                extra: selection,
-              ),
+              onTap: () =>
+                  context.push(RoutePaths.appointmentCheck, extra: selection),
             ),
             const SizedBox(height: AppSpacing.sm),
             _ActionRow(

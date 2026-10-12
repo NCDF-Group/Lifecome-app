@@ -132,9 +132,25 @@ abstract final class RoutePaths {
   /// `BookingSelection`.
   static const bookingAppointmentTime = '/booking/appointment-time';
 
-  /// Blueprint view 14 — Before Your Visit. Reached with a
-  /// `BookingSelection`.
+  /// "Check your appointment" — a checklist hub reached after confirming a
+  /// booking, fanning out to the clinical-suitability questions
+  /// ([bookingBeforeYourVisit]) and the funding check ([linkHealthPlan]).
+  /// Reached with a `BookingSelection`.
+  static const appointmentCheck = '/booking/check-appointment';
+
+  /// Blueprint view 14 — Before Your Visit (the clinical suitability
+  /// questions). Reached with a `BookingSelection`.
   static const bookingBeforeYourVisit = '/booking/before-your-visit';
+
+  /// "Choose your access" — how the patient wants to pay for or access
+  /// care (pay per visit, membership, employer access, or a linked health
+  /// plan), reached from My Visits' "Book a consultation".
+  static const chooseAccess = '/booking/choose-access';
+
+  /// "Link your health plan" — confirm cover with an HMO or LifeCome
+  /// Benefits before booking. Reached with an optional HMO/provider name
+  /// passed as `extra`.
+  static const linkHealthPlan = '/payer/link-health-plan';
 
   /// Blueprint views 15-16 — Review Booking & Payment / HMO Authorisation
   /// (merged into one screen). Reached with a `BookingSelection`.

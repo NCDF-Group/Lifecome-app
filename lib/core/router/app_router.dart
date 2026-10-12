@@ -11,9 +11,11 @@ import '../../features/auth/presentation/sign_in_screen.dart';
 import '../../features/auth/presentation/sign_up_success_screen.dart';
 import '../../features/auth/presentation/verify_mobile_screen.dart';
 import '../../features/booking/domain/models/appointment.dart';
+import '../../features/booking/presentation/appointment_check_screen.dart';
 import '../../features/booking/presentation/before_your_visit_screen.dart';
 import '../../features/booking/presentation/booking_confirmation_screen.dart';
 import '../../features/booking/presentation/booking_location_screen.dart';
+import '../../features/booking/presentation/choose_access_screen.dart';
 import '../../features/booking/presentation/choose_appointment_time_screen.dart';
 import '../../features/booking/presentation/choose_service_screen.dart';
 import '../../features/booking/presentation/find_smart_gp_clinic_screen.dart';
@@ -34,6 +36,7 @@ import '../../features/membership/presentation/membership_plans_screen.dart';
 import '../../features/membership/presentation/my_benefits_screen.dart';
 import '../../features/messaging/presentation/message_threads_screen.dart';
 import '../../features/payer/presentation/hmo_coverage_screen.dart';
+import '../../features/payer/presentation/link_health_plan_screen.dart';
 import '../../features/payer/presentation/select_hmo_screen.dart';
 import '../../features/payer/presentation/verify_hmo_membership_screen.dart';
 import '../../features/profile/presentation/edit_profile_screen.dart';
@@ -114,6 +117,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             HmoCoverageScreen(hmoName: state.extra! as String),
       ),
       GoRoute(
+        path: RoutePaths.linkHealthPlan,
+        builder: (context, state) =>
+            LinkHealthPlanScreen(provider: state.extra as String?),
+      ),
+      GoRoute(
+        path: RoutePaths.chooseAccess,
+        builder: (context, state) => const ChooseAccessScreen(),
+      ),
+      GoRoute(
         path: RoutePaths.bookingChooseService,
         builder: (context, state) {
           final args = state.extra! as (BookingAccessType, String?);
@@ -145,6 +157,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => ChooseAppointmentTimeScreen(
           selection: state.extra! as BookingSelection,
         ),
+      ),
+      GoRoute(
+        path: RoutePaths.appointmentCheck,
+        builder: (context, state) =>
+            AppointmentCheckScreen(selection: state.extra! as BookingSelection),
       ),
       GoRoute(
         path: RoutePaths.bookingBeforeYourVisit,
