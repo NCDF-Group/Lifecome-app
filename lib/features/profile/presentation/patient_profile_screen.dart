@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/providers/core_providers.dart';
@@ -8,11 +9,11 @@ import '../../../core/services/session_store.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../auth/application/auth_controller.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
+import '../../auth/application/auth_controller.dart';
 
 /// The Profile tab landing screen — account summary plus links into health
-/// records, support, legal pages and account management.
+/// records, support and account management.
 class PatientProfileScreen extends ConsumerStatefulWidget {
   const PatientProfileScreen({super.key});
 
@@ -61,157 +62,142 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final name = _session?.displayName ?? 'Your account';
-    final email = _session?.email ?? '';
+    final firstName = (_session?.displayName ?? 'Your account')
+        .split(' ')
+        .first;
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        title: const Text(
-          'Profile',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
-        ),
-      ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            InkWell(
-              borderRadius: BorderRadius.circular(AppRadius.card),
-              onTap: () => context.push(RoutePaths.editProfile),
-              child: Container(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AppRadius.card),
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Color(0xFFE8F4FC), Color(0xFFEAF7E8)],
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 56,
-                      height: 56,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [AppColors.blue, AppColors.greenStrong],
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.person_rounded,
-                        color: AppColors.white,
-                        size: 30,
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            name,
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.ink,
-                            ),
-                          ),
-                          if (email.isNotEmpty)
-                            Text(
-                              email,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: AppColors.inkMuted,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    const Icon(Icons.chevron_right, color: AppColors.inkMuted),
-                  ],
-                ),
+            SvgPicture.asset(
+              'assets/images/logo/lifecome-live-logo.svg',
+              height: 24,
+              semanticsLabel: 'LifeCome Live',
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Your profile',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                color: AppColors.ink,
               ),
             ),
+            const SizedBox(height: 4),
+            const Text(
+              'Manage your account and preferences.',
+              style: TextStyle(fontSize: 14, color: AppColors.inkMuted),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _ProfileRow(
+              green: false,
+              icon: Icons.person,
+              title: firstName,
+              subtitle: 'Personal account',
+              onTap: () => context.push(RoutePaths.editProfile),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _ProfileRow(
+              green: true,
+              icon: Icons.person_outline,
+              title: 'Personal details',
+              subtitle: 'View and update your personal information.',
+              onTap: () => context.push(RoutePaths.editProfile),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _ProfileRow(
+              green: false,
+              icon: Icons.monitor_heart_outlined,
+              title: 'Medical history',
+              subtitle: 'Add and manage your medical history.',
+              onTap: () =>
+                  showComingSoonPopup(context, feature: 'Medical history'),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _ProfileRow(
+              green: true,
+              icon: Icons.workspace_premium_outlined,
+              title: 'Access and benefits',
+              subtitle: 'View your access and available benefits.',
+              onTap: () => context.push(RoutePaths.myBenefits),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _ProfileRow(
+              green: false,
+              icon: Icons.groups_outlined,
+              title: 'Household membership',
+              subtitle: 'Manage household members and their access.',
+              onTap: () => context.push(RoutePaths.membershipBilling),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _ProfileRow(
+              green: true,
+              icon: Icons.description_outlined,
+              title: 'Health records',
+              subtitle: 'View and manage your records and care plans.',
+              onTap: () => context.push(RoutePaths.healthRecords),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _ProfileRow(
+              green: false,
+              icon: Icons.verified_user_outlined,
+              title: 'Privacy and sharing',
+              subtitle: 'Manage your data, privacy and sharing preferences.',
+              onTap: () => context.push(RoutePaths.privacyAndSharing),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _ProfileRow(
+              green: true,
+              icon: Icons.notifications_outlined,
+              title: 'Notifications',
+              subtitle: 'Choose what you want to be notified about.',
+              onTap: () => showComingSoonPopup(
+                context,
+                feature: 'Notification settings',
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _ProfileRow(
+              green: false,
+              icon: Icons.help_outline,
+              title: 'Help and support',
+              subtitle: 'Get help, view FAQs or contact support.',
+              onTap: () => context.push(RoutePaths.helpAndSupport),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _ProfileRow(
+              destructive: true,
+              icon: Icons.logout,
+              title: 'Sign out',
+              subtitle: 'Sign out of your account on this device.',
+              onTap: _signOut,
+            ),
             const SizedBox(height: AppSpacing.lg),
-            _SectionCard(
-              label: 'Account',
-              tiles: [
-                _MenuTile(
-                  icon: Icons.person_outline,
-                  label: 'My profile',
-                  onTap: () => context.push(RoutePaths.editProfile),
-                ),
-                _MenuTile(
-                  icon: Icons.folder_shared_outlined,
-                  label: 'Health records',
-                  onTap: () => context.push(RoutePaths.healthRecords),
-                ),
-                _MenuTile(
-                  icon: Icons.shield_outlined,
-                  label: 'Privacy and sharing',
-                  onTap: () => context.push(RoutePaths.privacyAndSharing),
-                ),
-                _MenuTile(
-                  icon: Icons.credit_card_outlined,
-                  label: 'Membership and billing',
-                  onTap: () => context.push(RoutePaths.membershipBilling),
-                ),
-                _MenuTile(
-                  icon: Icons.verified_user_outlined,
-                  label: 'My benefits',
-                  onTap: () => context.push(RoutePaths.myBenefits),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.md),
-            _SectionCard(
-              label: 'Support',
-              tiles: [
-                _MenuTile(
-                  icon: Icons.help_outline_rounded,
-                  label: 'Help and support',
-                  onTap: () => context.push(RoutePaths.helpAndSupport),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.md),
-            _SectionCard(
-              label: 'Legal',
-              tiles: [
-                _MenuTile(
-                  icon: Icons.privacy_tip_outlined,
-                  label: 'Privacy Policy',
-                  onTap: () => context.push(RoutePaths.privacyPolicy),
-                ),
-                _MenuTile(
-                  icon: Icons.description_outlined,
-                  label: 'Terms and Conditions',
-                  onTap: () => context.push(RoutePaths.termsAndConditions),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.md),
-            _SectionCard(
-              label: 'Danger zone',
-              tiles: [
-                _MenuTile(
-                  icon: Icons.delete_outline_rounded,
-                  label: 'Delete my account',
-                  color: AppColors.error,
-                  onTap: _confirmDeleteAccount,
-                ),
-                _MenuTile(
-                  icon: Icons.logout_rounded,
-                  label: 'Sign out',
-                  color: AppColors.error,
-                  onTap: _signOut,
-                ),
-              ],
+            Center(
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  _FooterLink(
+                    label: 'Privacy Policy',
+                    onTap: () => context.push(RoutePaths.privacyPolicy),
+                  ),
+                  const _FooterDot(),
+                  _FooterLink(
+                    label: 'Terms and Conditions',
+                    onTap: () => context.push(RoutePaths.termsAndConditions),
+                  ),
+                  const _FooterDot(),
+                  _FooterLink(
+                    label: 'Delete my account',
+                    color: AppColors.error,
+                    onTap: _confirmDeleteAccount,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -220,94 +206,121 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
   }
 }
 
-/// A titled group of menu rows on a soft tonal background — replaces plain
-/// flat list rows with a "card per section" feel.
-class _SectionCard extends StatelessWidget {
-  const _SectionCard({required this.label, required this.tiles});
+class _ProfileRow extends StatelessWidget {
+  const _ProfileRow({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    this.green = false,
+    this.destructive = false,
+  });
 
-  final String label;
-  final List<_MenuTile> tiles;
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  final bool green;
+  final bool destructive;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(
-            bottom: AppSpacing.xs,
-            left: AppSpacing.xxs,
-          ),
-          child: Text(
-            label.toUpperCase(),
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-              color: AppColors.inkMuted,
-              letterSpacing: 0.6,
-            ),
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFFE8F4FC),
-            borderRadius: BorderRadius.circular(AppRadius.card),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-          child: Column(
+    final background = destructive
+        ? const Color(0xFFFCEAEA)
+        : (green ? const Color(0xFFEAF7E8) : const Color(0xFFE3EEFB));
+    final tint = destructive
+        ? AppColors.error
+        : (green ? AppColors.greenStrong : AppColors.blue);
+    final titleColor = destructive ? AppColors.error : AppColors.ink;
+
+    return Material(
+      color: background,
+      borderRadius: BorderRadius.circular(AppRadius.card),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Row(
             children: [
-              for (var i = 0; i < tiles.length; i++) ...[
-                tiles[i],
-                if (i != tiles.length - 1)
-                  const Divider(height: 1, color: Color(0xFFD3E6F5)),
-              ],
+              CircleAvatar(
+                radius: 22,
+                backgroundColor: AppColors.white,
+                child: Icon(icon, color: tint),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: titleColor,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        color: AppColors.inkMuted,
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right, color: tint),
             ],
           ),
         ),
-      ],
+      ),
     );
   }
 }
 
-class _MenuTile extends StatelessWidget {
-  const _MenuTile({
-    required this.icon,
+class _FooterLink extends StatelessWidget {
+  const _FooterLink({
     required this.label,
     required this.onTap,
-    this.color = AppColors.ink,
+    this.color = AppColors.inkMuted,
   });
 
-  final IconData icon;
   final String label;
   final VoidCallback onTap;
   final Color color;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-          child: Row(
-            children: [
-              Icon(icon, color: color, size: 22),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: color,
-                  ),
-                ),
-              ),
-              Icon(Icons.chevron_right, color: color.withValues(alpha: 0.6)),
-            ],
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12.5,
+            fontWeight: FontWeight.w700,
+            color: color,
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _FooterDot extends StatelessWidget {
+  const _FooterDot();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8),
+      child: Text(
+        '·',
+        style: TextStyle(fontSize: 12.5, color: AppColors.inkMuted),
       ),
     );
   }
