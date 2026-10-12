@@ -151,6 +151,11 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
                   label: 'Health records',
                   onTap: () => context.push(RoutePaths.healthRecords),
                 ),
+                _MenuTile(
+                  icon: Icons.shield_outlined,
+                  label: 'Privacy and sharing',
+                  onTap: () => context.push(RoutePaths.privacyAndSharing),
+                ),
               ],
             ),
             const SizedBox(height: AppSpacing.md),

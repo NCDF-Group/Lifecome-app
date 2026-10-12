@@ -70,6 +70,10 @@ abstract final class RoutePaths {
 
   static const editProfile = '/profile/edit';
 
+  /// Who can access the patient's records and why — distinct from
+  /// [privacyPolicy], the legal document it links out to.
+  static const privacyAndSharing = '/profile/privacy-sharing';
+
   static const privacyPolicy = '/profile/privacy';
 
   static const termsAndConditions = '/profile/terms';

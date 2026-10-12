@@ -33,6 +33,7 @@ import '../../features/payer/presentation/select_hmo_screen.dart';
 import '../../features/payer/presentation/verify_hmo_membership_screen.dart';
 import '../../features/profile/presentation/edit_profile_screen.dart';
 import '../../features/profile/presentation/patient_profile_screen.dart';
+import '../../features/profile/presentation/privacy_sharing_screen.dart';
 import '../../features/services/domain/models/wellbeing_service.dart';
 import '../../features/services/presentation/services_screen.dart';
 import '../../features/services/presentation/wellbeing_service_screen.dart';
@@ -224,6 +225,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'edit',
                     builder: (context, state) => const EditProfileScreen(),
+                  ),
+                  GoRoute(
+                    path: 'privacy-sharing',
+                    builder: (context, state) => const PrivacySharingScreen(),
                   ),
                   GoRoute(
                     path: 'privacy',
