@@ -16,6 +16,8 @@ import '../../features/booking/presentation/booking_confirmation_screen.dart';
 import '../../features/booking/presentation/booking_location_screen.dart';
 import '../../features/booking/presentation/choose_appointment_time_screen.dart';
 import '../../features/booking/presentation/choose_service_screen.dart';
+import '../../features/booking/presentation/find_smart_gp_clinic_screen.dart';
+import '../../features/booking/presentation/manage_appointment_screen.dart';
 import '../../features/booking/presentation/my_visits_screen.dart';
 import '../../features/booking/presentation/review_booking_screen.dart';
 import '../../features/care_plan/presentation/care_plan_screen.dart';
@@ -27,6 +29,9 @@ import '../../features/doctors/presentation/find_a_doctor_screen.dart';
 import '../../features/health_records/presentation/health_records_screen.dart';
 import '../../features/legal/presentation/privacy_screen.dart';
 import '../../features/legal/presentation/terms_screen.dart';
+import '../../features/membership/presentation/membership_billing_screen.dart';
+import '../../features/membership/presentation/membership_plans_screen.dart';
+import '../../features/membership/presentation/my_benefits_screen.dart';
 import '../../features/messaging/presentation/message_threads_screen.dart';
 import '../../features/payer/presentation/hmo_coverage_screen.dart';
 import '../../features/payer/presentation/select_hmo_screen.dart';
@@ -158,6 +163,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: RoutePaths.manageAppointment,
+        builder: (context, state) => ManageAppointmentScreen(
+          selection: state.extra! as BookingSelection,
+        ),
+      ),
+      GoRoute(
+        path: RoutePaths.findSmartGpClinic,
+        builder: (context, state) => const FindSmartGpClinicScreen(),
+      ),
+      GoRoute(
         path: RoutePaths.consultationWaitingRoom,
         builder: (context, state) =>
             WaitingRoomScreen(selection: state.extra! as BookingSelection),
@@ -229,6 +244,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'privacy-sharing',
                     builder: (context, state) => const PrivacySharingScreen(),
+                  ),
+                  GoRoute(
+                    path: 'membership-billing',
+                    builder: (context, state) =>
+                        const MembershipBillingScreen(),
+                  ),
+                  GoRoute(
+                    path: 'my-benefits',
+                    builder: (context, state) => const MyBenefitsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'membership-plans',
+                    builder: (context, state) => const MembershipPlansScreen(),
                   ),
                   GoRoute(
                     path: 'privacy',

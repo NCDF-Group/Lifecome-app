@@ -198,7 +198,7 @@ class BookingConfirmationScreen extends StatelessWidget {
               iconColor: AppColors.greenStrong,
               label: 'Manage booking',
               onTap: () =>
-                  showComingSoonPopup(context, feature: 'Manage booking'),
+                  context.push(RoutePaths.manageAppointment, extra: selection),
             ),
             const SizedBox(height: AppSpacing.md),
             Container(

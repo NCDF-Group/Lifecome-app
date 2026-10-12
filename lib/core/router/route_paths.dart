@@ -78,6 +78,24 @@ abstract final class RoutePaths {
 
   static const termsAndConditions = '/profile/terms';
 
+  /// Household plan, members and payment — distinct from [myBenefits],
+  /// which is what that plan actually covers.
+  static const membershipBilling = '/profile/membership-billing';
+
+  /// What the patient's current plan covers and how to use it.
+  static const myBenefits = '/profile/my-benefits';
+
+  /// The plan picker (Individual / Adult household / existing member),
+  /// reached from [membershipBilling]'s "Manage membership" button.
+  static const membershipPlans = '/profile/membership-plans';
+
+  /// Change, cancel or get help with a just-booked appointment. Reached
+  /// with the appointment's `BookingSelection` passed as `extra`.
+  static const manageAppointment = '/booking/manage-appointment';
+
+  /// Search for an in-person Smart GP clinic. Reached from the Visit tab.
+  static const findSmartGpClinic = '/visits/find-clinic';
+
   /// Blueprint view 06 — Select Your HMO. The entry point for the
   /// employer/HMO-covered path (Home and Services' "Employer access" link
   /// straight here) — "choose how to pay" no longer gates it; the direct-pay

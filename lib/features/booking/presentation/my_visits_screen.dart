@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
@@ -67,6 +69,12 @@ class MyVisitsScreen extends StatelessWidget {
                   context,
                   feature: 'Booking a consultation',
                 ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              TextButton.icon(
+                onPressed: () => context.push(RoutePaths.findSmartGpClinic),
+                icon: const Icon(Icons.apartment_outlined),
+                label: const Text('Find a Smart GP clinic'),
               ),
             ],
           ),

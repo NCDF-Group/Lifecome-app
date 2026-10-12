@@ -156,6 +156,16 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
                   label: 'Privacy and sharing',
                   onTap: () => context.push(RoutePaths.privacyAndSharing),
                 ),
+                _MenuTile(
+                  icon: Icons.credit_card_outlined,
+                  label: 'Membership and billing',
+                  onTap: () => context.push(RoutePaths.membershipBilling),
+                ),
+                _MenuTile(
+                  icon: Icons.verified_user_outlined,
+                  label: 'My benefits',
+                  onTap: () => context.push(RoutePaths.myBenefits),
+                ),
               ],
             ),
             const SizedBox(height: AppSpacing.md),
