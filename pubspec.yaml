@@ -38,18 +38,21 @@ flutter:
     - assets/images/welcome/
     - assets/images/home/
 
-  # Liberation Sans, bundled so the app never waits on a font CDN (OFL).
+  # Manrope, bundled so every weight is a real font file and the app never
+  # waits on a font CDN. Static instances of Google Fonts' Manrope[wght].ttf
+  # (OFL), one per weight the UI uses.
   fonts:
-    - family: Liberation Sans
+    - family: Manrope
       fonts:
-        - asset: assets/fonts/LiberationSans/LiberationSans-Regular.ttf
-        - asset: assets/fonts/LiberationSans/LiberationSans-Italic.ttf
-          style: italic
-        - asset: assets/fonts/LiberationSans/LiberationSans-Bold.ttf
+        - asset: assets/fonts/Manrope/Manrope-Regular.ttf
+        - asset: assets/fonts/Manrope/Manrope-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Manrope/Manrope-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Manrope/Manrope-Bold.ttf
           weight: 700
-        - asset: assets/fonts/LiberationSans/LiberationSans-BoldItalic.ttf
-          weight: 700
-          style: italic
+        - asset: assets/fonts/Manrope/Manrope-ExtraBold.ttf
+          weight: 800
 
 flutter_launcher_icons:
   # Regenerate with `dart run flutter_launcher_icons` after changing the mark

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
 
-/// The brand typeface, Liberation Sans, bundled from
-/// assets/fonts/LiberationSans (see the `fonts:` block in pubspec.yaml).
-const appFontFamily = 'Liberation Sans';
+/// The brand typeface, Manrope, bundled from assets/fonts/Manrope (see the
+/// `fonts:` block in pubspec.yaml).
+const appFontFamily = 'Manrope';
 
 /// Headings read ExtraBold; everything else (body, labels, buttons) reads
 /// Regular by default so a screen's own explicit weights (a bold title next
