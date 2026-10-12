@@ -1,103 +1,201 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/country/app_country.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
+import '../../../core/widgets/layout/app_header_bar.dart';
 import '../domain/models/appointment.dart';
 
-const _times = [
-  '9:00 AM',
-  '9:30 AM',
-  '10:00 AM',
-  '10:30 AM',
-  '11:00 AM',
-  '2:00 PM',
-  '2:30 PM',
-  '3:00 PM',
+const _times = ['10:00', '10:30', '11:00', '11:30'];
+const _weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const _months = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+const _fullMonths = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+const _fullWeekdays = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
 ];
 
+enum _ConsultationMode { video, telephone }
+
 /// Blueprint view 13 — Choose Appointment Time.
-class ChooseAppointmentTimeScreen extends StatefulWidget {
+class ChooseAppointmentTimeScreen extends ConsumerStatefulWidget {
   const ChooseAppointmentTimeScreen({super.key, required this.selection});
 
   final BookingSelection selection;
 
   @override
-  State<ChooseAppointmentTimeScreen> createState() =>
+  ConsumerState<ChooseAppointmentTimeScreen> createState() =>
       _ChooseAppointmentTimeScreenState();
 }
 
 class _ChooseAppointmentTimeScreenState
-    extends State<ChooseAppointmentTimeScreen> {
+    extends ConsumerState<ChooseAppointmentTimeScreen> {
   late final _days = List.generate(
-    7,
+    3,
     (i) => DateTime.now().add(Duration(days: i)),
   );
   late DateTime _selectedDay = _days.first;
-  String _selectedTime = _times.first;
+  String _selectedTime = _times[1];
+  _ConsultationMode _mode = _ConsultationMode.video;
 
   @override
   Widget build(BuildContext context) {
     final doctor = widget.selection.doctor!;
+    final isUk = ref.watch(countryProvider) == AppCountry.unitedKingdom;
+    final timezoneLabel = isUk ? 'UK time (BST)' : 'West Africa Time (WAT)';
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        title: const Text(
-          'Choose your appointment',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
-        ),
-      ),
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.all(AppSpacing.lg),
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(AppSpacing.sm),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(AppRadius.control),
+                  AppHeaderBar(showBack: true, onBack: () => context.pop()),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Choose a time',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.ink,
                     ),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: AppColors.blue.withValues(
-                            alpha: 0.1,
-                          ),
-                          child: const Icon(
-                            Icons.person,
-                            color: AppColors.blue,
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Select a date, time and how you would like to be seen.',
+                    style: TextStyle(fontSize: 14, color: AppColors.inkMuted),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  Material(
+                    color: const Color(0xFFEAF7E8),
+                    borderRadius: BorderRadius.circular(AppRadius.card),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(AppRadius.card),
+                      onTap: () => context.push(
+                        RoutePaths.doctorsProfile,
+                        extra: widget.selection,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.sm),
+                        child: Row(
                           children: [
-                            Text(
-                              doctor.name,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.ink,
+                            const CircleAvatar(
+                              radius: 22,
+                              backgroundColor: AppColors.white,
+                              child: Icon(
+                                Icons.person,
+                                color: AppColors.greenStrong,
                               ),
                             ),
-                            Text(
-                              widget.selection.consultationType,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: AppColors.inkMuted,
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    doctor.name,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.ink,
+                                    ),
+                                  ),
+                                  Text(
+                                    _mode == _ConsultationMode.video
+                                        ? 'Online GP'
+                                        : 'Telephone GP',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.inkMuted,
+                                    ),
+                                  ),
+                                ],
                               ),
+                            ),
+                            const Icon(
+                              Icons.chevron_right,
+                              color: AppColors.blue,
                             ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  const Text(
+                    'How would you like to be seen?',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.ink,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: _ModeCard(
+                          icon: Icons.videocam_outlined,
+                          title: 'Video',
+                          subtitle: 'See the GP online',
+                          selected: _mode == _ConsultationMode.video,
+                          onTap: () =>
+                              setState(() => _mode = _ConsultationMode.video),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: _ModeCard(
+                          icon: Icons.call_outlined,
+                          title: 'Telephone',
+                          subtitle: 'Speak by phone',
+                          selected: _mode == _ConsultationMode.telephone,
+                          onTap: () => setState(
+                            () => _mode = _ConsultationMode.telephone,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: AppSpacing.md),
                   const Text(
@@ -109,53 +207,121 @@ class _ChooseAppointmentTimeScreenState
                     ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
-                  SizedBox(
-                    height: 72,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _days.length,
-                      separatorBuilder: (_, _) =>
+                  Row(
+                    children: [
+                      for (var i = 0; i < _days.length; i++) ...[
+                        Expanded(
+                          child: _DayCard(
+                            day: _days[i],
+                            selected:
+                                _days[i].day == _selectedDay.day &&
+                                _days[i].month == _selectedDay.month,
+                            onTap: () =>
+                                setState(() => _selectedDay = _days[i]),
+                          ),
+                        ),
+                        if (i != _days.length - 1)
                           const SizedBox(width: AppSpacing.xs),
-                      itemBuilder: (context, index) {
-                        final day = _days[index];
-                        final selected =
-                            day.day == _selectedDay.day &&
-                            day.month == _selectedDay.month;
-                        return _DayChip(
-                          day: day,
-                          isToday: index == 0,
-                          selected: selected,
-                          onTap: () => setState(() => _selectedDay = day),
-                        );
-                      },
-                    ),
+                      ],
+                    ],
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  const Text(
-                    'Available time slots',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.ink,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Wrap(
-                    spacing: AppSpacing.xs,
-                    runSpacing: AppSpacing.xs,
+                  Row(
                     children: [
-                      for (final time in _times)
-                        _TimeChip(
-                          time: time,
-                          selected: time == _selectedTime,
-                          onTap: () => setState(() => _selectedTime = time),
+                      const Text(
+                        'Available times',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.ink,
                         ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        timezoneLabel,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.inkMuted,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: AppSpacing.sm),
+                  Row(
+                    children: [
+                      for (var i = 0; i < _times.length; i++) ...[
+                        Expanded(
+                          child: _TimeChip(
+                            time: _times[i],
+                            selected: _times[i] == _selectedTime,
+                            onTap: () =>
+                                setState(() => _selectedTime = _times[i]),
+                          ),
+                        ),
+                        if (i != _times.length - 1)
+                          const SizedBox(width: AppSpacing.xs),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 4),
                   const Text(
-                    'All times are West Africa Time (WAT).',
+                    'Sample availability',
                     style: TextStyle(fontSize: 12, color: AppColors.inkMuted),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  Container(
+                    padding: const EdgeInsets.all(AppSpacing.sm),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEAF7E8),
+                      borderRadius: BorderRadius.circular(AppRadius.control),
+                    ),
+                    child: Row(
+                      children: [
+                        const CircleAvatar(
+                          radius: 18,
+                          backgroundColor: AppColors.white,
+                          child: Icon(
+                            Icons.calendar_month_outlined,
+                            size: 18,
+                            color: AppColors.greenStrong,
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Selected appointment',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.inkMuted,
+                                ),
+                              ),
+                              Text(
+                                '${_fullWeekdays[_selectedDay.weekday - 1]} '
+                                '${_selectedDay.day} '
+                                '${_fullMonths[_selectedDay.month - 1]} '
+                                '${_selectedDay.year} at $_selectedTime',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.ink,
+                                ),
+                              ),
+                              Text(
+                                '${_mode == _ConsultationMode.video ? 'Video' : 'Telephone'} '
+                                'consultation with ${doctor.name}',
+                                style: const TextStyle(
+                                  fontSize: 12.5,
+                                  color: AppColors.inkMuted,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -163,13 +329,16 @@ class _ChooseAppointmentTimeScreenState
             Padding(
               padding: const EdgeInsets.all(AppSpacing.lg),
               child: PrimaryButton(
-                label: 'Continue with $_selectedTime',
+                label: 'Continue',
                 icon: Icons.arrow_forward,
                 onPressed: () => context.push(
                   RoutePaths.bookingBeforeYourVisit,
                   extra: widget.selection.copyWith(
                     date: _selectedDay,
                     time: _selectedTime,
+                    consultationType: _mode == _ConsultationMode.video
+                        ? 'Video consultation'
+                        : 'Telephone consultation',
                   ),
                 ),
               ),
@@ -181,57 +350,113 @@ class _ChooseAppointmentTimeScreenState
   }
 }
 
-class _DayChip extends StatelessWidget {
-  const _DayChip({
+class _ModeCard extends StatelessWidget {
+  const _ModeCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: selected ? const Color(0xFFE3EEFB) : AppColors.white,
+      borderRadius: BorderRadius.circular(AppRadius.card),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.sm),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.card),
+            border: Border.all(
+              color: selected ? AppColors.blue : AppColors.line,
+              width: 1.5,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(icon, color: AppColors.ink, size: 20),
+                  const Spacer(),
+                  _RadioCircle(selected: selected),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.ink,
+                ),
+              ),
+              Text(
+                subtitle,
+                style: const TextStyle(fontSize: 12, color: AppColors.inkMuted),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DayCard extends StatelessWidget {
+  const _DayCard({
     required this.day,
-    required this.isToday,
     required this.selected,
     required this.onTap,
   });
 
   final DateTime day;
-  final bool isToday;
   final bool selected;
   final VoidCallback onTap;
-
-  static const _weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected ? AppColors.blue : AppColors.white,
-      borderRadius: BorderRadius.circular(AppRadius.control),
+      color: selected ? const Color(0xFFE3EEFB) : AppColors.white,
+      borderRadius: BorderRadius.circular(AppRadius.card),
       child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.control),
+        borderRadius: BorderRadius.circular(AppRadius.card),
         onTap: onTap,
         child: Container(
-          width: 64,
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppRadius.control),
+            borderRadius: BorderRadius.circular(AppRadius.card),
             border: Border.all(
               color: selected ? AppColors.blue : AppColors.line,
+              width: 1.5,
             ),
           ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                isToday ? 'Today' : _weekdays[day.weekday - 1],
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: selected ? AppColors.white : AppColors.inkMuted,
-                ),
+                _weekdays[day.weekday - 1],
+                style: const TextStyle(fontSize: 12, color: AppColors.inkMuted),
               ),
               Text(
-                '${day.day}',
-                style: TextStyle(
-                  fontSize: 16,
+                '${day.day} ${_months[day.month - 1]}',
+                style: const TextStyle(
+                  fontSize: 15,
                   fontWeight: FontWeight.w800,
-                  color: selected ? AppColors.white : AppColors.ink,
+                  color: AppColors.ink,
                 ),
               ),
+              const SizedBox(height: 4),
+              _RadioCircle(selected: selected),
             ],
           ),
         ),
@@ -254,32 +479,57 @@ class _TimeChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected ? AppColors.blue : AppColors.white,
+      color: selected ? AppColors.blue : AppColors.surface,
       borderRadius: BorderRadius.circular(AppRadius.control),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.control),
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.sm,
-            vertical: AppSpacing.xs,
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppRadius.control),
-            border: Border.all(
-              color: selected ? AppColors.blue : AppColors.line,
-            ),
-          ),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+          alignment: Alignment.center,
           child: Text(
             time,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 14,
               fontWeight: FontWeight.w700,
               color: selected ? AppColors.white : AppColors.ink,
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _RadioCircle extends StatelessWidget {
+  const _RadioCircle({required this.selected});
+
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 20,
+      height: 20,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: selected ? AppColors.blue : AppColors.line,
+          width: 2,
+        ),
+      ),
+      child: selected
+          ? Center(
+              child: Container(
+                width: 10,
+                height: 10,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.blue,
+                ),
+              ),
+            )
+          : null,
     );
   }
 }
