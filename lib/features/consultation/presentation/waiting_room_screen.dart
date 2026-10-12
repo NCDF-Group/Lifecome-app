@@ -6,11 +6,13 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
+import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../booking/domain/models/appointment.dart';
 
 /// Blueprint view 18 — Consultation Waiting Room. There is no real signaling
-/// server, so "Join call" is always available immediately rather than
-/// waiting for the doctor to actually connect.
+/// server, so "Test audio and video" doubles as the way in — it goes
+/// straight to the call rather than waiting for the doctor to connect.
 class WaitingRoomScreen extends StatelessWidget {
   const WaitingRoomScreen({super.key, required this.selection});
 
@@ -22,44 +24,67 @@ class WaitingRoomScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        title: const Text(
-          'You are in the waiting room',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
-        ),
-      ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
+            AppHeaderBar(showBack: true, onBack: () => context.pop()),
+            const SizedBox(height: 20),
+            const Text(
+              'Your waiting room',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                color: AppColors.ink,
+              ),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'You’re checked in. We’ll let you know when your '
+              'clinician is ready.',
+              style: TextStyle(
+                fontSize: 14,
+                color: AppColors.inkMuted,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
             Container(
-              padding: const EdgeInsets.all(AppSpacing.sm),
+              padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                border: Border.all(color: AppColors.line),
-                borderRadius: BorderRadius.circular(AppRadius.control),
+                color: const Color(0xFFE3EEFB),
+                borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    backgroundColor: AppColors.blue.withValues(alpha: 0.1),
-                    child: const Icon(Icons.person, color: AppColors.blue),
+                  const CircleAvatar(
+                    radius: 22,
+                    backgroundColor: AppColors.white,
+                    child: Icon(Icons.person, color: AppColors.blue),
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        doctor.name,
+                        selection.service?.title ?? 'Online GP',
                         style: const TextStyle(
-                          fontSize: 15,
+                          fontSize: 13,
+                          color: AppColors.inkMuted,
+                        ),
+                      ),
+                      Text(
+                        selection.time ?? '',
+                        style: const TextStyle(
+                          fontSize: 17,
                           fontWeight: FontWeight.w800,
                           color: AppColors.ink,
                         ),
                       ),
                       Text(
-                        '${selection.service?.title ?? 'Consultation'} · ${selection.time ?? ''}',
+                        doctor.name,
                         style: const TextStyle(
-                          fontSize: 12,
+                          fontSize: 13,
                           color: AppColors.inkMuted,
                         ),
                       ),
@@ -69,75 +94,164 @@ class WaitingRoomScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
+            const _WaitingIllustration(),
+            const SizedBox(height: AppSpacing.md),
+            const Text(
+              'Waiting for your clinician',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+                color: AppColors.ink,
+              ),
+            ),
+            const SizedBox(height: 2),
+            const Text(
+              'We’ll connect you as soon as they’re ready.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 13, color: AppColors.inkMuted),
+            ),
+            const SizedBox(height: AppSpacing.lg),
             Container(
-              padding: const EdgeInsets.all(AppSpacing.lg),
+              padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
                 color: const Color(0xFFEAF7E8),
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: const Column(
                 children: [
-                  Icon(
-                    Icons.videocam_outlined,
-                    color: AppColors.greenStrong,
-                    size: 40,
-                  ),
-                  SizedBox(height: AppSpacing.sm),
-                  Text(
-                    'Your doctor will join shortly',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.ink,
-                    ),
-                  ),
+                  _CheckRow(label: 'Camera ready'),
+                  SizedBox(height: AppSpacing.xs),
+                  _CheckRow(label: 'Microphone ready'),
+                  SizedBox(height: AppSpacing.xs),
+                  _CheckRow(label: 'Connection ready'),
                 ],
               ),
             ),
-            const SizedBox(height: AppSpacing.lg),
-            const Text(
-              'Connection check',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-                color: AppColors.ink,
+            const SizedBox(height: AppSpacing.sm),
+            Material(
+              color: const Color(0xFFE3EEFB),
+              borderRadius: BorderRadius.circular(AppRadius.control),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(AppRadius.control),
+                onTap: () =>
+                    showComingSoonPopup(context, feature: 'Update location'),
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.sm),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 20,
+                        color: AppColors.blue,
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Current location',
+                              style: TextStyle(
+                                fontSize: 12.5,
+                                color: AppColors.inkMuted,
+                              ),
+                            ),
+                            Text(
+                              'London',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.ink,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Text(
+                        'Confirm or update',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.blue,
+                        ),
+                      ),
+                      const Icon(
+                        Icons.chevron_right,
+                        size: 18,
+                        color: AppColors.blue,
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-            const SizedBox(height: AppSpacing.xs),
-            const _CheckRow(
-              icon: Icons.videocam_outlined,
-              label: 'Camera',
-              status: 'Ready',
-            ),
-            const _CheckRow(
-              icon: Icons.mic_outlined,
-              label: 'Microphone',
-              status: 'Ready',
-            ),
-            const _CheckRow(
-              icon: Icons.wifi,
-              label: 'Internet',
-              status: 'Connected',
-            ),
             const SizedBox(height: AppSpacing.md),
-            const Text(
-              'Choose a quiet, private place for your visit.',
-              style: TextStyle(fontSize: 12, color: AppColors.inkMuted),
-            ),
-            const SizedBox(height: AppSpacing.lg),
             PrimaryButton(
-              label: 'Join call',
-              icon: Icons.videocam,
+              label: 'Test audio and video',
+              icon: Icons.videocam_outlined,
               onPressed: () => context.pushReplacement(
                 RoutePaths.consultationCall,
                 extra: selection,
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
+            Material(
+              color: const Color(0xFFE3EEFB),
+              borderRadius: BorderRadius.circular(AppRadius.control),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(AppRadius.control),
+                onTap: () =>
+                    showComingSoonPopup(context, feature: 'Telephone fallback'),
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.sm),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.phone_outlined,
+                        size: 20,
+                        color: AppColors.blue,
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Trouble connecting?',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.ink,
+                              ),
+                            ),
+                            Text(
+                              'Request telephone fallback',
+                              style: TextStyle(
+                                fontSize: 12.5,
+                                color: AppColors.inkMuted,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.chevron_right, color: AppColors.blue),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
             Center(
               child: TextButton(
                 onPressed: () => context.pop(),
-                child: const Text('Leave waiting room'),
+                child: const Text(
+                  'Leave waiting room',
+                  style: TextStyle(
+                    color: AppColors.blue,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
             ),
           ],
@@ -147,43 +261,95 @@ class WaitingRoomScreen extends StatelessWidget {
   }
 }
 
-class _CheckRow extends StatelessWidget {
-  const _CheckRow({
-    required this.icon,
-    required this.label,
-    required this.status,
-  });
-
-  final IconData icon;
-  final String label;
-  final String status;
+class _WaitingIllustration extends StatelessWidget {
+  const _WaitingIllustration();
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
+    return SizedBox(
+      height: 150,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          Icon(icon, size: 18, color: AppColors.blue),
-          const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Text(
-              label,
-              style: const TextStyle(fontSize: 14, color: AppColors.ink),
+          const Positioned(
+            left: 70,
+            top: 10,
+            child: Icon(Icons.circle, size: 6, color: AppColors.blue),
+          ),
+          const Positioned(
+            right: 60,
+            top: 30,
+            child: Icon(Icons.circle, size: 4, color: AppColors.blue),
+          ),
+          const Positioned(
+            left: 50,
+            bottom: 20,
+            child: Icon(Icons.circle, size: 4, color: AppColors.blue),
+          ),
+          Container(
+            width: 170,
+            height: 120,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE3EEFB),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.blue, width: 2.5),
+            ),
+            child: Stack(
+              children: [
+                const Center(
+                  child: Icon(Icons.person, size: 56, color: AppColors.blue),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Container(
+                    width: 22,
+                    height: 22,
+                    decoration: const BoxDecoration(
+                      color: AppColors.blue,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.videocam,
+                      size: 12,
+                      color: AppColors.white,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          const Icon(Icons.circle, size: 8, color: AppColors.greenStrong),
-          const SizedBox(width: 4),
-          Text(
-            status,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: AppColors.greenStrong,
+          Positioned(
+            bottom: 0,
+            child: Container(
+              width: 190,
+              height: 8,
+              decoration: BoxDecoration(
+                color: AppColors.blue,
+                borderRadius: BorderRadius.circular(4),
+              ),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _CheckRow extends StatelessWidget {
+  const _CheckRow({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Icon(Icons.check_circle, size: 18, color: AppColors.greenStrong),
+        const SizedBox(width: AppSpacing.xs),
+        Text(label, style: const TextStyle(fontSize: 14, color: AppColors.ink)),
+      ],
     );
   }
 }
