@@ -126,37 +126,39 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
                     style: TextStyle(fontSize: 13, color: AppColors.inkMuted),
                   ),
                   const SizedBox(height: AppSpacing.sm),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(
-                        child: _FormatCard(
-                          background: const Color(0xFFEAF7E8),
-                          iconColor: AppColors.greenStrong,
-                          icon: Icons.desktop_windows_outlined,
-                          title: 'Online GP',
-                          subtitle: 'Video or telephone\nappointment.',
-                          selected: _format == _AppointmentFormat.online,
-                          onTap: () => setState(
-                            () => _format = _AppointmentFormat.online,
+                  IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: _FormatCard(
+                            background: const Color(0xFFEAF7E8),
+                            iconColor: AppColors.greenStrong,
+                            icon: Icons.desktop_windows_outlined,
+                            title: 'Online GP',
+                            subtitle: 'Video or telephone\nappointment.',
+                            selected: _format == _AppointmentFormat.online,
+                            onTap: () => setState(
+                              () => _format = _AppointmentFormat.online,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: _FormatCard(
-                          background: const Color(0xFFE3EEFB),
-                          iconColor: AppColors.blue,
-                          icon: Icons.apartment_outlined,
-                          title: 'Smart GP clinic',
-                          subtitle: 'In person\nat a local clinic.',
-                          selected: _format == _AppointmentFormat.clinic,
-                          onTap: () => setState(
-                            () => _format = _AppointmentFormat.clinic,
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: _FormatCard(
+                            background: const Color(0xFFE3EEFB),
+                            iconColor: AppColors.blue,
+                            icon: Icons.apartment_outlined,
+                            title: 'Smart GP clinic',
+                            subtitle: 'In person\nat a local clinic.',
+                            selected: _format == _AppointmentFormat.clinic,
+                            onTap: () => setState(
+                              () => _format = _AppointmentFormat.clinic,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),

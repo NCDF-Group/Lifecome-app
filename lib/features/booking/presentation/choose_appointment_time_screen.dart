@@ -166,32 +166,34 @@ class _ChooseAppointmentTimeScreenState
                     ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(
-                        child: _ModeCard(
-                          icon: Icons.videocam_outlined,
-                          title: 'Video',
-                          subtitle: 'See the GP online',
-                          selected: _mode == _ConsultationMode.video,
-                          onTap: () =>
-                              setState(() => _mode = _ConsultationMode.video),
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: _ModeCard(
-                          icon: Icons.call_outlined,
-                          title: 'Telephone',
-                          subtitle: 'Speak by phone',
-                          selected: _mode == _ConsultationMode.telephone,
-                          onTap: () => setState(
-                            () => _mode = _ConsultationMode.telephone,
+                  IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: _ModeCard(
+                            icon: Icons.videocam_outlined,
+                            title: 'Video',
+                            subtitle: 'See the GP online',
+                            selected: _mode == _ConsultationMode.video,
+                            onTap: () =>
+                                setState(() => _mode = _ConsultationMode.video),
                           ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: _ModeCard(
+                            icon: Icons.call_outlined,
+                            title: 'Telephone',
+                            subtitle: 'Speak by phone',
+                            selected: _mode == _ConsultationMode.telephone,
+                            onTap: () => setState(
+                              () => _mode = _ConsultationMode.telephone,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.md),
                   const Text(

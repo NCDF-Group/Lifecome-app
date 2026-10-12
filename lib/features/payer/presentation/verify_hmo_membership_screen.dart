@@ -225,31 +225,33 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: _FallbackCard(
-                    icon: Icons.headset_mic_outlined,
-                    background: const Color(0xFFEAF7E8),
-                    iconColor: AppColors.greenStrong,
-                    title: 'Get help',
-                    subtitle: 'Speak to our team.',
-                    onTap: () => context.go(RoutePaths.messages),
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: _FallbackCard(
+                      icon: Icons.headset_mic_outlined,
+                      background: const Color(0xFFEAF7E8),
+                      iconColor: AppColors.greenStrong,
+                      title: 'Get help',
+                      subtitle: 'Speak to our team.',
+                      onTap: () => context.go(RoutePaths.messages),
+                    ),
                   ),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: _FallbackCard(
-                    icon: Icons.sync_alt,
-                    background: const Color(0xFFE3EEFB),
-                    iconColor: AppColors.blue,
-                    title: 'Choose another way',
-                    subtitle: 'Other ways to access.',
-                    onTap: () => context.pop(),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: _FallbackCard(
+                      icon: Icons.sync_alt,
+                      background: const Color(0xFFE3EEFB),
+                      iconColor: AppColors.blue,
+                      title: 'Choose another way',
+                      subtitle: 'Other ways to access.',
+                      onTap: () => context.pop(),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
