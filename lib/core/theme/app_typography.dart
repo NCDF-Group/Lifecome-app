@@ -6,11 +6,13 @@ import 'app_colors.dart';
 /// assets/fonts/LiberationSans (see the `fonts:` block in pubspec.yaml).
 const appFontFamily = 'Liberation Sans';
 
-/// The app reads bold throughout: headings in ExtraBold and everything else
-/// (body, labels, buttons) in Bold.
+/// Headings read ExtraBold; everything else (body, labels, buttons) reads
+/// Regular by default so a screen's own explicit weights (a bold title next
+/// to a plain-weight subtitle, for instance) aren't overridden by the
+/// ambient text style every unstyled `Text` widget inherits.
 TextTheme buildAppTextTheme(TextTheme base) {
   TextStyle? heading(TextStyle? s) => s?.copyWith(fontWeight: FontWeight.w800);
-  TextStyle? body(TextStyle? s) => s?.copyWith(fontWeight: FontWeight.w700);
+  TextStyle? body(TextStyle? s) => s?.copyWith(fontWeight: FontWeight.w400);
 
   return base
       .copyWith(
