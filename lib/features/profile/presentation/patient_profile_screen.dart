@@ -142,7 +142,7 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
               label: 'Account',
               tiles: [
                 _MenuTile(
-                  icon: Icons.person_outline_rounded,
+                  icon: Icons.person_outline,
                   label: 'My profile',
                   onTap: () => context.push(RoutePaths.editProfile),
                 ),

@@ -211,7 +211,7 @@ class CarePlanScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
             PrimaryButton(
               label: 'Message care team',
-              icon: Icons.chat_bubble_outline,
+              icon: Icons.forum_outlined,
               onPressed: () => context.go(RoutePaths.messages),
             ),
           ],

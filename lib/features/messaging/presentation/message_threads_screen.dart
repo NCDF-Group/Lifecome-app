@@ -13,15 +13,11 @@ class _Message {
     required this.text,
     required this.fromPatient,
     required this.time,
-    this.actionLabel,
   });
 
   final String text;
   final bool fromPatient;
   final String time;
-
-  /// The small "Open care plan"-style button a care-team message can carry.
-  final String? actionLabel;
 }
 
 /// The Messages tab — blueprint view 22, Care Team Messages. There is only
@@ -37,24 +33,11 @@ class MessageThreadsScreen extends StatefulWidget {
 
 class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
   final _controller = TextEditingController();
-  final _messages = <_Message>[
-    const _Message(
-      text: 'Your visit summary is available in Health records.',
-      fromPatient: false,
-      time: '10:24',
-    ),
-    const _Message(
-      text: 'Thank you. Where can I find my care plan?',
-      fromPatient: true,
-      time: '10:28',
-    ),
-    const _Message(
-      text: 'Open Health records and select Care plans.',
-      fromPatient: false,
-      time: '10:31',
-      actionLabel: 'Open care plan',
-    ),
-  ];
+
+  /// No messaging backend exists yet, so this starts empty rather than
+  /// showing a fabricated conversation — a real exchange only appears here
+  /// once the patient sends one or the care team replies.
+  final _messages = <_Message>[];
 
   @override
   void dispose() {
@@ -163,28 +146,32 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
               ),
             ),
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.sm,
-                ),
-                children: [
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: AppSpacing.xs),
-                      child: Text(
-                        'Today',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.inkMuted,
-                        ),
+              child: _messages.isEmpty
+                  ? const _EmptyThread()
+                  : ListView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                        vertical: AppSpacing.sm,
                       ),
+                      children: [
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: AppSpacing.xs,
+                            ),
+                            child: Text(
+                              'Today',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColors.inkMuted,
+                              ),
+                            ),
+                          ),
+                        ),
+                        for (final message in _messages)
+                          _MessageBubble(message: message),
+                      ],
                     ),
-                  ),
-                  for (final message in _messages)
-                    _MessageBubble(message: message),
-                ],
-              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(
@@ -320,6 +307,56 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
   }
 }
 
+class _EmptyThread extends StatelessWidget {
+  const _EmptyThread();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: const BoxDecoration(
+                color: Color(0xFFE3EEFB),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.forum_outlined,
+                color: AppColors.blue,
+                size: 28,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            const Text(
+              'No messages yet',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: AppColors.ink,
+              ),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'Send a message to start a conversation with your care team.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                color: AppColors.inkMuted,
+                height: 1.4,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _MessageBubble extends StatelessWidget {
   const _MessageBubble({required this.message});
 
@@ -405,63 +442,9 @@ class _MessageBubble extends StatelessWidget {
                     color: const Color(0xFFE3EEFB),
                     borderRadius: BorderRadius.circular(AppRadius.control),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        message.text,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.ink,
-                        ),
-                      ),
-                      if (message.actionLabel != null) ...[
-                        const SizedBox(height: AppSpacing.xs),
-                        Material(
-                          color: AppColors.white,
-                          borderRadius: BorderRadius.circular(
-                            AppRadius.control,
-                          ),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(
-                              AppRadius.control,
-                            ),
-                            onTap: () => context.go(RoutePaths.healthRecords),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: AppSpacing.sm,
-                                vertical: AppSpacing.xs,
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.description_outlined,
-                                    size: 16,
-                                    color: AppColors.blue,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    message.actionLabel!,
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.blue,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  const Icon(
-                                    Icons.chevron_right,
-                                    size: 16,
-                                    color: AppColors.blue,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
+                  child: Text(
+                    message.text,
+                    style: const TextStyle(fontSize: 14, color: AppColors.ink),
                   ),
                 ),
               ],

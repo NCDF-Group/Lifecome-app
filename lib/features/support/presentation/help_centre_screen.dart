@@ -118,7 +118,7 @@ class HelpCentreScreen extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
-                          Icons.chat_bubble_outline,
+                          Icons.forum_outlined,
                           color: AppColors.white,
                           size: 20,
                         ),

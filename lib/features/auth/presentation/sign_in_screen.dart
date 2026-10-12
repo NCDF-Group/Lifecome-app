@@ -242,7 +242,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                       onPressed: () =>
                           showComingSoonPopup(context, feature: 'Get help'),
                       icon: const Icon(
-                        Icons.chat_bubble_outline,
+                        Icons.forum_outlined,
                         size: 16,
                         color: AppColors.blue,
                       ),
