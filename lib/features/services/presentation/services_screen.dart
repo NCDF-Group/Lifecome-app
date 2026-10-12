@@ -57,7 +57,7 @@ class ServicesScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 10),
             _ServiceRow(
-              icon: Icons.local_hospital_outlined,
+              icon: Icons.apartment_outlined,
               iconColor: AppColors.blue,
               title: 'Clinic care',
               subtitle: 'In-person GP care.',

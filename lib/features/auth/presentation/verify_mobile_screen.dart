@@ -8,6 +8,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
+import '../../../core/widgets/buttons/tinted_button.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/inputs/otp_input.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
@@ -150,7 +151,7 @@ class _VerifyMobileScreenState extends ConsumerState<VerifyMobileScreen> {
                   onPressed: _code.length == 6 ? () => _submit() : null,
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                _TintedButton(
+                TintedButton(
                   label: 'Change number',
                   onPressed: () => context.pop(),
                 ),
@@ -192,33 +193,6 @@ class _VerifyMobileScreenState extends ConsumerState<VerifyMobileScreen> {
 
   static void _showVerificationHelp(BuildContext context) {
     showComingSoonPopup(context, feature: 'Verification help');
-  }
-}
-
-class _TintedButton extends StatelessWidget {
-  const _TintedButton({required this.label, required this.onPressed});
-
-  final String label;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 52,
-      child: FilledButton(
-        onPressed: onPressed,
-        style: FilledButton.styleFrom(
-          backgroundColor: const Color(0xFFE3EEFB),
-          foregroundColor: AppColors.blue,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.pill),
-          ),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-        ),
-        child: Text(label),
-      ),
-    );
   }
 }
 

@@ -111,7 +111,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _QuickCard(
-                    icon: Icons.local_hospital_outlined,
+                    icon: Icons.apartment_outlined,
                     background: const Color(0xFFE3EEFB),
                     iconColor: AppColors.blue,
                     title: 'Clinic care',
@@ -136,9 +136,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       Container(
                         width: 40,
                         height: 40,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           color: AppColors.white,
-                          shape: BoxShape.circle,
+                          borderRadius: BorderRadius.circular(14),
                         ),
                         child: const Icon(
                           Icons.eco_outlined,
@@ -192,7 +192,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               children: [
                 Expanded(
                   child: _QuickCard(
-                    icon: Icons.calendar_today_outlined,
+                    icon: Icons.calendar_month_outlined,
                     background: const Color(0xFFEAF7E8),
                     iconColor: AppColors.greenStrong,
                     title: 'My bookings',

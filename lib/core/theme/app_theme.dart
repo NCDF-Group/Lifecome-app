@@ -66,31 +66,6 @@ ThemeData buildAppTheme() {
       ),
       side: const BorderSide(color: AppColors.line, width: 1.5),
     ),
-    navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: AppColors.white,
-      surfaceTintColor: Colors.transparent,
-      indicatorColor: AppColors.blue.withValues(alpha: 0.12),
-      height: 64,
-      labelTextStyle: WidgetStateProperty.resolveWith(
-        (states) => TextStyle(
-          fontSize: 12,
-          fontWeight: states.contains(WidgetState.selected)
-              ? FontWeight.w700
-              : FontWeight.w700,
-          color: states.contains(WidgetState.selected)
-              ? AppColors.blue
-              : AppColors.inkMuted,
-        ),
-      ),
-      iconTheme: WidgetStateProperty.resolveWith(
-        (states) => IconThemeData(
-          size: 24,
-          color: states.contains(WidgetState.selected)
-              ? AppColors.blue
-              : AppColors.inkMuted,
-        ),
-      ),
-    ),
     splashFactory: InkRipple.splashFactory,
   );
 }

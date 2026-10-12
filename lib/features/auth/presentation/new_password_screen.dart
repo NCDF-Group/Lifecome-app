@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/animation/fade_in.dart';
 import '../../../core/providers/core_providers.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
-import '../../../core/widgets/layout/auth_form_card.dart';
-import '../../../core/widgets/layout/brand_backdrop.dart';
+import '../../../core/widgets/layout/max_content_width.dart';
 import '../data/auth_repository.dart';
 import 'widgets/password_rules_checklist.dart';
 
@@ -84,137 +83,111 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.blue),
-          onPressed: () => context.pop(),
-        ),
-      ),
-      body: Stack(
-        children: [
-          const Positioned.fill(child: BrandBackdrop()),
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-              child: AuthFormCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.sm,
+            AppSpacing.lg,
+            AppSpacing.lg,
+          ),
+          child: MaxContentWidth(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
                   children: [
-                    FadeIn(
-                      child: Center(
-                        child: Container(
-                          width: 84,
-                          height: 84,
-                          decoration: BoxDecoration(
-                            color: AppColors.blue.withValues(alpha: 0.08),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.lock_outline,
-                            color: AppColors.blue,
-                            size: 38,
-                          ),
-                        ),
+                    IconButton(
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: () => context.pop(),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new,
+                        size: 18,
+                        color: AppColors.ink,
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.lg),
-                    const FadeIn(
-                      delay: Duration(milliseconds: 80),
-                      child: Text(
-                        'Choose a new password',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.ink,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    const FadeIn(
-                      delay: Duration(milliseconds: 120),
-                      child: Text(
-                        'Use at least 8 characters. You will use this password to sign in from now on.',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.inkMuted,
-                          height: 1.4,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xl),
-                    FadeIn(
-                      delay: const Duration(milliseconds: 160),
-                      child: AppTextField(
-                        label: 'New password',
-                        controller: _passwordController,
-                        hintText: 'Enter new password',
-                        obscureText: _obscurePassword,
-                        textInputAction: TextInputAction.next,
-                        autofillHints: const [AutofillHints.newPassword],
-                        prefixIcon: Icons.lock_outline,
-                        errorText: _passwordError,
-                        onChanged: (value) => setState(() => _password = value),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
-                            size: 20,
-                            color: AppColors.inkMuted,
-                          ),
-                          onPressed: () => setState(
-                            () => _obscurePassword = !_obscurePassword,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    FadeIn(
-                      delay: const Duration(milliseconds: 180),
-                      child: PasswordRulesChecklist(password: _password),
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    FadeIn(
-                      delay: const Duration(milliseconds: 200),
-                      child: AppTextField(
-                        label: 'Confirm new password',
-                        controller: _confirmController,
-                        hintText: 'Re-enter new password',
-                        obscureText: _obscureConfirm,
-                        textInputAction: TextInputAction.done,
-                        autofillHints: const [AutofillHints.newPassword],
-                        prefixIcon: Icons.lock_outline,
-                        errorText: _confirmError,
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureConfirm
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
-                            size: 20,
-                            color: AppColors.inkMuted,
-                          ),
-                          onPressed: () => setState(
-                            () => _obscureConfirm = !_obscureConfirm,
-                          ),
-                        ),
-                        onSubmitted: (_) => _submit(),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    FadeIn(
-                      delay: const Duration(milliseconds: 240),
-                      child: PrimaryButton(
-                        label: 'Reset password',
-                        loading: _loading,
-                        onPressed: _submit,
-                      ),
+                    const SizedBox(width: 8),
+                    SvgPicture.asset(
+                      'assets/images/logo/lifecome-live-logo.svg',
+                      height: 24,
+                      semanticsLabel: 'LifeCome Live',
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(height: AppSpacing.xxl),
+                const Text(
+                  'Choose a new password',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.ink,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xxs),
+                const Text(
+                  'Use at least 8 characters. You will use this password to sign in from now on.',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: AppColors.inkMuted,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                AppTextField(
+                  label: 'New password',
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  textInputAction: TextInputAction.next,
+                  autofillHints: const [AutofillHints.newPassword],
+                  errorText: _passwordError,
+                  onChanged: (value) => setState(() => _password = value),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                      size: 20,
+                      color: AppColors.inkMuted,
+                    ),
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                PasswordRulesChecklist(password: _password),
+                const SizedBox(height: AppSpacing.md),
+                AppTextField(
+                  label: 'Confirm new password',
+                  controller: _confirmController,
+                  obscureText: _obscureConfirm,
+                  textInputAction: TextInputAction.done,
+                  autofillHints: const [AutofillHints.newPassword],
+                  errorText: _confirmError,
+                  onSubmitted: (_) => _submit(),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureConfirm
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                      size: 20,
+                      color: AppColors.inkMuted,
+                    ),
+                    onPressed: () =>
+                        setState(() => _obscureConfirm = !_obscureConfirm),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                PrimaryButton(
+                  label: 'Reset password',
+                  icon: Icons.arrow_forward,
+                  loading: _loading,
+                  onPressed: _submit,
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

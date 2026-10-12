@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/animation/fade_in.dart';
 import '../../../core/providers/core_providers.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
+import '../../../core/widgets/buttons/tinted_button.dart';
 import '../../../core/widgets/inputs/otp_input.dart';
-import '../../../core/widgets/layout/auth_form_card.dart';
-import '../../../core/widgets/layout/brand_backdrop.dart';
+import '../../../core/widgets/layout/max_content_width.dart';
 import '../data/auth_repository.dart';
 import 'new_password_screen.dart';
 import 'widgets/otp_timer.dart';
@@ -87,98 +87,97 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.blue),
-          onPressed: () => context.pop(),
-        ),
-      ),
-      body: Stack(
-        children: [
-          const Positioned.fill(child: BrandBackdrop()),
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-              child: AuthFormCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.sm,
+            AppSpacing.lg,
+            AppSpacing.lg,
+          ),
+          child: MaxContentWidth(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
                   children: [
-                    FadeIn(
-                      child: Center(
-                        child: Container(
-                          width: 84,
-                          height: 84,
-                          decoration: BoxDecoration(
-                            color: AppColors.blue.withValues(alpha: 0.08),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.mark_email_read_outlined,
-                            color: AppColors.blue,
-                            size: 38,
-                          ),
-                        ),
+                    IconButton(
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: () => context.pop(),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new,
+                        size: 18,
+                        color: AppColors.ink,
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.lg),
-                    const FadeIn(
-                      delay: Duration(milliseconds: 80),
-                      child: Text(
-                        'Enter reset code',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.ink,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    FadeIn(
-                      delay: const Duration(milliseconds: 120),
-                      child: Text(
-                        'Enter the 6-digit code sent to ${widget.args.email}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.inkMuted,
-                          height: 1.4,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xl),
-                    Center(
-                      child: FadeIn(
-                        delay: const Duration(milliseconds: 160),
-                        child: OtpInput(
-                          key: _otpKey,
-                          onCompleted: (code) => _submit(code),
-                          onChanged: (value) => setState(() => _code = value),
-                          errorText: _errorText,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    FadeIn(
-                      delay: const Duration(milliseconds: 200),
-                      child: PrimaryButton(
-                        label: 'Verify code',
-                        loading: _loading,
-                        onPressed: _code.length == 6 ? () => _submit() : null,
-                        icon: Icons.arrow_forward,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    Center(
-                      child: OtpTimer(
-                        availableAt: _resendAvailableAt,
-                        onResend: _resend,
-                      ),
+                    const SizedBox(width: 8),
+                    SvgPicture.asset(
+                      'assets/images/logo/lifecome-live-logo.svg',
+                      height: 24,
+                      semanticsLabel: 'LifeCome Live',
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(height: AppSpacing.xxl),
+                const Text(
+                  'Enter reset code',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.ink,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xxs),
+                Text.rich(
+                  TextSpan(
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: AppColors.inkMuted,
+                      height: 1.4,
+                    ),
+                    children: [
+                      const TextSpan(text: 'Enter the 6-digit code sent to\n'),
+                      TextSpan(
+                        text: widget.args.email,
+                        style: const TextStyle(
+                          color: AppColors.ink,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xl),
+                OtpInput(
+                  key: _otpKey,
+                  onCompleted: (code) => _submit(code),
+                  onChanged: (value) => setState(() => _code = value),
+                  errorText: _errorText,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                PrimaryButton(
+                  label: 'Verify code',
+                  icon: Icons.arrow_forward,
+                  loading: _loading,
+                  onPressed: _code.length == 6 ? () => _submit() : null,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                TintedButton(
+                  label: 'Change email',
+                  onPressed: () => context.pop(),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Center(
+                  child: OtpTimer(
+                    availableAt: _resendAvailableAt,
+                    onResend: _resend,
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
