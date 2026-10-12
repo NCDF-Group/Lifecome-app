@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
 
-/// The brand typeface, Manrope, bundled from assets/fonts/Manrope (see the
-/// `fonts:` block in pubspec.yaml).
-const appFontFamily = 'Manrope';
+/// The brand typeface, Liberation Sans, bundled from
+/// assets/fonts/LiberationSans (see the `fonts:` block in pubspec.yaml).
+const appFontFamily = 'Liberation Sans';
 
 /// The app reads bold throughout: headings in ExtraBold and everything else
 /// (body, labels, buttons) in Bold.
