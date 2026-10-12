@@ -6,9 +6,10 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
+import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../booking/domain/models/appointment.dart';
 
-/// Blueprint view 12 — Doctor Profile.
+/// Blueprint view 12 — Doctor Profile ("Your clinician").
 class DoctorProfileScreen extends StatelessWidget {
   const DoctorProfileScreen({super.key, required this.selection});
 
@@ -20,178 +21,56 @@ class DoctorProfileScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        title: const Text(
-          'Doctor profile',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
-        ),
-      ),
       body: SafeArea(
-        child: Column(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.all(AppSpacing.lg),
+            AppHeaderBar(showBack: true, onBack: () => context.pop()),
+            const SizedBox(height: 20),
+            const Text(
+              'Your clinician',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                color: AppColors.ink,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEAF7E8),
+                borderRadius: BorderRadius.circular(AppRadius.card),
+              ),
+              child: Row(
                 children: [
-                  Center(
-                    child: CircleAvatar(
-                      radius: 44,
-                      backgroundColor: AppColors.blue.withValues(alpha: 0.1),
-                      child: const Icon(
-                        Icons.person,
-                        color: AppColors.blue,
-                        size: 44,
-                      ),
+                  const CircleAvatar(
+                    radius: 32,
+                    backgroundColor: AppColors.white,
+                    child: Icon(
+                      Icons.person,
+                      color: AppColors.greenStrong,
+                      size: 32,
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Center(
-                    child: Text(
-                      doctor.name,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.ink,
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: Text(
-                      doctor.specialty,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.inkMuted,
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: Text(
-                      doctor.credentials,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.inkMuted,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.star, color: AppColors.gold, size: 18),
-                        const SizedBox(width: 4),
                         Text(
-                          '${doctor.rating} (${doctor.reviewCount} reviews)',
+                          doctor.name,
                           style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
                             color: AppColors.ink,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: AppSpacing.xs,
-                    children: const [
-                      _Badge(label: 'HMO Verified'),
-                      _Badge(label: 'Licensed'),
-                      _Badge(label: 'Background Checked'),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  const Text(
-                    'About',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.ink,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    doctor.about,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.inkMuted,
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  const Text(
-                    'Consultation options',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.ink,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  const _OptionRow(
-                    icon: Icons.videocam_outlined,
-                    label: 'Video consultation',
-                  ),
-                  const _OptionRow(
-                    icon: Icons.call_outlined,
-                    label: 'Audio consultation',
-                  ),
-                  const _OptionRow(
-                    icon: Icons.chat_bubble_outline,
-                    label: 'Chat follow-up',
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  const Text(
-                    'Languages',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.ink,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    doctor.languages.join(', '),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.inkMuted,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  Container(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8F4FC),
-                      borderRadius: BorderRadius.circular(AppRadius.card),
-                    ),
-                    child: Row(
-                      children: const [
-                        Icon(
-                          Icons.calendar_today_outlined,
-                          color: AppColors.blue,
-                        ),
-                        SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Next available',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.inkMuted,
-                                ),
-                              ),
-                              Text(
-                                'Today · 10:00 AM',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppColors.ink,
-                                ),
-                              ),
-                            ],
+                        Text(
+                          doctor.specialty,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.inkMuted,
                           ),
                         ),
                       ],
@@ -200,15 +79,63 @@ class DoctorProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: PrimaryButton(
-                label: 'Choose appointment time',
-                icon: Icons.arrow_forward,
-                onPressed: () => context.push(
-                  RoutePaths.bookingAppointmentTime,
-                  extra: selection,
-                ),
+            const SizedBox(height: AppSpacing.sm),
+            _InfoRow(
+              icon: Icons.assignment_outlined,
+              iconColor: AppColors.greenStrong,
+              background: const Color(0xFFEAF7E8),
+              title: 'Professional registration',
+              subtitle: doctor.credentials,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            const _InfoRow(
+              icon: Icons.videocam_outlined,
+              iconColor: AppColors.blue,
+              background: Color(0xFFE3EEFB),
+              title: 'Consultation formats',
+              subtitle: 'Video and telephone.',
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _InfoRow(
+              icon: Icons.public,
+              iconColor: AppColors.greenStrong,
+              background: const Color(0xFFEAF7E8),
+              title: 'Languages',
+              subtitle: doctor.languages.join(', '),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE3EEFB),
+                borderRadius: BorderRadius.circular(AppRadius.card),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'About your visit',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.ink,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  const Text(
+                    'Discuss your concern and agree next steps.',
+                    style: TextStyle(fontSize: 13, color: AppColors.inkMuted),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  PrimaryButton(
+                    label: 'View appointment times',
+                    icon: Icons.arrow_forward,
+                    onPressed: () => context.push(
+                      RoutePaths.bookingAppointmentTime,
+                      extra: selection,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -218,63 +145,56 @@ class DoctorProfileScreen extends StatelessWidget {
   }
 }
 
-class _Badge extends StatelessWidget {
-  const _Badge({required this.label});
+class _InfoRow extends StatelessWidget {
+  const _InfoRow({
+    required this.icon,
+    required this.iconColor,
+    required this.background,
+    required this.title,
+    required this.subtitle,
+  });
 
-  final String label;
+  final IconData icon;
+  final Color iconColor;
+  final Color background;
+  final String title;
+  final String subtitle;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.xs,
-        vertical: 4,
-      ),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: const Color(0xFFEAF7E8),
-        borderRadius: BorderRadius.circular(AppRadius.pill),
+        color: background,
+        borderRadius: BorderRadius.circular(AppRadius.card),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
-            Icons.check_circle,
-            color: AppColors.greenStrong,
-            size: 12,
-          ),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: AppColors.greenStrong,
+          Icon(icon, size: 20, color: iconColor),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.ink,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.inkMuted,
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _OptionRow extends StatelessWidget {
-  const _OptionRow({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: AppColors.blue),
-          const SizedBox(width: AppSpacing.xs),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 14, color: AppColors.ink),
-          ),
+          const Icon(Icons.chevron_right, color: AppColors.blue),
         ],
       ),
     );

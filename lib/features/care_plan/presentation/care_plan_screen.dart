@@ -6,7 +6,24 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
+import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../booking/domain/models/appointment.dart';
+
+const _months = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
 
 /// Blueprint view 20 — Care Plan & Visit Summary, shown once a consultation
 /// ends. Reachable directly from Home too (with no completed visit yet, in
@@ -21,21 +38,18 @@ class CarePlanScreen extends StatelessWidget {
     if (selection == null) {
       return Scaffold(
         backgroundColor: AppColors.white,
-        appBar: AppBar(
-          title: const Text(
-            'My care plan',
-            style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
-          ),
-        ),
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                AppHeaderBar(showBack: true, onBack: () => context.pop()),
+                const Spacer(),
                 Container(
                   width: 84,
                   height: 84,
+                  alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: AppColors.blue.withValues(alpha: 0.08),
                     shape: BoxShape.circle,
@@ -49,6 +63,7 @@ class CarePlanScreen extends StatelessWidget {
                 const SizedBox(height: AppSpacing.lg),
                 const Text(
                   'No care plan yet',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
@@ -65,6 +80,7 @@ class CarePlanScreen extends StatelessWidget {
                     height: 1.4,
                   ),
                 ),
+                const Spacer(),
               ],
             ),
           ),
@@ -73,35 +89,52 @@ class CarePlanScreen extends StatelessWidget {
     }
 
     final doctor = selection!.doctor!;
+    final date = selection!.date;
+    final dateLabel = date == null
+        ? ''
+        : '${date.day} ${_months[date.month - 1]} ${date.year}';
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        title: const Text(
-          'My care plan',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
-        ),
-      ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
+            AppHeaderBar(showBack: true, onBack: () => context.pop()),
+            const SizedBox(height: 20),
+            const Text(
+              'Your care plan',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                color: AppColors.ink,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
                 color: const Color(0xFFEAF7E8),
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.check_circle, color: AppColors.greenStrong),
-                  SizedBox(width: AppSpacing.sm),
+                  const CircleAvatar(
+                    radius: 18,
+                    backgroundColor: AppColors.white,
+                    child: Icon(
+                      Icons.check,
+                      color: AppColors.greenStrong,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Your consultation is complete',
+                        const Text(
+                          'Consultation complete.',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w800,
@@ -109,12 +142,20 @@ class CarePlanScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'Your next steps, all in one place.',
-                          style: TextStyle(
-                            fontSize: 12,
+                          doctor.name,
+                          style: const TextStyle(
+                            fontSize: 13,
                             color: AppColors.inkMuted,
                           ),
                         ),
+                        if (dateLabel.isNotEmpty)
+                          Text(
+                            dateLabel,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: AppColors.inkMuted,
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -122,53 +163,49 @@ class CarePlanScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.sm),
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.line),
-                borderRadius: BorderRadius.circular(AppRadius.control),
-              ),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    backgroundColor: AppColors.blue.withValues(alpha: 0.1),
-                    child: const Icon(Icons.person, color: AppColors.blue),
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        doctor.name,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.ink,
-                        ),
-                      ),
-                      Text(
-                        '${selection!.service?.title ?? 'Consultation'} · ${selection!.date != null ? "${selection!.date!.day}/${selection!.date!.month}/${selection!.date!.year}" : ''}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.inkMuted,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: AppSpacing.md),
             _NextStepTile(
               icon: Icons.description_outlined,
+              iconColor: AppColors.greenStrong,
+              background: const Color(0xFFEAF7E8),
               title: 'Visit summary',
-              subtitle: 'Reviewed by your doctor',
+              subtitle: 'Read your consultation note.',
               onTap: () => context.push(RoutePaths.healthRecords),
             ),
+            const SizedBox(height: AppSpacing.sm),
             _NextStepTile(
-              icon: Icons.notes_outlined,
-              title: 'Care instructions',
-              subtitle: 'View the guidance from your doctor',
+              icon: Icons.reorder,
+              iconColor: AppColors.blue,
+              background: const Color(0xFFE3EEFB),
+              title: 'Agreed actions',
+              subtitle: 'View clinician instructions.',
+              onTap: () => context.push(RoutePaths.healthRecords),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _NextStepTile(
+              icon: Icons.calendar_month_outlined,
+              iconColor: AppColors.greenStrong,
+              background: const Color(0xFFEAF7E8),
+              title: 'Follow-up',
+              subtitle: 'See responsible team and next step.',
+              onTap: () => context.go(RoutePaths.messages),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _NextStepTile(
+              icon: Icons.shield_outlined,
+              iconColor: AppColors.blue,
+              background: const Color(0xFFE3EEFB),
+              title: 'Safety advice',
+              subtitle: 'Read your personal guidance.',
+              onTap: () =>
+                  showComingSoonPopup(context, feature: 'Safety advice'),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _NextStepTile(
+              icon: Icons.description_outlined,
+              iconColor: AppColors.greenStrong,
+              background: const Color(0xFFEAF7E8),
+              title: 'Prescriptions and letters',
+              subtitle: 'View documents.',
               onTap: () => context.push(RoutePaths.healthRecords),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -187,12 +224,16 @@ class CarePlanScreen extends StatelessWidget {
 class _NextStepTile extends StatelessWidget {
   const _NextStepTile({
     required this.icon,
+    required this.iconColor,
+    required this.background,
     required this.title,
     required this.subtitle,
     required this.onTap,
   });
 
   final IconData icon;
+  final Color iconColor;
+  final Color background;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
@@ -200,22 +241,23 @@ class _NextStepTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.white,
+      color: background,
+      borderRadius: BorderRadius.circular(AppRadius.card),
       child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.control),
+        borderRadius: BorderRadius.circular(AppRadius.card),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Row(
             children: [
               Container(
                 width: 36,
                 height: 36,
-                decoration: BoxDecoration(
-                  color: AppColors.blue.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(AppRadius.control),
+                decoration: const BoxDecoration(
+                  color: AppColors.white,
+                  shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: AppColors.blue, size: 18),
+                child: Icon(icon, color: iconColor, size: 18),
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
@@ -225,7 +267,7 @@ class _NextStepTile extends StatelessWidget {
                     Text(
                       title,
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 15,
                         fontWeight: FontWeight.w800,
                         color: AppColors.ink,
                       ),
@@ -233,14 +275,14 @@ class _NextStepTile extends StatelessWidget {
                     Text(
                       subtitle,
                       style: const TextStyle(
-                        fontSize: 12,
+                        fontSize: 12.5,
                         color: AppColors.inkMuted,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppColors.inkMuted),
+              const Icon(Icons.chevron_right, color: AppColors.blue),
             ],
           ),
         ),
