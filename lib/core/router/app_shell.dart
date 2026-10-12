@@ -133,19 +133,28 @@ class _NavButton extends StatelessWidget {
               child: selected ? item.selectedIcon : item.icon,
             ),
             const SizedBox(height: 4),
-            Text(
-              item.label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: color,
+            // IntrinsicWidth so the underline below can match the label's
+            // own rendered width exactly, rather than a guessed fixed size.
+            IntrinsicWidth(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    item.label,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: color,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  AnimatedOpacity(
+                    duration: const Duration(milliseconds: 150),
+                    opacity: selected ? 1 : 0,
+                    child: Container(height: 2.5, color: AppColors.blue),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 4),
-            AnimatedOpacity(
-              duration: const Duration(milliseconds: 150),
-              opacity: selected ? 1 : 0,
-              child: Container(width: 28, height: 2.5, color: AppColors.blue),
             ),
           ],
         ),

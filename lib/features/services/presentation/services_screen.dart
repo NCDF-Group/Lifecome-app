@@ -50,15 +50,19 @@ class ServicesScreen extends ConsumerWidget {
             const SizedBox(height: 10),
             _ServiceRow(
               icon: Icons.videocam_outlined,
-              iconColor: AppColors.blue,
+              iconColor: AppColors.greenStrong,
+              background: const Color(0xFFE3EEFB),
+              iconBackground: const Color(0xFFDCEEFA),
               title: 'Online GP',
               subtitle: 'Video or telephone appointments.',
               onTap: () => _openDirectBooking(context),
             ),
             const SizedBox(height: 10),
             _ServiceRow(
-              icon: Icons.apartment_outlined,
+              icon: Icons.badge_outlined,
               iconColor: AppColors.blue,
+              background: const Color(0xFFE3EEFB),
+              iconBackground: const Color(0xFFDCEEFA),
               title: 'Clinic care',
               subtitle: 'In-person GP care.',
               linkLabel: 'Find a clinic',
@@ -87,6 +91,8 @@ class ServicesScreen extends ConsumerWidget {
               _ServiceRow(
                 icon: service.heroIcon,
                 iconColor: AppColors.greenStrong,
+                background: const Color(0xFFEAF7E8),
+                iconBackground: const Color(0xFFD7F0D2),
                 title: service.title,
                 subtitle: service.subtitle,
                 onTap: () =>
@@ -95,8 +101,10 @@ class ServicesScreen extends ConsumerWidget {
               const SizedBox(height: 10),
             ],
             _ServiceRow(
-              icon: Icons.description_outlined,
+              icon: Icons.badge_outlined,
               iconColor: AppColors.blue,
+              background: const Color(0xFFE3EEFB),
+              iconBackground: const Color(0xFFDCEEFA),
               title: 'Have employer access?',
               subtitle: 'Check your benefits.',
               onTap: () => context.push(RoutePaths.payerSelectHmo),
@@ -164,6 +172,8 @@ class _ServiceRow extends StatelessWidget {
   const _ServiceRow({
     required this.icon,
     required this.iconColor,
+    required this.background,
+    required this.iconBackground,
     required this.title,
     required this.subtitle,
     required this.onTap,
@@ -172,6 +182,8 @@ class _ServiceRow extends StatelessWidget {
 
   final IconData icon;
   final Color iconColor;
+  final Color background;
+  final Color iconBackground;
   final String title;
   final String subtitle;
   final String? linkLabel;
@@ -180,7 +192,7 @@ class _ServiceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.surface,
+      color: background,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
@@ -193,8 +205,8 @@ class _ServiceRow extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
+                  color: iconBackground,
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(icon, color: iconColor, size: 22),
               ),

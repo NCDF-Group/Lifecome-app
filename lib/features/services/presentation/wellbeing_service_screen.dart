@@ -83,64 +83,60 @@ class WellbeingServiceScreen extends StatelessWidget {
                       height: 1.4,
                     ),
                   ),
-                  if (service.badge != null) ...[
+                  if (service.badge != null &&
+                      service.highlightTitle == null) ...[
                     const SizedBox(height: 10),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8F4FC),
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.computer_outlined,
-                            size: 15,
-                            color: AppColors.blue,
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            service.badge!,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.blue,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    _BadgePill(label: service.badge!),
                   ],
                   if (service.highlightTitle != null) ...[
                     const SizedBox(height: 18),
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEAF7E8),
+                        color: service.explorePanelColor,
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: Column(
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            service.highlightTitle!,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.ink,
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundColor: AppColors.white.withValues(
+                              alpha: 0.6,
+                            ),
+                            child: Icon(
+                              service.highlightIcon,
+                              size: 18,
+                              color: service.explorePanelIconColor,
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            service.highlightDescription ?? '',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: AppColors.inkMuted,
-                              height: 1.4,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  service.highlightTitle!,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w800,
+                                    color: AppColors.ink,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  service.highlightDescription ?? '',
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: AppColors.inkMuted,
+                                    height: 1.4,
+                                  ),
+                                ),
+                                if (service.badge != null) ...[
+                                  const SizedBox(height: 10),
+                                  _BadgePill(label: service.badge!),
+                                ],
+                              ],
                             ),
                           ),
                         ],
@@ -158,7 +154,11 @@ class WellbeingServiceScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   for (final item in service.exploreItems) ...[
-                    _ExploreRow(item: item),
+                    _ExploreRow(
+                      item: item,
+                      background: service.explorePanelColor,
+                      defaultIconColor: service.explorePanelIconColor,
+                    ),
                     const SizedBox(height: 10),
                   ],
                   if (service.journeySteps != null) ...[
@@ -175,7 +175,7 @@ class WellbeingServiceScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEAF7E8),
+                        color: service.explorePanelColor,
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: _Journey(steps: service.journeySteps!),
@@ -183,6 +183,7 @@ class WellbeingServiceScreen extends StatelessWidget {
                   ],
                   const SizedBox(height: 18),
                   _LinkRow(
+                    icon: Icons.person_outline,
                     label: 'Meet your ${service.facilitatorLabel}',
                     sublabel: 'Explore profiles and session options.',
                     onTap: () => showComingSoonPopup(
@@ -192,6 +193,7 @@ class WellbeingServiceScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   _LinkRow(
+                    icon: Icons.badge_outlined,
                     label: 'Employer access',
                     sublabel: 'Check whether this service is included.',
                     onTap: () => showComingSoonPopup(
@@ -200,12 +202,25 @@ class WellbeingServiceScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    service.disclaimer,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.inkMuted,
-                    ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.info_outline,
+                        size: 14,
+                        color: AppColors.inkMuted,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          service.disclaimer,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.inkMuted,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   if (service.extraLinkLabel != null) ...[
                     const SizedBox(height: 6),
@@ -214,6 +229,12 @@ class WellbeingServiceScreen extends StatelessWidget {
                           showComingSoonPopup(context, feature: 'GP care'),
                       child: Row(
                         children: [
+                          const Icon(
+                            Icons.favorite_border,
+                            size: 15,
+                            color: AppColors.blue,
+                          ),
+                          const SizedBox(width: 6),
                           Expanded(
                             child: Text(
                               service.extraLinkLabel!,
@@ -265,16 +286,22 @@ class WellbeingServiceScreen extends StatelessWidget {
 }
 
 class _ExploreRow extends StatelessWidget {
-  const _ExploreRow({required this.item});
+  const _ExploreRow({
+    required this.item,
+    required this.background,
+    required this.defaultIconColor,
+  });
 
   final ExploreItem item;
+  final Color background;
+  final Color defaultIconColor;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: background,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
@@ -282,7 +309,11 @@ class _ExploreRow extends StatelessWidget {
           CircleAvatar(
             radius: 18,
             backgroundColor: AppColors.white,
-            child: Icon(item.icon, size: 18, color: AppColors.ink),
+            child: Icon(
+              item.icon,
+              size: 18,
+              color: item.color ?? defaultIconColor,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -374,11 +405,13 @@ class _Journey extends StatelessWidget {
 
 class _LinkRow extends StatelessWidget {
   const _LinkRow({
+    required this.icon,
     required this.label,
     required this.sublabel,
     required this.onTap,
   });
 
+  final IconData icon;
   final String label;
   final String sublabel;
   final VoidCallback onTap;
@@ -386,7 +419,7 @@ class _LinkRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.surface,
+      color: const Color(0xFFE3EEFB),
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
@@ -395,14 +428,10 @@ class _LinkRow extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 18,
                 backgroundColor: AppColors.white,
-                child: Icon(
-                  Icons.person_outline,
-                  size: 18,
-                  color: AppColors.blue,
-                ),
+                child: Icon(icon, size: 18, color: AppColors.blue),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -431,6 +460,38 @@ class _LinkRow extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _BadgePill extends StatelessWidget {
+  const _BadgePill({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE8F4FC),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.computer_outlined, size: 15, color: AppColors.blue),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: AppColors.blue,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
-/// One row under "What you will explore" / "What we can help with".
+/// One row under "What you will explore" / "What we can help with". [color]
+/// overrides the service's own `explorePanelIconColor` for the rare item
+/// that stands out from its siblings (e.g. eating's "General nutrition").
 class ExploreItem {
-  const ExploreItem(this.icon, this.label);
+  const ExploreItem(this.icon, this.label, {this.color});
   final IconData icon;
   final String label;
+  final Color? color;
 }
 
 /// One step of a coaching journey timeline.
@@ -26,10 +29,13 @@ class WellbeingService {
     required this.heroIcon,
     required this.heroColor,
     this.badge,
+    this.highlightIcon = Icons.eco_outlined,
     this.highlightTitle,
     this.highlightDescription,
     this.exploreHeading = 'What you will explore',
     required this.exploreItems,
+    required this.explorePanelColor,
+    required this.explorePanelIconColor,
     this.journeySteps,
     this.facilitatorLabel = 'facilitator',
     this.extraLinkLabel,
@@ -46,13 +52,19 @@ class WellbeingService {
   /// Small pill under the subtitle, e.g. "Online sessions".
   final String? badge;
 
-  /// The highlighted green callout card (eating/stress have one; coaching
-  /// uses a journey timeline instead).
+  /// The highlighted callout card (eating/stress have one; coaching uses a
+  /// journey timeline instead).
+  final IconData highlightIcon;
   final String? highlightTitle;
   final String? highlightDescription;
 
   final String exploreHeading;
   final List<ExploreItem> exploreItems;
+
+  /// Background tint and icon-circle tint for the explore rows (and the
+  /// highlight card) — green for lifestyle/stress, blue for eating.
+  final Color explorePanelColor;
+  final Color explorePanelIconColor;
 
   /// Coaching's numbered "Your coaching journey" timeline.
   final List<JourneyStep>? journeySteps;
@@ -67,6 +79,11 @@ class WellbeingService {
   final String? footerNote;
 }
 
+const _green = Color(0xFFEAF7E8);
+const _greenIcon = Color(0xFF2F7D00);
+const _blue = Color(0xFFE3EEFB);
+const _blueIcon = Color(0xFF0667B8);
+
 const wellbeingServices = [
   WellbeingService(
     id: 'lifestyle-coaching',
@@ -76,6 +93,8 @@ const wellbeingServices = [
     heroColor: Color(0xFF49AA02),
     badge: 'Online coaching',
     exploreHeading: 'What we can help with',
+    explorePanelColor: _green,
+    explorePanelIconColor: _greenIcon,
     exploreItems: [
       ExploreItem(Icons.directions_walk_rounded, 'Healthy daily routines'),
       ExploreItem(Icons.fitness_center_rounded, 'Physical activity'),
@@ -105,8 +124,10 @@ const wellbeingServices = [
     subtitle: 'Practical food choices for everyday life.',
     heroIcon: Icons.apple_outlined,
     heroColor: Color(0xFF2F7D00),
+    explorePanelColor: _blue,
+    explorePanelIconColor: _blueIcon,
     exploreItems: [
-      ExploreItem(Icons.eco_outlined, 'General nutrition'),
+      ExploreItem(Icons.eco_outlined, 'General nutrition', color: _greenIcon),
       ExploreItem(Icons.assignment_outlined, 'Meal planning'),
       ExploreItem(Icons.shopping_cart_outlined, 'Healthy shopping'),
       ExploreItem(Icons.savings_outlined, 'Food choices that fit your budget'),
@@ -121,6 +142,8 @@ const wellbeingServices = [
     subtitle: 'Make space for everyday calm.',
     heroIcon: Icons.self_improvement_outlined,
     heroColor: Color(0xFF2F7D00),
+    explorePanelColor: _green,
+    explorePanelIconColor: _greenIcon,
     highlightTitle: 'A gentle guided session',
     highlightDescription: 'Try practical techniques at your own pace and discover what works for your everyday wellbeing.',
     badge: 'Online sessions',
