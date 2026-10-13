@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_typography.dart';
 
 /// The filled blue call-to-action button, matching the website's primary
 /// `ButtonLink` variant. Shows a small spinner in place of the label while
@@ -42,7 +43,11 @@ class PrimaryButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(squared ? 0 : AppRadius.pill),
           ),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          textStyle: const TextStyle(
+            fontFamily: appFontFamily,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         child: loading
             ? const SizedBox(

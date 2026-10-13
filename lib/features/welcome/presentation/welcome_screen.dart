@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/animation/fade_in.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
@@ -121,6 +122,7 @@ class WelcomeScreen extends StatelessWidget {
                         ),
                         shape: const StadiumBorder(),
                         textStyle: const TextStyle(
+                          fontFamily: appFontFamily,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),

@@ -4,6 +4,7 @@ import '../../network/api_exception.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
+import '../../theme/app_typography.dart';
 
 /// The app's one way of telling the user something: a centred, animated
 /// popup card. Used in place of SnackBars everywhere, so every message —
@@ -288,6 +289,7 @@ class _AppPopupCard extends StatelessWidget {
                                 backgroundColor: primaryColor,
                                 shape: const StadiumBorder(),
                                 textStyle: const TextStyle(
+                                  fontFamily: appFontFamily,
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
                                 ),
