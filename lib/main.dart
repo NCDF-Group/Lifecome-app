@@ -2,7 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app.dart';
+import 'core/theme/theme_mode_controller.dart';
 
-void main() {
-  runApp(const ProviderScope(child: LifeComeLiveApp()));
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Read the saved Appearance choice before the first frame, so nobody sees
+  // the wrong theme flash up while it loads.
+  final themeMode = await ThemeModeStore().read();
+
+  runApp(
+    ProviderScope(
+      overrides: [initialThemeModeProvider.overrideWithValue(themeMode)],
+      child: const LifeComeLiveApp(),
+    ),
+  );
 }

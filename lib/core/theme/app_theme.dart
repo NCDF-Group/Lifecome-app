@@ -1,71 +1,96 @@
 import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
+import 'app_palette.dart';
 import 'app_radius.dart';
 import 'app_typography.dart';
 
-/// The app's single light theme. LifeCome Live is light-only for now,
-/// matching the website (see Lifecome-web/src/app/layout.tsx), so there is
-/// no dark ThemeData here yet.
-ThemeData buildAppTheme() {
+/// The app's theme for one brightness. [Brightness.light] is the original
+/// LifeCome Live look, unchanged; [Brightness.dark] is its dark counterpart.
+/// Both carry their [AppPalette] as a theme extension — read it with
+/// `context.palette` — and which one is shown follows the phone's setting
+/// unless the user picked one (see `themeModeProvider`).
+ThemeData buildAppTheme({Brightness brightness = Brightness.light}) {
+  final dark = brightness == Brightness.dark;
+  final palette = dark ? AppPalette.dark : AppPalette.light;
+
   final base = ThemeData(
     useMaterial3: true,
     fontFamily: appFontFamily,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: AppColors.blue,
-      brightness: Brightness.light,
-      primary: AppColors.blue,
-      secondary: AppColors.green,
-      surface: AppColors.white,
-      error: AppColors.error,
-    ),
-    scaffoldBackgroundColor: AppColors.white,
+    colorScheme: dark
+        ? ColorScheme.fromSeed(
+            seedColor: AppColors.blue,
+            brightness: Brightness.dark,
+            primary: palette.accent,
+            onPrimary: palette.background,
+            secondary: AppColors.green,
+            surface: palette.background,
+            onSurface: palette.ink,
+            onSurfaceVariant: palette.inkMuted,
+            outline: palette.line,
+            outlineVariant: palette.line,
+            error: palette.danger,
+          )
+        : ColorScheme.fromSeed(
+            seedColor: AppColors.blue,
+            brightness: Brightness.light,
+            primary: AppColors.blue,
+            secondary: AppColors.green,
+            surface: AppColors.white,
+            error: AppColors.error,
+          ),
+    scaffoldBackgroundColor: palette.background,
+    extensions: [palette],
   );
 
   return base.copyWith(
-    textTheme: buildAppTextTheme(base.textTheme),
+    textTheme: buildAppTextTheme(base.textTheme, color: palette.ink),
     appBarTheme: AppBarTheme(
-      backgroundColor: AppColors.white,
-      foregroundColor: AppColors.ink,
+      backgroundColor: palette.background,
+      foregroundColor: palette.ink,
       elevation: 0,
       centerTitle: true,
       surfaceTintColor: Colors.transparent,
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.white,
+      fillColor: palette.elevated,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.control),
-        borderSide: const BorderSide(color: AppColors.line, width: 1.5),
+        borderSide: BorderSide(color: palette.line, width: 1.5),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.control),
-        borderSide: const BorderSide(color: AppColors.line, width: 1.5),
+        borderSide: BorderSide(color: palette.line, width: 1.5),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.control),
-        borderSide: const BorderSide(color: AppColors.blue, width: 2),
+        borderSide: BorderSide(color: palette.accent, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.control),
-        borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+        borderSide: BorderSide(color: palette.danger, width: 1.5),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.control),
-        borderSide: const BorderSide(color: AppColors.error, width: 2),
+        borderSide: BorderSide(color: palette.danger, width: 2),
       ),
-      hintStyle: const TextStyle(color: AppColors.inkMuted),
+      hintStyle: TextStyle(color: palette.inkMuted),
     ),
     checkboxTheme: CheckboxThemeData(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
       fillColor: WidgetStateProperty.resolveWith(
         (states) => states.contains(WidgetState.selected)
             ? AppColors.blue
-            : AppColors.white,
+            : palette.elevated,
       ),
-      side: const BorderSide(color: AppColors.line, width: 1.5),
+      side: BorderSide(color: palette.line, width: 1.5),
     ),
+    // Light mode keeps Material's own defaults for these; dark mode needs them
+    // pinned to the palette so nothing falls back to a light-theme colour.
+    dividerTheme: dark ? DividerThemeData(color: palette.line) : null,
+    iconTheme: dark ? IconThemeData(color: palette.ink) : null,
     splashFactory: InkRipple.splashFactory,
   );
 }

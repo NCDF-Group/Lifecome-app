@@ -5,6 +5,12 @@ import 'package:flutter/material.dart';
 /// [lime], [cyan] and [gold] do not carry enough contrast for text on a
 /// white background, so they are used for fills, chips and accents, never
 /// for body text or small labels.
+///
+/// These are the brand constants, written for a light page. Anything that has
+/// to look right in dark mode too — text, icons, backgrounds, borders, tinted
+/// panels — reads its colour from `context.palette` (`AppPalette`) instead;
+/// only fills with white content on top (a blue button, a green badge) use
+/// these directly.
 abstract final class AppColors {
   static const lime = Color(0xFFA2E10D);
   static const cyan = Color(0xFF3DE5F8);

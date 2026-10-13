@@ -14,7 +14,7 @@ const appFontFamily = 'Manrope';
 /// The app's weight scale tops out at SemiBold (w600): titles, buttons and
 /// small chips use w600, list-row text and secondary emphasis use w500, body
 /// text w400. Avoid Bold and ExtraBold.
-TextTheme buildAppTextTheme(TextTheme base) {
+TextTheme buildAppTextTheme(TextTheme base, {Color color = AppColors.ink}) {
   TextStyle? heading(TextStyle? s) => s?.copyWith(fontWeight: FontWeight.w600);
   TextStyle? body(TextStyle? s) => s?.copyWith(fontWeight: FontWeight.w400);
 
@@ -36,9 +36,5 @@ TextTheme buildAppTextTheme(TextTheme base) {
         labelMedium: body(base.labelMedium),
         labelSmall: body(base.labelSmall),
       )
-      .apply(
-        fontFamily: appFontFamily,
-        bodyColor: AppColors.ink,
-        displayColor: AppColors.ink,
-      );
+      .apply(fontFamily: appFontFamily, bodyColor: color, displayColor: color);
 }
