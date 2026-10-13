@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
@@ -39,28 +39,31 @@ class _BeforeYourVisitScreenState extends State<BeforeYourVisitScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Help your doctor prepare',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            color: context.palette.ink,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
-            const Text(
+            Text(
               'A few details before your consultation.',
-              style: TextStyle(fontSize: 14, color: AppColors.inkMuted),
+              style: TextStyle(fontSize: 14, color: context.palette.inkMuted),
             ),
             const SizedBox(height: AppSpacing.md),
-            const Text(
+            Text(
               'What would you like to discuss?',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: AppSpacing.xs),
@@ -75,12 +78,12 @@ class _BeforeYourVisitScreenState extends State<BeforeYourVisitScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.md),
-            const Text(
+            Text(
               'How long has this been happening?',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: AppSpacing.xs),
@@ -104,9 +107,9 @@ class _BeforeYourVisitScreenState extends State<BeforeYourVisitScreen> {
               onChanged: (value) => setState(() => _consented = value ?? false),
               controlAffinity: ListTileControlAffinity.leading,
               contentPadding: EdgeInsets.zero,
-              title: const Text(
+              title: Text(
                 'I agree to an online consultation',
-                style: TextStyle(fontSize: 14, color: AppColors.ink),
+                style: TextStyle(fontSize: 14, color: context.palette.ink),
               ),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -122,10 +125,10 @@ class _BeforeYourVisitScreenState extends State<BeforeYourVisitScreen> {
                     ),
             ),
             const SizedBox(height: AppSpacing.xs),
-            const Center(
+            Center(
               child: Text(
                 'Your doctor will review these details.',
-                style: TextStyle(fontSize: 12, color: AppColors.inkMuted),
+                style: TextStyle(fontSize: 12, color: context.palette.inkMuted),
               ),
             ),
           ],

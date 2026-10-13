@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
@@ -37,7 +38,7 @@ class CarePlanScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     if (selection == null) {
       return Scaffold(
-        backgroundColor: AppColors.white,
+        backgroundColor: context.palette.background,
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
@@ -54,29 +55,29 @@ class CarePlanScreen extends StatelessWidget {
                     color: AppColors.blue.withValues(alpha: 0.08),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.description_outlined,
-                    color: AppColors.blue,
+                    color: context.palette.accent,
                     size: 36,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                const Text(
+                Text(
                   'No care plan yet',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.ink,
+                    color: context.palette.ink,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                const Text(
+                Text(
                   'Your care plan appears here once you complete a consultation.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.inkMuted,
+                    color: context.palette.inkMuted,
                     height: 1.4,
                   ),
                 ),
@@ -95,36 +96,36 @@ class CarePlanScreen extends StatelessWidget {
         : '${date.day} ${_months[date.month - 1]} ${date.year}';
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             AppHeaderBar(showBack: true, onBack: () => context.pop()),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Your care plan',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: AppSpacing.md),
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF7E8),
+                color: context.palette.tintGreen,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 18,
-                    backgroundColor: AppColors.white,
+                    backgroundColor: context.palette.elevated,
                     child: Icon(
                       Icons.check,
-                      color: AppColors.greenStrong,
+                      color: context.palette.positive,
                       size: 20,
                     ),
                   ),
@@ -133,27 +134,27 @@ class CarePlanScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Consultation complete.',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: context.palette.ink,
                           ),
                         ),
                         Text(
                           doctor.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            color: AppColors.inkMuted,
+                            color: context.palette.inkMuted,
                           ),
                         ),
                         if (dateLabel.isNotEmpty)
                           Text(
                             dateLabel,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
-                              color: AppColors.inkMuted,
+                              color: context.palette.inkMuted,
                             ),
                           ),
                       ],
@@ -165,8 +166,8 @@ class CarePlanScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _NextStepTile(
               icon: Icons.description_outlined,
-              iconColor: AppColors.greenStrong,
-              background: const Color(0xFFEAF7E8),
+              iconColor: context.palette.positive,
+              background: context.palette.tintGreen,
               title: 'Visit summary',
               subtitle: 'Read your consultation note.',
               onTap: () => context.push(RoutePaths.healthRecords),
@@ -174,8 +175,8 @@ class CarePlanScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _NextStepTile(
               icon: Icons.reorder,
-              iconColor: AppColors.blue,
-              background: const Color(0xFFE3EEFB),
+              iconColor: context.palette.accent,
+              background: context.palette.tintBlue,
               title: 'Agreed actions',
               subtitle: 'View clinician instructions.',
               onTap: () => context.push(RoutePaths.healthRecords),
@@ -183,8 +184,8 @@ class CarePlanScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _NextStepTile(
               icon: Icons.calendar_month_outlined,
-              iconColor: AppColors.greenStrong,
-              background: const Color(0xFFEAF7E8),
+              iconColor: context.palette.positive,
+              background: context.palette.tintGreen,
               title: 'Follow-up',
               subtitle: 'See responsible team and next step.',
               onTap: () => context.go(RoutePaths.messages),
@@ -192,8 +193,8 @@ class CarePlanScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _NextStepTile(
               icon: Icons.shield_outlined,
-              iconColor: AppColors.blue,
-              background: const Color(0xFFE3EEFB),
+              iconColor: context.palette.accent,
+              background: context.palette.tintBlue,
               title: 'Safety advice',
               subtitle: 'Read your personal guidance.',
               onTap: () =>
@@ -202,8 +203,8 @@ class CarePlanScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _NextStepTile(
               icon: Icons.description_outlined,
-              iconColor: AppColors.greenStrong,
-              background: const Color(0xFFEAF7E8),
+              iconColor: context.palette.positive,
+              background: context.palette.tintGreen,
               title: 'Prescriptions and letters',
               subtitle: 'View documents.',
               onTap: () => context.push(RoutePaths.healthRecords),
@@ -253,8 +254,8 @@ class _NextStepTile extends StatelessWidget {
               Container(
                 width: 36,
                 height: 36,
-                decoration: const BoxDecoration(
-                  color: AppColors.white,
+                decoration: BoxDecoration(
+                  color: context.palette.elevated,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, color: iconColor, size: 18),
@@ -266,23 +267,23 @@ class _NextStepTile extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.5,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppColors.blue),
+              Icon(Icons.chevron_right, color: context.palette.accent),
             ],
           ),
         ),

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
@@ -60,22 +61,25 @@ class HmoCoverageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Your HMO coverage',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            color: context.palette.ink,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
-            const Text(
+            Text(
               'Your membership has been verified. Here are the services covered under your plan.',
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.inkMuted,
+                color: context.palette.inkMuted,
                 height: 1.4,
               ),
             ),
@@ -83,7 +87,7 @@ class HmoCoverageScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF7E8),
+                color: context.palette.tintGreen,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
@@ -95,10 +99,10 @@ class HmoCoverageScreen extends StatelessWidget {
                       children: [
                         Text(
                           hmoName,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: context.palette.ink,
                           ),
                         ),
                         const SizedBox(height: AppSpacing.xxs),
@@ -123,14 +127,14 @@ class HmoCoverageScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
                         'Plan type',
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.inkMuted,
+                          color: context.palette.inkMuted,
                         ),
                       ),
                       Text(
@@ -138,7 +142,7 @@ class HmoCoverageScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color: AppColors.ink,
+                          color: context.palette.ink,
                         ),
                       ),
                     ],
@@ -147,12 +151,12 @@ class HmoCoverageScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            const Text(
+            Text(
               'Your covered services',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -164,18 +168,21 @@ class HmoCoverageScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFE8F4FC),
+                color: context.palette.tintBlueFaint,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: AppColors.blue),
+                  Icon(Icons.info_outline, color: context.palette.accent),
                   SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
                       'Not all services may be covered under your plan. Please check '
                       'service eligibility before booking.',
-                      style: TextStyle(fontSize: 13, color: AppColors.ink),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: context.palette.ink,
+                      ),
                     ),
                   ),
                 ],
@@ -206,12 +213,12 @@ class _ServiceRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.line),
+        border: Border.all(color: context.palette.line),
         borderRadius: BorderRadius.circular(AppRadius.control),
       ),
       child: Row(
         children: [
-          Icon(service.icon, color: AppColors.greenStrong, size: 22),
+          Icon(service.icon, color: context.palette.positive, size: 22),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Column(
@@ -219,17 +226,17 @@ class _ServiceRow extends StatelessWidget {
               children: [
                 Text(
                   service.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.ink,
+                    color: context.palette.ink,
                   ),
                 ),
                 Text(
                   service.description,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.inkMuted,
+                    color: context.palette.inkMuted,
                   ),
                 ),
               ],
@@ -250,7 +257,9 @@ class _ServiceRow extends StatelessWidget {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: service.covered ? AppColors.greenStrong : AppColors.gold,
+                color: service.covered
+                    ? context.palette.positive
+                    : context.palette.warning,
               ),
             ),
           ),

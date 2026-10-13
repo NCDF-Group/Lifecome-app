@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../country/app_country.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_palette.dart';
 import '../feedback/app_popup.dart';
 
 /// The header shared by the welcome screen, Home, Services and the
@@ -25,16 +26,16 @@ class AppHeaderBar extends StatelessWidget {
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
             onPressed: onBack ?? () => context.pop(),
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_back_ios_new,
               size: 18,
-              color: AppColors.ink,
+              color: context.palette.ink,
             ),
           ),
           const SizedBox(width: 8),
         ],
         SvgPicture.asset(
-          'assets/images/logo/lifecome-live-logo.svg',
+          context.palette.logoAsset,
           height: 24,
           semanticsLabel: 'LifeCome Live',
         ),
@@ -54,7 +55,7 @@ class _CountryChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.palette.surface,
         borderRadius: BorderRadius.circular(999),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
@@ -68,10 +69,10 @@ class _CountryChip extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             AppCountry.unitedKingdom.name,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: AppColors.ink,
+              color: context.palette.ink,
             ),
           ),
         ],
@@ -88,12 +89,12 @@ class _BellButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.surface,
+      color: context.palette.surface,
       shape: const CircleBorder(),
       child: InkWell(
         customBorder: const CircleBorder(),
         onTap: onTap,
-        child: const SizedBox(
+        child: SizedBox(
           width: 38,
           height: 38,
           child: Stack(
@@ -102,7 +103,7 @@ class _BellButton extends StatelessWidget {
               Icon(
                 Icons.notifications_outlined,
                 size: 20,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
               Positioned(top: 8, right: 9, child: _Dot()),
             ],

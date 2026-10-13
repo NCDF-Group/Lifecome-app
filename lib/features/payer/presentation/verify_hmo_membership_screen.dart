@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
@@ -65,28 +65,28 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             AppHeaderBar(showBack: true, onBack: () => context.pop()),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Verify your eligibility',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'We’ve recognised your invitation. Please check your '
               'details so we can verify your access.',
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.inkMuted,
+                color: context.palette.inkMuted,
                 height: 1.4,
               ),
             ),
@@ -94,17 +94,17 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF7E8),
+                color: context.palette.tintGreen,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 22,
-                    backgroundColor: AppColors.white,
+                    backgroundColor: context.palette.elevated,
                     child: Icon(
                       Icons.apartment_outlined,
-                      color: AppColors.greenStrong,
+                      color: context.palette.positive,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
@@ -112,28 +112,28 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Invitation recognised',
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.greenStrong,
+                            color: context.palette.positive,
                           ),
                         ),
-                        const Text(
+                        Text(
                           'Employer or sponsor access',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: context.palette.ink,
                           ),
                         ),
                         Text(
                           'Your organisation provides access to LifeCome '
                           'Live.',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12.5,
-                            color: AppColors.inkMuted,
+                            color: context.palette.inkMuted,
                             height: 1.4,
                           ),
                         ),
@@ -147,7 +147,7 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                border: Border.all(color: AppColors.line),
+                border: Border.all(color: context.palette.line),
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Column(
@@ -166,10 +166,10 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
                     hintText: 'DD / MM / YYYY',
                     readOnly: true,
                     onTap: _pickDateOfBirth,
-                    suffixIcon: const Icon(
+                    suffixIcon: Icon(
                       Icons.calendar_today_outlined,
                       size: 18,
-                      color: AppColors.inkMuted,
+                      color: context.palette.inkMuted,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
@@ -195,12 +195,16 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.sm),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: context.palette.surface,
                 borderRadius: BorderRadius.circular(AppRadius.control),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.info_outline, size: 16, color: AppColors.blue),
+                  Icon(
+                    Icons.info_outline,
+                    size: 16,
+                    color: context.palette.accent,
+                  ),
                   SizedBox(width: AppSpacing.xs),
                   Expanded(
                     child: Text(
@@ -208,7 +212,7 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
                       'suitability.',
                       style: TextStyle(
                         fontSize: 12.5,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                     ),
                   ),
@@ -216,12 +220,12 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.md),
-            const Text(
+            Text(
               'If your details do not match',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -232,8 +236,8 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
                   Expanded(
                     child: _FallbackCard(
                       icon: Icons.headset_mic_outlined,
-                      background: const Color(0xFFEAF7E8),
-                      iconColor: AppColors.greenStrong,
+                      background: context.palette.tintGreen,
+                      iconColor: context.palette.positive,
                       title: 'Get help',
                       subtitle: 'Speak to our team.',
                       onTap: () => context.go(RoutePaths.messages),
@@ -243,8 +247,8 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
                   Expanded(
                     child: _FallbackCard(
                       icon: Icons.sync_alt,
-                      background: const Color(0xFFE3EEFB),
-                      iconColor: AppColors.blue,
+                      background: context.palette.tintBlue,
+                      iconColor: context.palette.accent,
                       title: 'Choose another way',
                       subtitle: 'Other ways to access.',
                       onTap: () => context.pop(),
@@ -300,15 +304,15 @@ class _FallbackCard extends StatelessWidget {
               const SizedBox(height: AppSpacing.xs),
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.ink,
+                  color: context.palette.ink,
                 ),
               ),
               Text(
                 subtitle,
-                style: const TextStyle(fontSize: 12, color: AppColors.inkMuted),
+                style: TextStyle(fontSize: 12, color: context.palette.inkMuted),
               ),
             ],
           ),

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
@@ -77,7 +78,7 @@ class _ChooseAppointmentTimeScreenState
     final doctor = widget.selection.doctor!;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -87,22 +88,25 @@ class _ChooseAppointmentTimeScreenState
                 children: [
                   AppHeaderBar(showBack: true, onBack: () => context.pop()),
                   const SizedBox(height: 20),
-                  const Text(
+                  Text(
                     'Choose a time',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.ink,
+                      color: context.palette.ink,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     'Select a date, time and how you would like to be seen.',
-                    style: TextStyle(fontSize: 14, color: AppColors.inkMuted),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: context.palette.inkMuted,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.md),
                   Material(
-                    color: const Color(0xFFEAF7E8),
+                    color: context.palette.tintGreen,
                     borderRadius: BorderRadius.circular(AppRadius.card),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(AppRadius.card),
@@ -114,12 +118,12 @@ class _ChooseAppointmentTimeScreenState
                         padding: const EdgeInsets.all(AppSpacing.sm),
                         child: Row(
                           children: [
-                            const CircleAvatar(
+                            CircleAvatar(
                               radius: 22,
-                              backgroundColor: AppColors.white,
+                              backgroundColor: context.palette.elevated,
                               child: Icon(
                                 Icons.person,
-                                color: AppColors.greenStrong,
+                                color: context.palette.positive,
                               ),
                             ),
                             const SizedBox(width: AppSpacing.sm),
@@ -129,27 +133,27 @@ class _ChooseAppointmentTimeScreenState
                                 children: [
                                   Text(
                                     doctor.name,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
-                                      color: AppColors.ink,
+                                      color: context.palette.ink,
                                     ),
                                   ),
                                   Text(
                                     _mode == _ConsultationMode.video
                                         ? 'Online GP'
                                         : 'Telephone GP',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 12,
-                                      color: AppColors.inkMuted,
+                                      color: context.palette.inkMuted,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            const Icon(
+                            Icon(
                               Icons.chevron_right,
-                              color: AppColors.blue,
+                              color: context.palette.accent,
                             ),
                           ],
                         ),
@@ -157,12 +161,12 @@ class _ChooseAppointmentTimeScreenState
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  const Text(
+                  Text(
                     'How would you like to be seen?',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.ink,
+                      color: context.palette.ink,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
@@ -196,12 +200,12 @@ class _ChooseAppointmentTimeScreenState
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  const Text(
+                  Text(
                     'Select a date',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.ink,
+                      color: context.palette.ink,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
@@ -226,20 +230,20 @@ class _ChooseAppointmentTimeScreenState
                   const SizedBox(height: AppSpacing.md),
                   Row(
                     children: [
-                      const Text(
+                      Text(
                         'Available times',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.ink,
+                          color: context.palette.ink,
                         ),
                       ),
                       const Spacer(),
                       Text(
                         'UK time (BST)',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.inkMuted,
+                          color: context.palette.inkMuted,
                         ),
                       ),
                     ],
@@ -262,26 +266,29 @@ class _ChooseAppointmentTimeScreenState
                     ],
                   ),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     'Sample availability',
-                    style: TextStyle(fontSize: 12, color: AppColors.inkMuted),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: context.palette.inkMuted,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.md),
                   Container(
                     padding: const EdgeInsets.all(AppSpacing.sm),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEAF7E8),
+                      color: context.palette.tintGreen,
                       borderRadius: BorderRadius.circular(AppRadius.control),
                     ),
                     child: Row(
                       children: [
-                        const CircleAvatar(
+                        CircleAvatar(
                           radius: 18,
-                          backgroundColor: AppColors.white,
+                          backgroundColor: context.palette.elevated,
                           child: Icon(
                             Icons.calendar_month_outlined,
                             size: 18,
-                            color: AppColors.greenStrong,
+                            color: context.palette.positive,
                           ),
                         ),
                         const SizedBox(width: AppSpacing.sm),
@@ -289,11 +296,11 @@ class _ChooseAppointmentTimeScreenState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'Selected appointment',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: AppColors.inkMuted,
+                                  color: context.palette.inkMuted,
                                 ),
                               ),
                               Text(
@@ -301,18 +308,18 @@ class _ChooseAppointmentTimeScreenState
                                 '${_selectedDay.day} '
                                 '${_fullMonths[_selectedDay.month - 1]} '
                                 '${_selectedDay.year} at $_selectedTime',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.ink,
+                                  color: context.palette.ink,
                                 ),
                               ),
                               Text(
                                 '${_mode == _ConsultationMode.video ? 'Video' : 'Telephone'} '
                                 'consultation with ${doctor.name}',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12.5,
-                                  color: AppColors.inkMuted,
+                                  color: context.palette.inkMuted,
                                 ),
                               ),
                             ],
@@ -366,7 +373,7 @@ class _ModeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected ? const Color(0xFFE3EEFB) : AppColors.white,
+      color: selected ? context.palette.tintBlue : context.palette.elevated,
       borderRadius: BorderRadius.circular(AppRadius.card),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.card),
@@ -376,7 +383,7 @@ class _ModeCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.card),
             border: Border.all(
-              color: selected ? AppColors.blue : AppColors.line,
+              color: selected ? context.palette.accent : context.palette.line,
               width: 1.5,
             ),
           ),
@@ -385,7 +392,7 @@ class _ModeCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(icon, color: AppColors.ink, size: 20),
+                  Icon(icon, color: context.palette.ink, size: 20),
                   const Spacer(),
                   _RadioCircle(selected: selected),
                 ],
@@ -393,15 +400,15 @@ class _ModeCard extends StatelessWidget {
               const SizedBox(height: AppSpacing.xs),
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.ink,
+                  color: context.palette.ink,
                 ),
               ),
               Text(
                 subtitle,
-                style: const TextStyle(fontSize: 12, color: AppColors.inkMuted),
+                style: TextStyle(fontSize: 12, color: context.palette.inkMuted),
               ),
             ],
           ),
@@ -425,7 +432,7 @@ class _DayCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected ? const Color(0xFFE3EEFB) : AppColors.white,
+      color: selected ? context.palette.tintBlue : context.palette.elevated,
       borderRadius: BorderRadius.circular(AppRadius.card),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.card),
@@ -435,7 +442,7 @@ class _DayCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.card),
             border: Border.all(
-              color: selected ? AppColors.blue : AppColors.line,
+              color: selected ? context.palette.accent : context.palette.line,
               width: 1.5,
             ),
           ),
@@ -443,14 +450,14 @@ class _DayCard extends StatelessWidget {
             children: [
               Text(
                 _weekdays[day.weekday - 1],
-                style: const TextStyle(fontSize: 12, color: AppColors.inkMuted),
+                style: TextStyle(fontSize: 12, color: context.palette.inkMuted),
               ),
               Text(
                 '${day.day} ${_months[day.month - 1]}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.ink,
+                  color: context.palette.ink,
                 ),
               ),
               const SizedBox(height: 4),
@@ -477,7 +484,7 @@ class _TimeChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected ? AppColors.blue : AppColors.surface,
+      color: selected ? AppColors.blue : context.palette.surface,
       borderRadius: BorderRadius.circular(AppRadius.control),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.control),
@@ -490,7 +497,7 @@ class _TimeChip extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: selected ? AppColors.white : AppColors.ink,
+              color: selected ? AppColors.white : context.palette.ink,
             ),
           ),
         ),
@@ -512,7 +519,7 @@ class _RadioCircle extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: selected ? AppColors.blue : AppColors.line,
+          color: selected ? context.palette.accent : context.palette.line,
           width: 2,
         ),
       ),

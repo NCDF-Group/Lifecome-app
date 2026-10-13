@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
@@ -19,27 +20,27 @@ class MembershipBillingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             AppHeaderBar(showBack: true, onBack: () => context.pop()),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Membership and billing',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Manage your household plan, payment and membership.',
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.inkMuted,
+                color: context.palette.inkMuted,
                 height: 1.4,
               ),
             ),
@@ -47,21 +48,21 @@ class MembershipBillingScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF7E8),
+                color: context.palette.tintGreen,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 22,
-                    backgroundColor: AppColors.white,
+                    backgroundColor: context.palette.elevated,
                     child: Icon(
                       Icons.family_restroom,
-                      color: AppColors.greenStrong,
+                      color: context.palette.positive,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -70,14 +71,14 @@ class MembershipBillingScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: context.palette.ink,
                           ),
                         ),
                         Text(
                           'Care for you and your household members.',
                           style: TextStyle(
                             fontSize: 12.5,
-                            color: AppColors.inkMuted,
+                            color: context.palette.inkMuted,
                             height: 1.4,
                           ),
                         ),
@@ -88,44 +89,44 @@ class MembershipBillingScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            const Text(
+            Text(
               'Members',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: AppSpacing.xs),
             Container(
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: context.palette.surface,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
               child: Column(
                 children: [
                   _MemberRow(
-                    background: const Color(0xFFEAF7E8),
-                    iconColor: AppColors.greenStrong,
+                    background: context.palette.tintGreen,
+                    iconColor: context.palette.positive,
                     name: 'You',
                     badge: 'Active',
-                    badgeColor: AppColors.greenStrong,
-                    badgeBackground: const Color(0xFFEAF7E8),
+                    badgeColor: context.palette.positive,
+                    badgeBackground: context.palette.tintGreen,
                     subtitle: 'Account holder',
                     onTap: () => showComingSoonPopup(
                       context,
                       feature: 'Your membership',
                     ),
                   ),
-                  const Divider(height: 1, color: AppColors.line),
+                  Divider(height: 1, color: context.palette.line),
                   _MemberRow(
-                    background: const Color(0xFFE3EEFB),
-                    iconColor: AppColors.blue,
+                    background: context.palette.tintBlue,
+                    iconColor: context.palette.accent,
                     name: 'Adult member',
                     badge: 'Invitation pending',
-                    badgeColor: AppColors.blue,
-                    badgeBackground: const Color(0xFFE3EEFB),
+                    badgeColor: context.palette.accent,
+                    badgeBackground: context.palette.tintBlue,
                     subtitle: 'Invitation sent',
                     onTap: () => showComingSoonPopup(
                       context,
@@ -136,19 +137,19 @@ class MembershipBillingScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            const Text(
+            Text(
               'Billing and membership',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: AppSpacing.xs),
             _BillingRow(
               icon: Icons.credit_card_outlined,
-              background: const Color(0xFFE3EEFB),
-              iconColor: AppColors.blue,
+              background: context.palette.tintBlue,
+              iconColor: context.palette.accent,
               title: 'Payment method',
               subtitle: 'View and update your payment method.',
               onTap: () =>
@@ -157,8 +158,8 @@ class MembershipBillingScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _BillingRow(
               icon: Icons.description_outlined,
-              background: const Color(0xFFEAF7E8),
-              iconColor: AppColors.greenStrong,
+              background: context.palette.tintGreen,
+              iconColor: context.palette.positive,
               title: 'Billing history',
               subtitle: 'View your past payments and invoices.',
               onTap: () =>
@@ -167,8 +168,8 @@ class MembershipBillingScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _BillingRow(
               icon: Icons.sync_alt,
-              background: const Color(0xFFE3EEFB),
-              iconColor: AppColors.blue,
+              background: context.palette.tintBlue,
+              iconColor: context.palette.accent,
               title: 'Renewal and cancellation',
               subtitle: 'Manage your plan renewal or cancellation.',
               onTap: () => showComingSoonPopup(
@@ -179,8 +180,8 @@ class MembershipBillingScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _BillingRow(
               icon: Icons.group_add_outlined,
-              background: const Color(0xFFEAF7E8),
-              iconColor: AppColors.greenStrong,
+              background: context.palette.tintGreen,
+              iconColor: context.palette.positive,
               title: 'Manage members',
               subtitle: 'Add or remove household members.',
               onTap: () =>
@@ -270,10 +271,10 @@ class _MemberRow extends StatelessWidget {
                       children: [
                         Text(
                           name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: context.palette.ink,
                           ),
                         ),
                         const SizedBox(width: AppSpacing.xs),
@@ -299,15 +300,15 @@ class _MemberRow extends StatelessWidget {
                     ),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.5,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppColors.blue),
+              Icon(Icons.chevron_right, color: context.palette.accent),
             ],
           ),
         ),
@@ -348,8 +349,8 @@ class _BillingRow extends StatelessWidget {
               Container(
                 width: 40,
                 height: 40,
-                decoration: const BoxDecoration(
-                  color: AppColors.white,
+                decoration: BoxDecoration(
+                  color: context.palette.elevated,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, color: iconColor, size: 20),
@@ -361,17 +362,17 @@ class _BillingRow extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.5,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                         height: 1.4,
                       ),
                     ),

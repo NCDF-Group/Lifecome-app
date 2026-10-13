@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
+import '../../theme/app_palette.dart';
 
 /// A soft, centred colour glow behind a form card, matching the website's
 /// hero background treatment (Lifecome-web's blurred `bg-cyan`/`bg-lime`
@@ -13,23 +14,35 @@ class BrandBackdrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // The same tint reads far stronger over a dark page, so ease it off there.
+    final strength = context.palette.isDark ? 0.5 : 1.0;
+
     return IgnorePointer(
       child: Stack(
         children: [
           Positioned(
             top: -40,
             left: -60,
-            child: _glow(300, AppColors.cyan.withValues(alpha: 0.20)),
+            child: _glow(
+              300,
+              AppColors.cyan.withValues(alpha: 0.20 * strength),
+            ),
           ),
           Positioned(
             top: 40,
             right: -70,
-            child: _glow(260, AppColors.lime.withValues(alpha: 0.20)),
+            child: _glow(
+              260,
+              AppColors.lime.withValues(alpha: 0.20 * strength),
+            ),
           ),
           Positioned(
             bottom: -80,
             left: 40,
-            child: _glow(220, AppColors.blue.withValues(alpha: 0.08)),
+            child: _glow(
+              220,
+              AppColors.blue.withValues(alpha: 0.08 * strength),
+            ),
           ),
         ],
       ),

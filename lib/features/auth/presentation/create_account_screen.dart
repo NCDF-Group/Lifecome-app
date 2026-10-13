@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/animation/fade_in.dart';
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
@@ -134,7 +134,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
     final submitting = authState.status == AuthStatus.submitting;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(
@@ -154,15 +154,15 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                         onPressed: () => context.pop(),
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.arrow_back_ios_new,
                           size: 18,
-                          color: AppColors.ink,
+                          color: context.palette.ink,
                         ),
                       ),
                       const SizedBox(width: 8),
                       SvgPicture.asset(
-                        'assets/images/logo/lifecome-live-logo.svg',
+                        context.palette.logoAsset,
                         height: 24,
                         semanticsLabel: 'LifeCome Live',
                       ),
@@ -170,20 +170,20 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                const Text(
+                Text(
                   'Create your account',
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.ink,
+                    color: context.palette.ink,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xxs),
-                const Text(
+                Text(
                   'Set up your account to access your care.',
                   style: TextStyle(
                     fontSize: 15,
-                    color: AppColors.inkMuted,
+                    color: context.palette.inkMuted,
                     height: 1.4,
                   ),
                 ),
@@ -232,7 +232,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined,
                       size: 20,
-                      color: AppColors.inkMuted,
+                      color: context.palette.inkMuted,
                     ),
                     onPressed: () =>
                         setState(() => _obscurePassword = !_obscurePassword),
@@ -253,7 +253,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined,
                       size: 20,
-                      color: AppColors.inkMuted,
+                      color: context.palette.inkMuted,
                     ),
                     onPressed: () =>
                         setState(() => _obscureConfirm = !_obscureConfirm),
@@ -281,16 +281,16 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                         padding: const EdgeInsets.only(top: 2),
                         child: Text.rich(
                           TextSpan(
-                            style: const TextStyle(
-                              color: AppColors.inkMuted,
+                            style: TextStyle(
+                              color: context.palette.inkMuted,
                               fontSize: 14,
                             ),
                             children: [
                               const TextSpan(text: 'I agree to the '),
                               TextSpan(
                                 text: 'Terms of use',
-                                style: const TextStyle(
-                                  color: AppColors.blue,
+                                style: TextStyle(
+                                  color: context.palette.accent,
                                   fontWeight: FontWeight.w600,
                                 ),
                                 recognizer: TapGestureRecognizer()
@@ -307,17 +307,17 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                   const SizedBox(height: AppSpacing.xxs),
                   Text(
                     _termsError!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.error,
+                      color: context.palette.danger,
                     ),
                   ),
                 ],
                 const SizedBox(height: AppSpacing.xxs),
                 Text.rich(
                   TextSpan(
-                    style: const TextStyle(
-                      color: AppColors.inkMuted,
+                    style: TextStyle(
+                      color: context.palette.inkMuted,
                       fontSize: 12,
                       height: 1.4,
                     ),
@@ -325,8 +325,8 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                       const TextSpan(text: 'See our '),
                       TextSpan(
                         text: 'Privacy notice',
-                        style: const TextStyle(
-                          color: AppColors.blue,
+                        style: TextStyle(
+                          color: context.palette.accent,
                           fontWeight: FontWeight.w600,
                         ),
                         recognizer: TapGestureRecognizer()
@@ -351,16 +351,16 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEAF7E8),
+                    color: context.palette.tintGreen,
                     borderRadius: BorderRadius.circular(AppRadius.control),
                   ),
-                  child: const Row(
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Icon(
                         Icons.info_outline,
                         size: 18,
-                        color: AppColors.greenStrong,
+                        color: context.palette.positive,
                       ),
                       SizedBox(width: AppSpacing.xs),
                       Expanded(
@@ -369,7 +369,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: context.palette.ink,
                             height: 1.4,
                           ),
                         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../network/api_exception.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_palette.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -168,12 +169,12 @@ Future<PhotoSource?> showUploadPhotoPopup(BuildContext context) {
     message: 'Choose a clear, well-lit photo of your face.',
     primaryLabel: 'Cancel',
     body: Column(
-      children: const [
+      children: [
         _OptionTile(
           value: PhotoSource.camera,
           leading: Icon(
             Icons.photo_camera_rounded,
-            color: AppColors.blue,
+            color: context.palette.accent,
             size: 22,
           ),
           label: 'Take a photo',
@@ -183,7 +184,7 @@ Future<PhotoSource?> showUploadPhotoPopup(BuildContext context) {
           value: PhotoSource.library,
           leading: Icon(
             Icons.photo_library_rounded,
-            color: AppColors.blue,
+            color: context.palette.accent,
             size: 22,
           ),
           label: 'Choose from library',
@@ -215,6 +216,7 @@ class _AppPopupCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = _styles[kind]!;
+    final kindColor = context.palette.adapt(style.color);
     final primaryColor = destructive ? AppColors.error : AppColors.blue;
     // Upload's primary action is "Cancel", so it pops null, not true.
     final primaryResult = body == null ? true : null;
@@ -226,7 +228,7 @@ class _AppPopupCard extends StatelessWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 380),
             child: Material(
-              color: AppColors.white,
+              color: context.palette.elevated,
               borderRadius: BorderRadius.circular(28),
               elevation: 24,
               shadowColor: AppColors.ink.withValues(alpha: 0.25),
@@ -244,33 +246,33 @@ class _AppPopupCard extends StatelessWidget {
                       width: 72,
                       height: 72,
                       decoration: BoxDecoration(
-                        color: style.color.withValues(alpha: 0.12),
+                        color: kindColor.withValues(alpha: 0.12),
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: style.color.withValues(alpha: 0.18),
+                          color: kindColor.withValues(alpha: 0.18),
                           width: 6,
                         ),
                       ),
-                      child: Icon(style.icon, color: style.color, size: 32),
+                      child: Icon(style.icon, color: kindColor, size: 32),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     Text(
                       title,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
                       message,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         height: 1.45,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                     ),
                     if (body != null) ...[
@@ -299,7 +301,7 @@ class _AppPopupCard extends StatelessWidget {
                           : TextButton(
                               onPressed: () => Navigator.of(context).pop(),
                               style: TextButton.styleFrom(
-                                foregroundColor: AppColors.inkMuted,
+                                foregroundColor: context.palette.inkMuted,
                                 shape: const StadiumBorder(),
                               ),
                               child: Text(primaryLabel),
@@ -313,7 +315,7 @@ class _AppPopupCard extends StatelessWidget {
                         child: TextButton(
                           onPressed: () => Navigator.of(context).pop(false),
                           style: TextButton.styleFrom(
-                            foregroundColor: AppColors.inkMuted,
+                            foregroundColor: context.palette.inkMuted,
                             shape: const StadiumBorder(),
                           ),
                           child: Text(secondaryLabel!),
@@ -350,11 +352,11 @@ class _OptionTile<T> extends StatelessWidget {
     return Material(
       color: selected
           ? AppColors.blue.withValues(alpha: 0.08)
-          : AppColors.surface,
+          : context.palette.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.control),
         side: BorderSide(
-          color: selected ? AppColors.blue : Colors.transparent,
+          color: selected ? context.palette.accent : Colors.transparent,
           width: 1.5,
         ),
       ),
@@ -373,14 +375,16 @@ class _OptionTile<T> extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  style: const TextStyle(fontSize: 15, color: AppColors.ink),
+                  style: TextStyle(fontSize: 15, color: context.palette.ink),
                 ),
               ),
               Icon(
                 selected
                     ? Icons.check_circle_rounded
                     : Icons.arrow_forward_ios_rounded,
-                color: selected ? AppColors.blue : AppColors.inkMuted,
+                color: selected
+                    ? context.palette.accent
+                    : context.palette.inkMuted,
                 size: selected ? 20 : 14,
               ),
             ],

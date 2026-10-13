@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/providers/core_providers.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/services/session_store.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
@@ -67,29 +67,29 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
         .first;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             SvgPicture.asset(
-              'assets/images/logo/lifecome-live-logo.svg',
+              context.palette.logoAsset,
               height: 24,
               semanticsLabel: 'LifeCome Live',
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Your profile',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Manage your account and preferences.',
-              style: TextStyle(fontSize: 14, color: AppColors.inkMuted),
+              style: TextStyle(fontSize: 14, color: context.palette.inkMuted),
             ),
             const SizedBox(height: AppSpacing.md),
             _ProfileRow(
@@ -193,7 +193,7 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
                   const _FooterDot(),
                   _FooterLink(
                     label: 'Delete my account',
-                    color: AppColors.error,
+                    color: context.palette.danger,
                     onTap: _confirmDeleteAccount,
                   ),
                 ],
@@ -226,12 +226,14 @@ class _ProfileRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final background = destructive
-        ? const Color(0xFFFCEAEA)
-        : (green ? const Color(0xFFEAF7E8) : const Color(0xFFE3EEFB));
+        ? context.palette.tintRed
+        : (green ? context.palette.tintGreen : context.palette.tintBlue);
     final tint = destructive
-        ? AppColors.error
-        : (green ? AppColors.greenStrong : AppColors.blue);
-    final titleColor = destructive ? AppColors.error : AppColors.ink;
+        ? context.palette.danger
+        : (green ? context.palette.positive : context.palette.accent);
+    final titleColor = destructive
+        ? context.palette.danger
+        : context.palette.ink;
 
     return Material(
       color: background,
@@ -245,7 +247,7 @@ class _ProfileRow extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 22,
-                backgroundColor: AppColors.white,
+                backgroundColor: context.palette.elevated,
                 child: Icon(icon, color: tint),
               ),
               const SizedBox(width: AppSpacing.sm),
@@ -263,9 +265,9 @@ class _ProfileRow extends StatelessWidget {
                     ),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.5,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                         height: 1.3,
                       ),
                     ),
@@ -282,15 +284,11 @@ class _ProfileRow extends StatelessWidget {
 }
 
 class _FooterLink extends StatelessWidget {
-  const _FooterLink({
-    required this.label,
-    required this.onTap,
-    this.color = AppColors.inkMuted,
-  });
+  const _FooterLink({required this.label, required this.onTap, this.color});
 
   final String label;
   final VoidCallback onTap;
-  final Color color;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -303,7 +301,7 @@ class _FooterLink extends StatelessWidget {
           style: TextStyle(
             fontSize: 12.5,
             fontWeight: FontWeight.w600,
-            color: color,
+            color: color ?? context.palette.inkMuted,
           ),
         ),
       ),
@@ -316,11 +314,11 @@ class _FooterDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8),
       child: Text(
         '·',
-        style: TextStyle(fontSize: 12.5, color: AppColors.inkMuted),
+        style: TextStyle(fontSize: 12.5, color: context.palette.inkMuted),
       ),
     );
   }

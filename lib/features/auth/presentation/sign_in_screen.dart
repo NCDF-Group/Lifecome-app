@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/animation/fade_in.dart';
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/buttons/secondary_button.dart';
@@ -82,7 +82,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     final submitting = authState.status == AuthStatus.submitting;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(
@@ -97,30 +97,33 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               children: [
                 FadeIn(
                   child: SvgPicture.asset(
-                    'assets/images/logo/lifecome-live-logo.svg',
+                    context.palette.logoAsset,
                     height: 28,
                     semanticsLabel: 'LifeCome Live',
                   ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                const FadeIn(
+                FadeIn(
                   delay: Duration(milliseconds: 80),
                   child: Text(
                     'Welcome to LifeCome Live.',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.ink,
+                      color: context.palette.ink,
                       height: 1.2,
                     ),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xxs),
-                const FadeIn(
+                FadeIn(
                   delay: Duration(milliseconds: 120),
                   child: Text(
                     'Your care, connected.',
-                    style: TextStyle(fontSize: 16, color: AppColors.inkMuted),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: context.palette.inkMuted,
+                    ),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xl),
@@ -155,7 +158,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined,
                         size: 20,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                       onPressed: () =>
                           setState(() => _obscurePassword = !_obscurePassword),
@@ -171,10 +174,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     child: TextButton(
                       onPressed: _forgotPassword,
                       style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                      child: const Text(
+                      child: Text(
                         'Forgot password?',
                         style: TextStyle(
-                          color: AppColors.blue,
+                          color: context.palette.accent,
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
@@ -200,15 +203,15 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                const Divider(color: AppColors.line),
+                Divider(color: context.palette.line),
                 const SizedBox(height: AppSpacing.md),
                 FadeIn(
                   delay: const Duration(milliseconds: 280),
                   child: Center(
                     child: Text.rich(
                       TextSpan(
-                        style: const TextStyle(
-                          color: AppColors.inkMuted,
+                        style: TextStyle(
+                          color: context.palette.inkMuted,
                           fontSize: 12,
                         ),
                         children: [
@@ -217,8 +220,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                           ),
                           TextSpan(
                             text: 'Privacy notice',
-                            style: const TextStyle(
-                              color: AppColors.blue,
+                            style: TextStyle(
+                              color: context.palette.accent,
                               fontWeight: FontWeight.w600,
                             ),
                             recognizer: TapGestureRecognizer()
@@ -241,15 +244,15 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     child: TextButton.icon(
                       onPressed: () =>
                           showComingSoonPopup(context, feature: 'Get help'),
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.forum_outlined,
                         size: 16,
-                        color: AppColors.blue,
+                        color: context.palette.accent,
                       ),
-                      label: const Text(
+                      label: Text(
                         'Get help',
                         style: TextStyle(
-                          color: AppColors.blue,
+                          color: context.palette.accent,
                           fontWeight: FontWeight.w500,
                           fontSize: 14,
                         ),

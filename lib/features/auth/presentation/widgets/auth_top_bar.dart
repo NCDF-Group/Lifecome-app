@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_palette.dart';
 
 /// The header used across the sign-up flow (create account, verify email,
 /// create password): a circular back button, plus an optional [trailing]
@@ -32,17 +32,17 @@ class _CircleBackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.white,
-      shape: const CircleBorder(
-        side: BorderSide(color: AppColors.line, width: 1.5),
+      color: context.palette.elevated,
+      shape: CircleBorder(
+        side: BorderSide(color: context.palette.line, width: 1.5),
       ),
       child: InkWell(
         customBorder: const CircleBorder(),
         onTap: onPressed,
-        child: const SizedBox(
+        child: SizedBox(
           width: 44,
           height: 44,
-          child: Icon(Icons.arrow_back, color: AppColors.ink, size: 20),
+          child: Icon(Icons.arrow_back, color: context.palette.ink, size: 20),
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_palette.dart';
 
 /// A compact "step X of N" progress indicator — a row of small pill
 /// segments, filled for the current step and every step before it, outlined
@@ -29,10 +30,12 @@ class StepIndicator extends StatelessWidget {
             width: 22,
             height: 6,
             decoration: BoxDecoration(
-              color: index <= step ? AppColors.blue : AppColors.white,
+              color: index <= step ? AppColors.blue : context.palette.elevated,
               borderRadius: BorderRadius.circular(3),
               border: Border.all(
-                color: index <= step ? AppColors.blue : AppColors.line,
+                color: index <= step
+                    ? context.palette.accent
+                    : context.palette.line,
                 width: 1.5,
               ),
             ),

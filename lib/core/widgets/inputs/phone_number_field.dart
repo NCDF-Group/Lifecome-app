@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_palette.dart';
 import '../../theme/app_radius.dart';
 
 const _ukDialCode = '+44';
@@ -45,18 +45,18 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
   @override
   Widget build(BuildContext context) {
     final borderColor = widget.errorText != null
-        ? AppColors.error
-        : AppColors.line;
+        ? context.palette.danger
+        : context.palette.line;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           widget.label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: AppColors.ink,
+            color: context.palette.ink,
           ),
         ),
         const SizedBox(height: 8),
@@ -67,7 +67,7 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
           ),
           child: Row(
             children: [
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -78,21 +78,21 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
                       _ukDialCode,
                       style: TextStyle(
                         fontSize: 16,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
               ),
-              Container(width: 1, height: 28, color: AppColors.line),
+              Container(width: 1, height: 28, color: context.palette.line),
               Expanded(
                 child: TextField(
                   controller: _numberController,
                   keyboardType: TextInputType.phone,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   onChanged: (_) => _emit(),
-                  style: const TextStyle(fontSize: 16, color: AppColors.ink),
+                  style: TextStyle(fontSize: 16, color: context.palette.ink),
                   decoration: const InputDecoration(
                     hintText: 'Enter mobile number',
                     border: InputBorder.none,
@@ -110,7 +110,7 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
           const SizedBox(height: 4),
           Text(
             widget.errorText!,
-            style: const TextStyle(fontSize: 12, color: AppColors.error),
+            style: TextStyle(fontSize: 12, color: context.palette.danger),
           ),
         ],
       ],

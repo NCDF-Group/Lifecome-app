@@ -7,6 +7,7 @@ import '../../../core/animation/fade_in.dart';
 import '../../../core/providers/core_providers.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
@@ -105,7 +106,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
     final name = _displayName;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
@@ -116,7 +117,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                 FadeIn(
                   child: Center(
                     child: SvgPicture.asset(
-                      'assets/images/logo/lifecome-live-logo.svg',
+                      context.palette.logoAsset,
                       height: 32,
                       semanticsLabel: 'LifeCome Live',
                     ),
@@ -127,30 +128,30 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                   delay: const Duration(milliseconds: 80),
                   child: Text.rich(
                     TextSpan(
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                         height: 1.15,
                       ),
                       children: [
                         const TextSpan(text: 'Welcome back, '),
                         TextSpan(
                           text: '${name ?? ''},',
-                          style: const TextStyle(color: AppColors.blue),
+                          style: TextStyle(color: context.palette.accent),
                         ),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                const FadeIn(
+                FadeIn(
                   delay: Duration(milliseconds: 120),
                   child: Text(
                     'Enter password or unlock with biometrics to continue.',
                     style: TextStyle(
                       fontSize: 15,
-                      color: AppColors.inkMuted,
+                      color: context.palette.inkMuted,
                       height: 1.4,
                     ),
                   ),
@@ -173,7 +174,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined,
                         size: 20,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                       onPressed: () =>
                           setState(() => _obscurePassword = !_obscurePassword),
@@ -189,10 +190,10 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                     child: TextButton(
                       onPressed: () => context.push(RoutePaths.forgotPassword),
                       style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                      child: const Text(
+                      child: Text(
                         'Forgot Password?',
                         style: TextStyle(
-                          color: AppColors.blue,
+                          color: context.palette.accent,
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
@@ -232,11 +233,11 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                                 shape: BoxShape.circle,
                               ),
                               child: _step == _UnlockStep.checking
-                                  ? const Padding(
+                                  ? Padding(
                                       padding: EdgeInsets.all(22),
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2.4,
-                                        color: AppColors.blue,
+                                        color: context.palette.accent,
                                       ),
                                     )
                                   : Icon(
@@ -244,18 +245,18 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                                           ? Icons.check_circle
                                           : Icons.face_retouching_natural,
                                       color: _step == _UnlockStep.unlocked
-                                          ? AppColors.greenStrong
-                                          : AppColors.blue,
+                                          ? context.palette.positive
+                                          : context.palette.accent,
                                       size: 34,
                                     ),
                             ),
                           ),
                           const SizedBox(height: AppSpacing.xs),
-                          const Text(
+                          Text(
                             'Use Face ID',
                             style: TextStyle(
                               fontSize: 13,
-                              color: AppColors.inkMuted,
+                              color: context.palette.inkMuted,
                             ),
                           ),
                         ],
@@ -269,10 +270,10 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                   child: Center(
                     child: TextButton(
                       onPressed: _signInWithAnotherAccount,
-                      child: const Text(
+                      child: Text(
                         'Not you? Sign in with another account',
                         style: TextStyle(
-                          color: AppColors.inkMuted,
+                          color: context.palette.inkMuted,
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),

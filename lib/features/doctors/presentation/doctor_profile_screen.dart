@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
@@ -20,36 +20,36 @@ class DoctorProfileScreen extends StatelessWidget {
     final doctor = selection.doctor!;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             AppHeaderBar(showBack: true, onBack: () => context.pop()),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Your clinician',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: AppSpacing.md),
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF7E8),
+                color: context.palette.tintGreen,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 32,
-                    backgroundColor: AppColors.white,
+                    backgroundColor: context.palette.elevated,
                     child: Icon(
                       Icons.person,
-                      color: AppColors.greenStrong,
+                      color: context.palette.positive,
                       size: 32,
                     ),
                   ),
@@ -60,17 +60,17 @@ class DoctorProfileScreen extends StatelessWidget {
                       children: [
                         Text(
                           doctor.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: context.palette.ink,
                           ),
                         ),
                         Text(
                           doctor.specialty,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
-                            color: AppColors.inkMuted,
+                            color: context.palette.inkMuted,
                           ),
                         ),
                       ],
@@ -82,24 +82,24 @@ class DoctorProfileScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _InfoRow(
               icon: Icons.assignment_outlined,
-              iconColor: AppColors.greenStrong,
-              background: const Color(0xFFEAF7E8),
+              iconColor: context.palette.positive,
+              background: context.palette.tintGreen,
               title: 'Professional registration',
               subtitle: doctor.credentials,
             ),
             const SizedBox(height: AppSpacing.sm),
-            const _InfoRow(
+            _InfoRow(
               icon: Icons.videocam_outlined,
-              iconColor: AppColors.blue,
-              background: Color(0xFFE3EEFB),
+              iconColor: context.palette.accent,
+              background: context.palette.tintBlue,
               title: 'Consultation formats',
               subtitle: 'Video and telephone.',
             ),
             const SizedBox(height: AppSpacing.sm),
             _InfoRow(
               icon: Icons.public,
-              iconColor: AppColors.greenStrong,
-              background: const Color(0xFFEAF7E8),
+              iconColor: context.palette.positive,
+              background: context.palette.tintGreen,
               title: 'Languages',
               subtitle: doctor.languages.join(', '),
             ),
@@ -107,24 +107,27 @@ class DoctorProfileScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFE3EEFB),
+                color: context.palette.tintBlue,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'About your visit',
                     style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.ink,
+                      color: context.palette.ink,
                     ),
                   ),
                   const SizedBox(height: 2),
-                  const Text(
+                  Text(
                     'Discuss your concern and agree next steps.',
-                    style: TextStyle(fontSize: 13, color: AppColors.inkMuted),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: context.palette.inkMuted,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   PrimaryButton(
@@ -178,23 +181,23 @@ class _InfoRow extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.ink,
+                    color: context.palette.ink,
                   ),
                 ),
                 Text(
                   subtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.inkMuted,
+                    color: context.palette.inkMuted,
                   ),
                 ),
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: AppColors.blue),
+          Icon(Icons.chevron_right, color: context.palette.accent),
         ],
       ),
     );

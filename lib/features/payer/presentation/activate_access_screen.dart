@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
@@ -51,31 +52,31 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             AppHeaderBar(showBack: true, onBack: () => context.pop()),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Activate your access',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'An invitation links funding to your private account.',
-              style: TextStyle(fontSize: 14, color: AppColors.inkMuted),
+              style: TextStyle(fontSize: 14, color: context.palette.inkMuted),
             ),
             const SizedBox(height: AppSpacing.md),
             Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: context.palette.surface,
                 borderRadius: BorderRadius.circular(AppRadius.pill),
               ),
               child: Row(
@@ -102,22 +103,22 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
                 color: _isEmployer
-                    ? const Color(0xFFEAF7E8)
-                    : const Color(0xFFE3EEFB),
+                    ? context.palette.tintGreen
+                    : context.palette.tintBlue,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
                 children: [
                   CircleAvatar(
                     radius: 22,
-                    backgroundColor: AppColors.white,
+                    backgroundColor: context.palette.elevated,
                     child: Icon(
                       _isEmployer
                           ? Icons.apartment_outlined
                           : Icons.badge_outlined,
                       color: _isEmployer
-                          ? AppColors.greenStrong
-                          : AppColors.blue,
+                          ? context.palette.positive
+                          : context.palette.accent,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
@@ -129,10 +130,10 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
                           _isEmployer
                               ? 'Employer or sponsor access'
                               : 'Personal membership access',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: context.palette.ink,
                           ),
                         ),
                         Text(
@@ -141,9 +142,9 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
                                     'employer or scheme administrator.'
                               : 'Use your membership code to activate '
                                     'your account.',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12.5,
-                            color: AppColors.inkMuted,
+                            color: context.palette.inkMuted,
                             height: 1.4,
                           ),
                         ),
@@ -215,18 +216,18 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFE3EEFB),
+                color: context.palette.tintBlue,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 18,
-                    backgroundColor: AppColors.white,
+                    backgroundColor: context.palette.elevated,
                     child: Icon(
                       Icons.help_outline,
                       size: 18,
-                      color: AppColors.blue,
+                      color: context.palette.accent,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
@@ -236,19 +237,19 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
                       children: [
                         Text(
                           _isEmployer ? 'No invitation?' : 'No code?',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: context.palette.ink,
                           ),
                         ),
                         Text(
                           _isEmployer
                               ? 'Contact your scheme administrator.'
                               : 'Contact patient support.',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12.5,
-                            color: AppColors.inkMuted,
+                            color: context.palette.inkMuted,
                           ),
                         ),
                       ],
@@ -258,17 +259,17 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            const Text(
+            Text(
               'Choose another access route',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
             Material(
-              color: const Color(0xFFEAF7E8),
+              color: context.palette.tintGreen,
               borderRadius: BorderRadius.circular(AppRadius.card),
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppRadius.card),
@@ -279,13 +280,13 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
                   padding: const EdgeInsets.all(AppSpacing.md),
                   child: Row(
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 18,
-                        backgroundColor: AppColors.white,
+                        backgroundColor: context.palette.elevated,
                         child: Icon(
                           Icons.person_outline,
                           size: 18,
-                          color: AppColors.greenStrong,
+                          color: context.palette.positive,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.sm),
@@ -297,27 +298,27 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
                               _isEmployer
                                   ? 'Use a personal membership'
                                   : 'Use employer or sponsor access',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.ink,
+                                color: context.palette.ink,
                               ),
                             ),
                             Text(
                               _isEmployer
                                   ? "If you're paying for your own care."
                                   : 'If your employer or scheme covers you.',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12.5,
-                                color: AppColors.inkMuted,
+                                color: context.palette.inkMuted,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const Icon(
+                      Icon(
                         Icons.chevron_right,
-                        color: AppColors.greenStrong,
+                        color: context.palette.positive,
                       ),
                     ],
                   ),
@@ -359,7 +360,7 @@ class _TabButton extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: selected ? AppColors.white : AppColors.ink,
+              color: selected ? AppColors.white : context.palette.ink,
             ),
           ),
         ),

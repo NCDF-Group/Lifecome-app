@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/animation/fade_in.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
@@ -17,7 +18,7 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
@@ -31,20 +32,20 @@ class WelcomeScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 FadeIn(
                   delay: const Duration(milliseconds: 60),
-                  child: const Text.rich(
+                  child: Text.rich(
                     TextSpan(
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w600,
                         height: 1.15,
                         letterSpacing: -0.6,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                       children: [
                         TextSpan(text: 'GP care and\n'),
                         TextSpan(
                           text: 'everyday wellbeing,\n',
-                          style: TextStyle(color: AppColors.greenStrong),
+                          style: TextStyle(color: context.palette.positive),
                         ),
                         TextSpan(text: 'connected.'),
                       ],
@@ -54,12 +55,12 @@ class WelcomeScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 FadeIn(
                   delay: const Duration(milliseconds: 100),
-                  child: const Text(
+                  child: Text(
                     'GP appointments and practical support for healthier '
                     'routines, eating well and relaxation.',
                     style: TextStyle(
                       fontSize: 15,
-                      color: AppColors.inkMuted,
+                      color: context.palette.inkMuted,
                       height: 1.4,
                     ),
                   ),
@@ -67,13 +68,13 @@ class WelcomeScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 FadeIn(
                   delay: const Duration(milliseconds: 140),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Expanded(
                         child: _FeatureIcon(
                           icon: Icons.videocam_outlined,
-                          background: Color(0xFFE3EEFB),
-                          color: AppColors.blue,
+                          background: context.palette.tintBlue,
+                          color: context.palette.accent,
                           label: 'Online GP',
                         ),
                       ),
@@ -81,8 +82,8 @@ class WelcomeScreen extends StatelessWidget {
                       Expanded(
                         child: _FeatureIcon(
                           icon: Icons.location_on_outlined,
-                          background: Color(0xFFE6F6E2),
-                          color: AppColors.greenStrong,
+                          background: context.palette.tintGreenFaint,
+                          color: context.palette.positive,
                           label: 'Clinic care',
                         ),
                       ),
@@ -90,8 +91,8 @@ class WelcomeScreen extends StatelessWidget {
                       Expanded(
                         child: _FeatureIcon(
                           icon: Icons.spa_outlined,
-                          background: Color(0xFFE3EEFB),
-                          color: AppColors.blue,
+                          background: context.palette.tintBlue,
+                          color: context.palette.accent,
                           label: 'Wellbeing',
                         ),
                       ),
@@ -115,9 +116,9 @@ class WelcomeScreen extends StatelessWidget {
                     child: OutlinedButton(
                       onPressed: () => context.go(RoutePaths.signIn),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.ink,
-                        side: const BorderSide(
-                          color: AppColors.line,
+                        foregroundColor: context.palette.ink,
+                        side: BorderSide(
+                          color: context.palette.line,
                           width: 1.5,
                         ),
                         shape: const StadiumBorder(),
@@ -134,14 +135,14 @@ class WelcomeScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 FadeIn(
                   delay: const Duration(milliseconds: 260),
-                  child: const Column(
+                  child: Column(
                     children: [
                       Text(
                         'For adults aged 18 and over. GP care in England.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.inkMuted,
+                          color: context.palette.inkMuted,
                         ),
                       ),
                       Text(
@@ -149,7 +150,7 @@ class WelcomeScreen extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.inkMuted,
+                          color: context.palette.inkMuted,
                         ),
                       ),
                       SizedBox(height: 4),
@@ -158,7 +159,7 @@ class WelcomeScreen extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.blue,
+                          color: context.palette.accent,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -191,12 +192,18 @@ class _HeroPhotos extends StatelessWidget {
           Positioned(
             right: -20,
             top: -10,
-            child: _SoftBlob(diameter: 150, color: const Color(0xFFDCF3D6)),
+            child: _SoftBlob(
+              diameter: 150,
+              color: context.palette.adapt(const Color(0xFFDCF3D6)),
+            ),
           ),
           Positioned(
             left: -10,
             bottom: -10,
-            child: _SoftBlob(diameter: 120, color: const Color(0xFFDCEEFA)),
+            child: _SoftBlob(
+              diameter: 120,
+              color: context.palette.tintBlueStrong,
+            ),
           ),
           // Connecting arc between the two photos.
           const Positioned(
@@ -306,7 +313,9 @@ class _BlobPhoto extends StatelessWidget {
       borderRadius: borderRadius,
       child: Stack(
         children: [
-          Positioned.fill(child: Container(color: const Color(0xFFE8F4FC))),
+          Positioned.fill(
+            child: Container(color: context.palette.tintBlueFaint),
+          ),
           Positioned.fill(child: Image.asset(asset, fit: BoxFit.cover)),
           Positioned.fill(
             child: Align(
@@ -351,7 +360,7 @@ class _PlusBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.greenStrong,
         shape: BoxShape.circle,
-        border: Border.all(color: AppColors.white, width: 3),
+        border: Border.all(color: context.palette.background, width: 3),
       ),
       child: const Icon(Icons.add, color: AppColors.white, size: 20),
     );
@@ -385,10 +394,10 @@ class _FeatureIcon extends StatelessWidget {
         Text(
           label,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: AppColors.ink,
+            color: context.palette.ink,
           ),
         ),
       ],

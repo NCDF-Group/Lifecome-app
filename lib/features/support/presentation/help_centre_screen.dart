@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
@@ -62,33 +63,33 @@ class HelpCentreScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             AppHeaderBar(showBack: true, onBack: () => context.pop()),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Help and support',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Find answers, or get in touch for more help.',
-              style: TextStyle(fontSize: 14, color: AppColors.inkMuted),
+              style: TextStyle(fontSize: 14, color: context.palette.inkMuted),
             ),
             const SizedBox(height: AppSpacing.md),
             TextField(
               decoration: InputDecoration(
                 hintText: 'Search help articles',
-                prefixIcon: const Icon(Icons.search, color: AppColors.inkMuted),
+                prefixIcon: Icon(Icons.search, color: context.palette.inkMuted),
                 filled: true,
-                fillColor: AppColors.surface,
+                fillColor: context.palette.surface,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                   borderSide: BorderSide.none,
@@ -114,7 +115,9 @@ class HelpCentreScreen extends StatelessWidget {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: AppColors.white.withValues(alpha: 0.18),
+                          color: context.palette.elevated.withValues(
+                            alpha: 0.18,
+                          ),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -156,7 +159,7 @@ class HelpCentreScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFFCEAEA),
+                color: context.palette.tintRed,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Column(
@@ -168,13 +171,13 @@ class HelpCentreScreen extends StatelessWidget {
                       Container(
                         width: 36,
                         height: 36,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFF7D7D4),
+                        decoration: BoxDecoration(
+                          color: context.palette.tintRedStrong,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.emergency_outlined,
-                          color: AppColors.error,
+                          color: context.palette.danger,
                           size: 18,
                         ),
                       ),
@@ -183,21 +186,21 @@ class HelpCentreScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'Urgent or emergency help',
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.error,
+                                color: context.palette.danger,
                               ),
                             ),
                             const SizedBox(height: 2),
-                            const Text(
+                            Text(
                               'If there is immediate danger, contact local '
                               'emergency services.',
                               style: TextStyle(
                                 fontSize: 13,
-                                color: AppColors.inkMuted,
+                                color: context.palette.inkMuted,
                                 height: 1.4,
                               ),
                             ),
@@ -207,7 +210,7 @@ class HelpCentreScreen extends StatelessWidget {
                                 context,
                                 feature: 'Urgent-care options',
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
@@ -215,14 +218,14 @@ class HelpCentreScreen extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
-                                      color: AppColors.blue,
+                                      color: context.palette.accent,
                                     ),
                                   ),
                                   SizedBox(width: 2),
                                   Icon(
                                     Icons.chevron_right,
                                     size: 16,
-                                    color: AppColors.blue,
+                                    color: context.palette.accent,
                                   ),
                                 ],
                               ),
@@ -233,11 +236,14 @@ class HelpCentreScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: AppSpacing.sm),
-                  const Divider(color: Color(0xFFF2CFCB), height: 1),
+                  Divider(color: context.palette.tintRedLine, height: 1),
                   const SizedBox(height: AppSpacing.sm),
-                  const Text(
+                  Text(
                     'Messages are not monitored continuously.',
-                    style: TextStyle(fontSize: 12, color: AppColors.inkMuted),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: context.palette.inkMuted,
+                    ),
                   ),
                 ],
               ),
@@ -257,7 +263,7 @@ class _TopicRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: topic.background,
+      color: context.palette.adapt(topic.background),
       borderRadius: BorderRadius.circular(AppRadius.card),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.card),
@@ -269,11 +275,15 @@ class _TopicRow extends StatelessWidget {
               Container(
                 width: 40,
                 height: 40,
-                decoration: const BoxDecoration(
-                  color: AppColors.white,
+                decoration: BoxDecoration(
+                  color: context.palette.elevated,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(topic.icon, color: topic.color, size: 20),
+                child: Icon(
+                  topic.icon,
+                  color: context.palette.adapt(topic.color),
+                  size: 20,
+                ),
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
@@ -282,24 +292,24 @@ class _TopicRow extends StatelessWidget {
                   children: [
                     Text(
                       topic.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     Text(
                       topic.subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.5,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                         height: 1.4,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppColors.blue),
+              Icon(Icons.chevron_right, color: context.palette.accent),
             ],
           ),
         ),

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
@@ -41,11 +42,14 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
     final covered = selection.isCovered;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Review and confirm',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            color: context.palette.ink,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       body: SafeArea(
@@ -55,15 +59,18 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
               child: ListView(
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 children: [
-                  const Text(
+                  Text(
                     'Please check your appointment details before confirming.',
-                    style: TextStyle(fontSize: 14, color: AppColors.inkMuted),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: context.palette.inkMuted,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.md),
                   Container(
                     padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.line),
+                      border: Border.all(color: context.palette.line),
                       borderRadius: BorderRadius.circular(AppRadius.card),
                     ),
                     child: Row(
@@ -72,9 +79,9 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
                           backgroundColor: AppColors.blue.withValues(
                             alpha: 0.1,
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.person,
-                            color: AppColors.blue,
+                            color: context.palette.accent,
                           ),
                         ),
                         const SizedBox(width: AppSpacing.sm),
@@ -84,17 +91,17 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
                             children: [
                               Text(
                                 doctor.name,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.ink,
+                                  color: context.palette.ink,
                                 ),
                               ),
                               Text(
                                 doctor.specialty,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12,
-                                  color: AppColors.inkMuted,
+                                  color: context.palette.inkMuted,
                                 ),
                               ),
                             ],
@@ -105,17 +112,17 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
                           children: [
                             Text(
                               '${selection.date!.day}/${selection.date!.month}/${selection.date!.year}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.ink,
+                                color: context.palette.ink,
                               ),
                             ),
                             Text(
                               selection.time ?? '',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 13,
-                                color: AppColors.inkMuted,
+                                color: context.palette.inkMuted,
                               ),
                             ),
                           ],
@@ -134,8 +141,8 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
                               ? 'Requires authorisation'
                               : null),
                     trailingColor: covered
-                        ? AppColors.greenStrong
-                        : AppColors.gold,
+                        ? context.palette.positive
+                        : context.palette.warning,
                   ),
                   _ReviewRow(
                     icon: Icons.credit_card,
@@ -147,8 +154,8 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
                         ? 'No payment required'
                         : '£${service.fee}',
                     trailingColor: covered
-                        ? AppColors.greenStrong
-                        : AppColors.ink,
+                        ? context.palette.positive
+                        : context.palette.ink,
                   ),
                   if (selection.concern != null &&
                       selection.concern!.isNotEmpty)
@@ -164,10 +171,13 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
                         setState(() => _agreed = value ?? false),
                     controlAffinity: ListTileControlAffinity.leading,
                     contentPadding: EdgeInsets.zero,
-                    title: const Text(
+                    title: Text(
                       'I confirm that the information provided is correct and I agree to the '
                       'Terms of Service and Privacy Policy.',
-                      style: TextStyle(fontSize: 13, color: AppColors.ink),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: context.palette.ink,
+                      ),
                     ),
                   ),
                 ],
@@ -211,7 +221,7 @@ class _ReviewRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20, color: AppColors.inkMuted),
+          Icon(icon, size: 20, color: context.palette.inkMuted),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Column(
@@ -219,17 +229,17 @@ class _ReviewRow extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.inkMuted,
+                    color: context.palette.inkMuted,
                   ),
                 ),
                 Text(
                   value,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.ink,
+                    color: context.palette.ink,
                   ),
                 ),
               ],
@@ -241,7 +251,7 @@ class _ReviewRow extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: trailingColor ?? AppColors.ink,
+                color: trailingColor ?? context.palette.ink,
               ),
             ),
         ],

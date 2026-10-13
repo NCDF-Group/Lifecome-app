@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_palette.dart';
 
 /// Shows "Resend code" once [availableAt] has passed, and a countdown
 /// before that, matching the wording used on the website and in the
@@ -68,10 +68,10 @@ class _OtpTimerState extends State<OtpTimer> {
     if (_remaining <= Duration.zero) {
       return TextButton(
         onPressed: widget.onResend,
-        child: const Text(
+        child: Text(
           "Didn't get any code? Resend",
           style: TextStyle(
-            color: AppColors.blue,
+            color: context.palette.accent,
             fontWeight: FontWeight.w500,
             fontSize: 14,
           ),
@@ -83,7 +83,7 @@ class _OtpTimerState extends State<OtpTimer> {
     final label = '00:${seconds.toString().padLeft(2, '0')}';
     return Text(
       "Didn't get any code? Resend in $label",
-      style: const TextStyle(color: AppColors.inkMuted, fontSize: 14),
+      style: TextStyle(color: context.palette.inkMuted, fontSize: 14),
     );
   }
 }

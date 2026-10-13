@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_spacing.dart';
 
 /// The checklist shown under a new-password field on both the sign-up and
@@ -50,7 +50,7 @@ class _Rule extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = met ? AppColors.ink : AppColors.inkMuted;
+    final color = met ? context.palette.ink : context.palette.inkMuted;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,7 +58,7 @@ class _Rule extends StatelessWidget {
         Icon(
           met ? Icons.check_circle : Icons.radio_button_unchecked,
           size: 18,
-          color: met ? AppColors.greenStrong : AppColors.inkMuted,
+          color: met ? context.palette.positive : context.palette.inkMuted,
         ),
         const SizedBox(width: AppSpacing.xs),
         Expanded(

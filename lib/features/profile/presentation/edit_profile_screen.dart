@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/core_providers.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
@@ -98,7 +98,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               ListTile(
                 title: Text(option),
                 trailing: option == _communicationNeed
-                    ? const Icon(Icons.check, color: AppColors.blue)
+                    ? Icon(Icons.check, color: context.palette.accent)
                     : null,
                 onTap: () => Navigator.of(context).pop(option),
               ),
@@ -124,30 +124,33 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Your care profile',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            color: context.palette.ink,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
-            const Text(
+            Text(
               'Keep your details up to date so we can provide the best care for you.',
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.inkMuted,
+                color: context.palette.inkMuted,
                 height: 1.4,
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
             _SectionCard(
-              background: const Color(0xFFEAF7E8),
+              background: context.palette.tintGreen,
               icon: Icons.person_outline,
-              iconColor: AppColors.greenStrong,
+              iconColor: context.palette.positive,
               title: 'Personal details',
               children: [
                 Row(
@@ -174,19 +177,19 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   hintText: 'DD / MM / YYYY',
                   readOnly: true,
                   onTap: _pickDateOfBirth,
-                  suffixIcon: const Icon(
+                  suffixIcon: Icon(
                     Icons.calendar_today_outlined,
                     size: 18,
-                    color: AppColors.inkMuted,
+                    color: context.palette.inkMuted,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: AppSpacing.md),
             _SectionCard(
-              background: const Color(0xFFE3EEFB),
+              background: context.palette.tintBlue,
               icon: Icons.home_outlined,
-              iconColor: AppColors.blue,
+              iconColor: context.palette.accent,
               title: 'Home address',
               children: [
                 AppTextField(
@@ -221,46 +224,52 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             ),
             const SizedBox(height: AppSpacing.md),
             _SectionCard(
-              background: const Color(0xFFEAF7E8),
+              background: context.palette.tintGreen,
               icon: Icons.local_hospital_outlined,
-              iconColor: AppColors.greenStrong,
+              iconColor: context.palette.positive,
               title: 'NHS GP practice (optional)',
               children: [
-                const Text(
+                Text(
                   'Helps us coordinate your care with your GP.',
-                  style: TextStyle(fontSize: 12.5, color: AppColors.inkMuted),
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    color: context.palette.inkMuted,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 TextField(
                   controller: _gpPracticeController,
-                  style: const TextStyle(fontSize: 16, color: AppColors.ink),
-                  decoration: const InputDecoration(
+                  style: TextStyle(fontSize: 16, color: context.palette.ink),
+                  decoration: InputDecoration(
                     hintText: 'Search for your GP practice',
                     prefixIcon: Icon(
                       Icons.search,
                       size: 20,
-                      color: AppColors.inkMuted,
+                      color: context.palette.inkMuted,
                     ),
                     filled: true,
-                    fillColor: AppColors.white,
+                    fillColor: context.palette.elevated,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: AppSpacing.md),
             _SectionCard(
-              background: AppColors.surface,
+              background: context.palette.surface,
               icon: Icons.chat_bubble_outline,
-              iconColor: AppColors.blue,
+              iconColor: context.palette.accent,
               title: 'Communication needs',
               children: [
-                const Text(
+                Text(
                   'Let us know if you need support with communication.',
-                  style: TextStyle(fontSize: 12.5, color: AppColors.inkMuted),
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    color: context.palette.inkMuted,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Material(
-                  color: AppColors.white,
+                  color: context.palette.elevated,
                   borderRadius: BorderRadius.circular(AppRadius.control),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(AppRadius.control),
@@ -272,7 +281,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       ),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(AppRadius.control),
-                        border: Border.all(color: AppColors.line, width: 1.5),
+                        border: Border.all(
+                          color: context.palette.line,
+                          width: 1.5,
+                        ),
                       ),
                       child: Row(
                         children: [
@@ -282,14 +294,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                               style: TextStyle(
                                 fontSize: 16,
                                 color: _communicationNeed != null
-                                    ? AppColors.ink
-                                    : AppColors.inkMuted,
+                                    ? context.palette.ink
+                                    : context.palette.inkMuted,
                               ),
                             ),
                           ),
-                          const Icon(
+                          Icon(
                             Icons.keyboard_arrow_down,
-                            color: AppColors.inkMuted,
+                            color: context.palette.inkMuted,
                           ),
                         ],
                       ),
@@ -300,7 +312,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             ),
             const SizedBox(height: AppSpacing.md),
             Material(
-              color: AppColors.surface,
+              color: context.palette.surface,
               borderRadius: BorderRadius.circular(AppRadius.card),
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppRadius.card),
@@ -310,7 +322,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   padding: const EdgeInsets.all(AppSpacing.md),
                   child: Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -319,23 +331,23 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.ink,
+                                color: context.palette.ink,
                               ),
                             ),
                             Text(
                               'Add details about your medical conditions, allergies and medications.',
                               style: TextStyle(
                                 fontSize: 12.5,
-                                color: AppColors.inkMuted,
+                                color: context.palette.inkMuted,
                                 height: 1.4,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const Icon(
+                      Icon(
                         Icons.chevron_right,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                     ],
                   ),
@@ -346,19 +358,23 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: const Color(0xFFE3EEFB),
+                color: context.palette.tintBlue,
                 borderRadius: BorderRadius.circular(AppRadius.control),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.shield_outlined, size: 18, color: AppColors.blue),
+                  Icon(
+                    Icons.shield_outlined,
+                    size: 18,
+                    color: context.palette.accent,
+                  ),
                   SizedBox(width: AppSpacing.xs),
                   Expanded(
                     child: Text(
                       'Your payer cannot see your clinical records.',
                       style: TextStyle(
                         fontSize: 13,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -410,8 +426,8 @@ class _SectionCard extends StatelessWidget {
               Container(
                 width: 32,
                 height: 32,
-                decoration: const BoxDecoration(
-                  color: AppColors.white,
+                decoration: BoxDecoration(
+                  color: context.palette.elevated,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, size: 16, color: iconColor),
@@ -419,10 +435,10 @@ class _SectionCard extends StatelessWidget {
               const SizedBox(width: AppSpacing.xs),
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.ink,
+                  color: context.palette.ink,
                 ),
               ),
             ],

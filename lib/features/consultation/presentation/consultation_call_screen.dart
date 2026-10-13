@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
 import '../../booking/domain/models/appointment.dart';
 
@@ -59,7 +60,7 @@ class _ConsultationCallScreenState extends State<ConsultationCallScreen> {
     final doctor = widget.selection.doctor!;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -71,15 +72,15 @@ class _ConsultationCallScreenState extends State<ConsultationCallScreen> {
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                     onPressed: () => context.pop(),
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.arrow_back_ios_new,
                       size: 18,
-                      color: AppColors.ink,
+                      color: context.palette.ink,
                     ),
                   ),
                   const SizedBox(width: 8),
                   SvgPicture.asset(
-                    'assets/images/logo/lifecome-live-logo.svg',
+                    context.palette.logoAsset,
                     height: 24,
                     semanticsLabel: 'LifeCome Live',
                   ),

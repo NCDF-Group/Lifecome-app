@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
@@ -29,7 +30,7 @@ class BookingConfirmationScreen extends StatelessWidget {
         : 'Payment received £${service.fee}';
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
@@ -39,7 +40,7 @@ class BookingConfirmationScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF7E8),
+                color: context.palette.tintGreen,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
@@ -58,7 +59,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -67,14 +68,14 @@ class BookingConfirmationScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: context.palette.ink,
                           ),
                         ),
                         Text(
                           'Your online GP video consultation is booked.',
                           style: TextStyle(
                             fontSize: 13,
-                            color: AppColors.inkMuted,
+                            color: context.palette.inkMuted,
                           ),
                         ),
                       ],
@@ -87,7 +88,7 @@ class BookingConfirmationScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                border: Border.all(color: AppColors.line),
+                border: Border.all(color: context.palette.line),
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Column(
@@ -98,18 +99,18 @@ class BookingConfirmationScreen extends StatelessWidget {
                       Container(
                         width: 40,
                         height: 40,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFE3EEFB),
+                        decoration: BoxDecoration(
+                          color: context.palette.tintBlue,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.videocam_outlined,
-                          color: AppColors.blue,
+                          color: context.palette.accent,
                           size: 20,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.sm),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -118,14 +119,14 @@ class BookingConfirmationScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.ink,
+                                color: context.palette.ink,
                               ),
                             ),
                             Text(
                               'Consultation from home',
                               style: TextStyle(
                                 fontSize: 12.5,
-                                color: AppColors.inkMuted,
+                                color: context.palette.inkMuted,
                               ),
                             ),
                           ],
@@ -133,9 +134,9 @@ class BookingConfirmationScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                    child: Divider(height: 1, color: AppColors.line),
+                    child: Divider(height: 1, color: context.palette.line),
                   ),
                   _DetailRow(
                     icon: Icons.calendar_today_outlined,
@@ -177,7 +178,7 @@ class BookingConfirmationScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _ActionRow(
               icon: Icons.calendar_month_outlined,
-              iconColor: AppColors.greenStrong,
+              iconColor: context.palette.positive,
               label: 'Add to calendar',
               onTap: () =>
                   showComingSoonPopup(context, feature: 'Add to calendar'),
@@ -185,7 +186,7 @@ class BookingConfirmationScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _ActionRow(
               icon: Icons.receipt_long_outlined,
-              iconColor: AppColors.blue,
+              iconColor: context.palette.accent,
               label: 'View receipt',
               onTap: () =>
                   showComingSoonPopup(context, feature: 'View receipt'),
@@ -193,7 +194,7 @@ class BookingConfirmationScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _ActionRow(
               icon: Icons.settings_outlined,
-              iconColor: AppColors.greenStrong,
+              iconColor: context.palette.positive,
               label: 'Manage booking',
               onTap: () =>
                   context.push(RoutePaths.manageAppointment, extra: selection),
@@ -202,19 +203,19 @@ class BookingConfirmationScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFE3EEFB),
+                color: context.palette.tintBlue,
                 borderRadius: BorderRadius.circular(AppRadius.control),
               ),
-              child: const Row(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CircleAvatar(
                     radius: 16,
-                    backgroundColor: AppColors.white,
+                    backgroundColor: context.palette.elevated,
                     child: Icon(
                       Icons.verified_user_outlined,
                       size: 16,
-                      color: AppColors.blue,
+                      color: context.palette.accent,
                     ),
                   ),
                   SizedBox(width: AppSpacing.sm),
@@ -227,7 +228,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: context.palette.ink,
                           ),
                         ),
                         SizedBox(height: 2),
@@ -236,7 +237,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                           'internet connection.',
                           style: TextStyle(
                             fontSize: 12.5,
-                            color: AppColors.inkMuted,
+                            color: context.palette.inkMuted,
                             height: 1.4,
                           ),
                         ),
@@ -301,20 +302,20 @@ class _DetailRow extends StatelessWidget {
       padding: EdgeInsets.only(bottom: isLast ? 0 : AppSpacing.sm),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: AppColors.inkMuted),
+          Icon(icon, size: 18, color: context.palette.inkMuted),
           const SizedBox(width: AppSpacing.xs),
           Expanded(
             child: Text(
               label,
-              style: const TextStyle(fontSize: 14, color: AppColors.inkMuted),
+              style: TextStyle(fontSize: 14, color: context.palette.inkMuted),
             ),
           ),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: AppColors.ink,
+              color: context.palette.ink,
             ),
           ),
         ],
@@ -342,9 +343,9 @@ class _ActionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fg = filled ? AppColors.white : AppColors.ink;
+    final fg = filled ? AppColors.white : context.palette.ink;
     return Material(
-      color: filled ? AppColors.blue : AppColors.white,
+      color: filled ? AppColors.blue : context.palette.elevated,
       borderRadius: BorderRadius.circular(AppRadius.pill),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.pill),
@@ -355,7 +356,7 @@ class _ActionRow extends StatelessWidget {
           decoration: filled
               ? null
               : BoxDecoration(
-                  border: Border.all(color: AppColors.line),
+                  border: Border.all(color: context.palette.line),
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
           child: Row(
@@ -401,14 +402,14 @@ class _BookingDetailsExpanderState extends State<_BookingDetailsExpander> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.white,
+      color: context.palette.elevated,
       borderRadius: BorderRadius.circular(AppRadius.card),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.card),
         onTap: () => setState(() => _expanded = !_expanded),
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: AppColors.line),
+            border: Border.all(color: context.palette.line),
             borderRadius: BorderRadius.circular(AppRadius.card),
           ),
           padding: const EdgeInsets.all(AppSpacing.md),
@@ -420,18 +421,18 @@ class _BookingDetailsExpanderState extends State<_BookingDetailsExpander> {
                   Container(
                     width: 36,
                     height: 36,
-                    decoration: const BoxDecoration(
-                      color: AppColors.surface,
+                    decoration: BoxDecoration(
+                      color: context.palette.surface,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.description_outlined,
                       size: 18,
-                      color: AppColors.inkMuted,
+                      color: context.palette.inkMuted,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -440,7 +441,7 @@ class _BookingDetailsExpanderState extends State<_BookingDetailsExpander> {
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: context.palette.ink,
                           ),
                         ),
                       ],
@@ -448,7 +449,7 @@ class _BookingDetailsExpanderState extends State<_BookingDetailsExpander> {
                   ),
                   Icon(
                     _expanded ? Icons.expand_less : Icons.expand_more,
-                    color: AppColors.inkMuted,
+                    color: context.palette.inkMuted,
                   ),
                 ],
               ),
@@ -456,9 +457,9 @@ class _BookingDetailsExpanderState extends State<_BookingDetailsExpander> {
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   widget.service.description,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.inkMuted,
+                    color: context.palette.inkMuted,
                     height: 1.4,
                   ),
                 ),
@@ -467,9 +468,9 @@ class _BookingDetailsExpanderState extends State<_BookingDetailsExpander> {
                   const SizedBox(height: AppSpacing.xs),
                   Text(
                     'Concern: ${widget.selection.concern}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: AppColors.inkMuted,
+                      color: context.palette.inkMuted,
                       height: 1.4,
                     ),
                   ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
@@ -19,45 +19,45 @@ class PrivacySharingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             AppHeaderBar(showBack: true, onBack: () => context.pop()),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Privacy and sharing',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'You control your information.',
-              style: TextStyle(fontSize: 14, color: AppColors.inkMuted),
+              style: TextStyle(fontSize: 14, color: context.palette.inkMuted),
             ),
             const SizedBox(height: AppSpacing.md),
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF7E8),
+                color: context.palette.tintGreen,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 22,
-                    backgroundColor: AppColors.white,
+                    backgroundColor: context.palette.elevated,
                     child: Icon(
                       Icons.shield_outlined,
-                      color: AppColors.greenStrong,
+                      color: context.palette.positive,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -65,7 +65,7 @@ class PrivacySharingScreen extends StatelessWidget {
                           'Sharing permissions',
                           style: TextStyle(
                             fontSize: 13,
-                            color: AppColors.inkMuted,
+                            color: context.palette.inkMuted,
                           ),
                         ),
                         Text(
@@ -73,7 +73,7 @@ class PrivacySharingScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: context.palette.ink,
                           ),
                         ),
                       ],
@@ -85,8 +85,8 @@ class PrivacySharingScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _PrivacyRow(
               icon: Icons.connect_without_contact,
-              iconColor: AppColors.blue,
-              background: const Color(0xFFE3EEFB),
+              iconColor: context.palette.accent,
+              background: context.palette.tintBlue,
               title: 'Request supported sharing',
               subtitle:
                   'Ask a trusted person, carer or organisation to access '
@@ -97,8 +97,8 @@ class PrivacySharingScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _PrivacyRow(
               icon: Icons.description_outlined,
-              iconColor: AppColors.greenStrong,
-              background: const Color(0xFFEAF7E8),
+              iconColor: context.palette.positive,
+              background: context.palette.tintGreen,
               title: 'Review permissions',
               subtitle:
                   'See who can access your records and what they '
@@ -109,8 +109,8 @@ class PrivacySharingScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _PrivacyRow(
               icon: Icons.do_not_disturb_on_outlined,
-              iconColor: AppColors.blue,
-              background: const Color(0xFFE3EEFB),
+              iconColor: context.palette.accent,
+              background: context.palette.tintBlue,
               title: 'Revoke access',
               subtitle:
                   "Remove a person or organisation's access to your "
@@ -121,8 +121,8 @@ class PrivacySharingScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _PrivacyRow(
               icon: Icons.history,
-              iconColor: AppColors.greenStrong,
-              background: const Color(0xFFEAF7E8),
+              iconColor: context.palette.positive,
+              background: context.palette.tintGreen,
               title: 'Access history',
               subtitle: 'See when your records have been accessed.',
               onTap: () =>
@@ -132,13 +132,17 @@ class PrivacySharingScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFE3EEFB),
+                color: context.palette.tintBlue,
                 borderRadius: BorderRadius.circular(AppRadius.control),
               ),
-              child: const Row(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.info_outline, size: 18, color: AppColors.blue),
+                  Icon(
+                    Icons.info_outline,
+                    size: 18,
+                    color: context.palette.accent,
+                  ),
                   SizedBox(width: AppSpacing.xs),
                   Expanded(
                     child: Column(
@@ -150,7 +154,7 @@ class PrivacySharingScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: context.palette.ink,
                           ),
                         ),
                         SizedBox(height: 2),
@@ -159,7 +163,7 @@ class PrivacySharingScreen extends StatelessWidget {
                           'reviewed.',
                           style: TextStyle(
                             fontSize: 12.5,
-                            color: AppColors.inkMuted,
+                            color: context.palette.inkMuted,
                             height: 1.4,
                           ),
                         ),
@@ -172,7 +176,7 @@ class PrivacySharingScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
             InkWell(
               onTap: () => context.push(RoutePaths.privacyPolicy),
-              child: const Row(
+              child: Row(
                 children: [
                   Expanded(
                     child: Text(
@@ -180,11 +184,15 @@ class PrivacySharingScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.blue,
+                        color: context.palette.accent,
                       ),
                     ),
                   ),
-                  Icon(Icons.chevron_right, size: 18, color: AppColors.blue),
+                  Icon(
+                    Icons.chevron_right,
+                    size: 18,
+                    color: context.palette.accent,
+                  ),
                 ],
               ),
             ),
@@ -227,8 +235,8 @@ class _PrivacyRow extends StatelessWidget {
               Container(
                 width: 40,
                 height: 40,
-                decoration: const BoxDecoration(
-                  color: AppColors.white,
+                decoration: BoxDecoration(
+                  color: context.palette.elevated,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, color: iconColor, size: 20),
@@ -240,24 +248,24 @@ class _PrivacyRow extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.5,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                         height: 1.4,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppColors.blue),
+              Icon(Icons.chevron_right, color: context.palette.accent),
             ],
           ),
         ),

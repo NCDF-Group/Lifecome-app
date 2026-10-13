@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
@@ -72,28 +73,28 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             AppHeaderBar(showBack: true, onBack: () => context.pop()),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Link your health plan',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Check your cover for our services and access any available '
               'benefits.',
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.inkMuted,
+                color: context.palette.inkMuted,
                 height: 1.4,
               ),
             ),
@@ -101,35 +102,35 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF7E8),
+                color: context.palette.tintGreen,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Plan provider',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.ink,
+                      color: context.palette.ink,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Container(
                     decoration: BoxDecoration(
-                      color: AppColors.white,
+                      color: context.palette.elevated,
                       borderRadius: BorderRadius.circular(AppRadius.control),
-                      border: Border.all(color: AppColors.line),
+                      border: Border.all(color: context.palette.line),
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value: _provider,
                         isExpanded: true,
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.keyboard_arrow_down,
-                          color: AppColors.inkMuted,
+                          color: context.palette.inkMuted,
                         ),
                         items: [
                           for (final provider in _providers)
@@ -137,18 +138,18 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
                               value: provider,
                               child: Row(
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.apartment_outlined,
                                     size: 18,
-                                    color: AppColors.greenStrong,
+                                    color: context.palette.positive,
                                   ),
                                   const SizedBox(width: AppSpacing.xs),
                                   Text(
                                     provider,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
-                                      color: AppColors.ink,
+                                      color: context.palette.ink,
                                     ),
                                   ),
                                 ],
@@ -173,10 +174,10 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
                     hintText: 'DD / MM / YYYY',
                     readOnly: true,
                     onTap: _pickDateOfBirth,
-                    suffixIcon: const Icon(
+                    suffixIcon: Icon(
                       Icons.calendar_today_outlined,
                       size: 18,
-                      color: AppColors.inkMuted,
+                      color: context.palette.inkMuted,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
@@ -227,22 +228,22 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFE3EEFB),
+                color: context.palette.tintBlue,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 18,
-                    backgroundColor: AppColors.white,
+                    backgroundColor: context.palette.elevated,
                     child: Icon(
                       Icons.lock_open_outlined,
                       size: 18,
-                      color: AppColors.blue,
+                      color: context.palette.accent,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -251,7 +252,7 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: context.palette.ink,
                           ),
                         ),
                         Text(
@@ -259,7 +260,7 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
                           'records with your insurer.',
                           style: TextStyle(
                             fontSize: 12.5,
-                            color: AppColors.inkMuted,
+                            color: context.palette.inkMuted,
                             height: 1.4,
                           ),
                         ),
@@ -270,46 +271,46 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            const Text(
+            Text(
               "What's covered?",
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 2),
-            const Text(
+            Text(
               "We'll check your cover for these services.",
-              style: TextStyle(fontSize: 13, color: AppColors.inkMuted),
+              style: TextStyle(fontSize: 13, color: context.palette.inkMuted),
             ),
             const SizedBox(height: AppSpacing.sm),
-            const _CoverageRow(
-              background: Color(0xFFEAF7E8),
+            _CoverageRow(
+              background: context.palette.tintGreen,
               icon: Icons.desktop_windows_outlined,
-              iconColor: AppColors.greenStrong,
+              iconColor: context.palette.positive,
               title: 'Online GP',
               subtitle: 'Video or phone appointments',
             ),
             const SizedBox(height: AppSpacing.sm),
-            const _CoverageRow(
-              background: Color(0xFFE3EEFB),
+            _CoverageRow(
+              background: context.palette.tintBlue,
               icon: Icons.apartment_outlined,
-              iconColor: AppColors.blue,
+              iconColor: context.palette.accent,
               title: 'Smart GP clinics',
               subtitle: 'Care in person',
             ),
             const SizedBox(height: AppSpacing.sm),
-            const _CoverageRow(
-              background: Color(0xFFEAF7E8),
+            _CoverageRow(
+              background: context.palette.tintGreen,
               icon: Icons.description_outlined,
-              iconColor: AppColors.greenStrong,
+              iconColor: context.palette.positive,
               title: 'Health records',
               subtitle: 'Access your records and care plans',
             ),
             const SizedBox(height: AppSpacing.sm),
             Material(
-              color: const Color(0xFFE3EEFB),
+              color: context.palette.tintBlue,
               borderRadius: BorderRadius.circular(AppRadius.card),
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppRadius.card),
@@ -321,17 +322,17 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
                   padding: const EdgeInsets.all(AppSpacing.md),
                   child: Row(
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 18,
-                        backgroundColor: AppColors.white,
+                        backgroundColor: context.palette.elevated,
                         child: Icon(
                           Icons.help_outline,
                           size: 18,
-                          color: AppColors.blue,
+                          color: context.palette.accent,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.sm),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -340,20 +341,20 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.ink,
+                                color: context.palette.ink,
                               ),
                             ),
                             Text(
                               "Contact support and we'll help you.",
                               style: TextStyle(
                                 fontSize: 12.5,
-                                color: AppColors.inkMuted,
+                                color: context.palette.inkMuted,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const Icon(Icons.chevron_right, color: AppColors.blue),
+                      Icon(Icons.chevron_right, color: context.palette.accent),
                     ],
                   ),
                 ),
@@ -393,7 +394,7 @@ class _CoverageRow extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 18,
-            backgroundColor: AppColors.white,
+            backgroundColor: context.palette.elevated,
             child: Icon(icon, size: 18, color: iconColor),
           ),
           const SizedBox(width: AppSpacing.sm),
@@ -403,23 +404,23 @@ class _CoverageRow extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.ink,
+                    color: context.palette.ink,
                   ),
                 ),
                 Text(
                   subtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12.5,
-                    color: AppColors.inkMuted,
+                    color: context.palette.inkMuted,
                   ),
                 ),
               ],
             ),
           ),
-          const Icon(Icons.check_circle, color: AppColors.greenStrong),
+          Icon(Icons.check_circle, color: context.palette.positive),
         ],
       ),
     );

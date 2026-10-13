@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/animation/fade_in.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/buttons/primary_button.dart';
 import '../../../../core/widgets/layout/auth_form_card.dart';
@@ -27,7 +28,7 @@ class AuthSuccessView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: Stack(
         children: [
           const Positioned.fill(child: BrandBackdrop()),
@@ -48,9 +49,9 @@ class AuthSuccessView extends StatelessWidget {
                             color: AppColors.green.withValues(alpha: 0.12),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.check_circle,
-                            color: AppColors.greenStrong,
+                            color: context.palette.positive,
                             size: 48,
                           ),
                         ),
@@ -61,10 +62,10 @@ class AuthSuccessView extends StatelessWidget {
                         child: Text(
                           title,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: context.palette.ink,
                           ),
                         ),
                       ),
@@ -74,9 +75,9 @@ class AuthSuccessView extends StatelessWidget {
                         child: Text(
                           message,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
-                            color: AppColors.inkMuted,
+                            color: context.palette.inkMuted,
                             height: 1.4,
                           ),
                         ),

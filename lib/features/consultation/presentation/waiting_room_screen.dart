@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
@@ -23,28 +24,28 @@ class WaitingRoomScreen extends StatelessWidget {
     final doctor = selection.doctor!;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             AppHeaderBar(showBack: true, onBack: () => context.pop()),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Your waiting room',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'You’re checked in. We’ll let you know when your '
               'clinician is ready.',
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.inkMuted,
+                color: context.palette.inkMuted,
                 height: 1.4,
               ),
             ),
@@ -52,15 +53,15 @@ class WaitingRoomScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFE3EEFB),
+                color: context.palette.tintBlue,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 22,
-                    backgroundColor: AppColors.white,
-                    child: Icon(Icons.person, color: AppColors.blue),
+                    backgroundColor: context.palette.elevated,
+                    child: Icon(Icons.person, color: context.palette.accent),
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   Column(
@@ -68,24 +69,24 @@ class WaitingRoomScreen extends StatelessWidget {
                     children: [
                       Text(
                         selection.service?.title ?? 'Online GP',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
-                          color: AppColors.inkMuted,
+                          color: context.palette.inkMuted,
                         ),
                       ),
                       Text(
                         selection.time ?? '',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.ink,
+                          color: context.palette.ink,
                         ),
                       ),
                       Text(
                         doctor.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
-                          color: AppColors.inkMuted,
+                          color: context.palette.inkMuted,
                         ),
                       ),
                     ],
@@ -96,26 +97,26 @@ class WaitingRoomScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.lg),
             const _WaitingIllustration(),
             const SizedBox(height: AppSpacing.md),
-            const Text(
+            Text(
               'Waiting for your clinician',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 2),
-            const Text(
+            Text(
               'We’ll connect you as soon as they’re ready.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13, color: AppColors.inkMuted),
+              style: TextStyle(fontSize: 13, color: context.palette.inkMuted),
             ),
             const SizedBox(height: AppSpacing.lg),
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF7E8),
+                color: context.palette.tintGreen,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: const Column(
@@ -130,7 +131,7 @@ class WaitingRoomScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             Material(
-              color: const Color(0xFFE3EEFB),
+              color: context.palette.tintBlue,
               borderRadius: BorderRadius.circular(AppRadius.control),
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppRadius.control),
@@ -140,13 +141,13 @@ class WaitingRoomScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(AppSpacing.sm),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.location_on_outlined,
                         size: 20,
-                        color: AppColors.blue,
+                        color: context.palette.accent,
                       ),
                       const SizedBox(width: AppSpacing.xs),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -154,7 +155,7 @@ class WaitingRoomScreen extends StatelessWidget {
                               'Current location',
                               style: TextStyle(
                                 fontSize: 12.5,
-                                color: AppColors.inkMuted,
+                                color: context.palette.inkMuted,
                               ),
                             ),
                             Text(
@@ -162,24 +163,24 @@ class WaitingRoomScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.ink,
+                                color: context.palette.ink,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const Text(
+                      Text(
                         'Confirm or update',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.blue,
+                          color: context.palette.accent,
                         ),
                       ),
-                      const Icon(
+                      Icon(
                         Icons.chevron_right,
                         size: 18,
-                        color: AppColors.blue,
+                        color: context.palette.accent,
                       ),
                     ],
                   ),
@@ -197,7 +198,7 @@ class WaitingRoomScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             Material(
-              color: const Color(0xFFE3EEFB),
+              color: context.palette.tintBlue,
               borderRadius: BorderRadius.circular(AppRadius.control),
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppRadius.control),
@@ -207,13 +208,13 @@ class WaitingRoomScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(AppSpacing.sm),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.phone_outlined,
                         size: 20,
-                        color: AppColors.blue,
+                        color: context.palette.accent,
                       ),
                       const SizedBox(width: AppSpacing.xs),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -222,20 +223,20 @@ class WaitingRoomScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.ink,
+                                color: context.palette.ink,
                               ),
                             ),
                             Text(
                               'Request telephone fallback',
                               style: TextStyle(
                                 fontSize: 12.5,
-                                color: AppColors.inkMuted,
+                                color: context.palette.inkMuted,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const Icon(Icons.chevron_right, color: AppColors.blue),
+                      Icon(Icons.chevron_right, color: context.palette.accent),
                     ],
                   ),
                 ),
@@ -245,10 +246,10 @@ class WaitingRoomScreen extends StatelessWidget {
             Center(
               child: TextButton(
                 onPressed: () => context.pop(),
-                child: const Text(
+                child: Text(
                   'Leave waiting room',
                   style: TextStyle(
-                    color: AppColors.blue,
+                    color: context.palette.accent,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -271,34 +272,38 @@ class _WaitingIllustration extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          const Positioned(
+          Positioned(
             left: 70,
             top: 10,
-            child: Icon(Icons.circle, size: 6, color: AppColors.blue),
+            child: Icon(Icons.circle, size: 6, color: context.palette.accent),
           ),
-          const Positioned(
+          Positioned(
             right: 60,
             top: 30,
-            child: Icon(Icons.circle, size: 4, color: AppColors.blue),
+            child: Icon(Icons.circle, size: 4, color: context.palette.accent),
           ),
-          const Positioned(
+          Positioned(
             left: 50,
             bottom: 20,
-            child: Icon(Icons.circle, size: 4, color: AppColors.blue),
+            child: Icon(Icons.circle, size: 4, color: context.palette.accent),
           ),
           Container(
             width: 170,
             height: 120,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFE3EEFB),
+              color: context.palette.tintBlue,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.blue, width: 2.5),
+              border: Border.all(color: context.palette.accent, width: 2.5),
             ),
             child: Stack(
               children: [
-                const Center(
-                  child: Icon(Icons.person, size: 56, color: AppColors.blue),
+                Center(
+                  child: Icon(
+                    Icons.person,
+                    size: 56,
+                    color: context.palette.accent,
+                  ),
                 ),
                 Positioned(
                   top: 0,
@@ -346,9 +351,9 @@ class _CheckRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Icon(Icons.check_circle, size: 18, color: AppColors.greenStrong),
+        Icon(Icons.check_circle, size: 18, color: context.palette.positive),
         const SizedBox(width: AppSpacing.xs),
-        Text(label, style: const TextStyle(fontSize: 14, color: AppColors.ink)),
+        Text(label, style: TextStyle(fontSize: 14, color: context.palette.ink)),
       ],
     );
   }

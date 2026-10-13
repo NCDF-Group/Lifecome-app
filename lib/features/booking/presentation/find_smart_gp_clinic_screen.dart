@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
@@ -58,40 +58,40 @@ class _FindSmartGpClinicScreenState extends State<FindSmartGpClinicScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             AppHeaderBar(showBack: true, onBack: () => context.pop()),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Find a Smart GP clinic',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Search for a clinic near you and book an appointment in '
               'person.',
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.inkMuted,
+                color: context.palette.inkMuted,
                 height: 1.4,
               ),
             ),
             const SizedBox(height: AppSpacing.md),
             Row(
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 20,
-                  backgroundColor: Color(0xFFE3EEFB),
+                  backgroundColor: context.palette.tintBlue,
                   child: Icon(
                     Icons.location_on_outlined,
-                    color: AppColors.blue,
+                    color: context.palette.accent,
                   ),
                 ),
                 const SizedBox(width: AppSpacing.sm),
@@ -99,19 +99,19 @@ class _FindSmartGpClinicScreenState extends State<FindSmartGpClinicScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Your location',
                         style: TextStyle(
                           fontSize: 13,
-                          color: AppColors.inkMuted,
+                          color: context.palette.inkMuted,
                         ),
                       ),
                       Text(
                         _location,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.ink,
+                          color: context.palette.ink,
                         ),
                       ),
                     ],
@@ -120,16 +120,16 @@ class _FindSmartGpClinicScreenState extends State<FindSmartGpClinicScreen> {
                 TextButton(
                   onPressed: _changeLocation,
                   style: TextButton.styleFrom(
-                    backgroundColor: const Color(0xFFE3EEFB),
+                    backgroundColor: context.palette.tintBlue,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppRadius.pill),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Change',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      color: AppColors.blue,
+                      color: context.palette.accent,
                     ),
                   ),
                 ),
@@ -138,14 +138,17 @@ class _FindSmartGpClinicScreenState extends State<FindSmartGpClinicScreen> {
             const SizedBox(height: AppSpacing.md),
             Container(
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: context.palette.surface,
                 borderRadius: BorderRadius.circular(AppRadius.control),
               ),
               child: TextField(
                 controller: _searchController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Search area or postcode',
-                  prefixIcon: Icon(Icons.search, color: AppColors.inkMuted),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: context.palette.inkMuted,
+                  ),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
                 ),
@@ -155,23 +158,23 @@ class _FindSmartGpClinicScreenState extends State<FindSmartGpClinicScreen> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF7E8),
+                color: context.palette.tintGreen,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Column(
                 children: [
                   Row(
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 20,
-                        backgroundColor: AppColors.white,
+                        backgroundColor: context.palette.elevated,
                         child: Icon(
                           Icons.apartment_outlined,
-                          color: AppColors.greenStrong,
+                          color: context.palette.positive,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.sm),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -180,28 +183,31 @@ class _FindSmartGpClinicScreenState extends State<FindSmartGpClinicScreen> {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.ink,
+                                color: context.palette.ink,
                               ),
                             ),
                             Text(
                               'Smart GP clinic',
                               style: TextStyle(
                                 fontSize: 12.5,
-                                color: AppColors.inkMuted,
+                                color: context.palette.inkMuted,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const Icon(
+                      Icon(
                         Icons.chevron_right,
-                        color: AppColors.greenStrong,
+                        color: context.palette.positive,
                       ),
                     ],
                   ),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                    child: Divider(height: 1, color: Color(0xFFCBE6C6)),
+                    child: Divider(
+                      height: 1,
+                      color: context.palette.tintGreenLine,
+                    ),
                   ),
                   _ClinicLinkRow(
                     icon: Icons.location_on_outlined,
@@ -226,7 +232,7 @@ class _FindSmartGpClinicScreenState extends State<FindSmartGpClinicScreen> {
             ),
             const SizedBox(height: AppSpacing.sm),
             Material(
-              color: const Color(0xFFE3EEFB),
+              color: context.palette.tintBlue,
               borderRadius: BorderRadius.circular(AppRadius.card),
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppRadius.card),
@@ -238,16 +244,16 @@ class _FindSmartGpClinicScreenState extends State<FindSmartGpClinicScreen> {
                   padding: const EdgeInsets.all(AppSpacing.md),
                   child: Row(
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 20,
-                        backgroundColor: AppColors.white,
+                        backgroundColor: context.palette.elevated,
                         child: Icon(
                           Icons.chat_bubble_outline,
-                          color: AppColors.blue,
+                          color: context.palette.accent,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.sm),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -256,20 +262,20 @@ class _FindSmartGpClinicScreenState extends State<FindSmartGpClinicScreen> {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.ink,
+                                color: context.palette.ink,
                               ),
                             ),
                             Text(
                               'Contact patient support.',
                               style: TextStyle(
                                 fontSize: 12.5,
-                                color: AppColors.inkMuted,
+                                color: context.palette.inkMuted,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const Icon(Icons.chevron_right, color: AppColors.blue),
+                      Icon(Icons.chevron_right, color: context.palette.accent),
                     ],
                   ),
                 ),
@@ -303,7 +309,7 @@ class _ClinicLinkRow extends StatelessWidget {
         onTap: onTap,
         child: Row(
           children: [
-            Icon(icon, size: 18, color: AppColors.greenStrong),
+            Icon(icon, size: 18, color: context.palette.positive),
             const SizedBox(width: AppSpacing.xs),
             Expanded(
               child: Column(
@@ -311,27 +317,27 @@ class _ClinicLinkRow extends StatelessWidget {
                 children: [
                   Text(
                     label,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14.5,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.ink,
+                      color: context.palette.ink,
                     ),
                   ),
                   if (subtitle != null)
                     Text(
                       subtitle!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.5,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                     ),
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.chevron_right,
               size: 18,
-              color: AppColors.greenStrong,
+              color: context.palette.positive,
             ),
           ],
         ),

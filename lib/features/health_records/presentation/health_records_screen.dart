@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
@@ -92,28 +93,28 @@ class _HealthRecordsScreenState extends State<HealthRecordsScreen> {
         : _records.where((r) => r.filter == _filter).toList();
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             const AppHeaderBar(),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Your health records',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'View your records and care plans, and upload documents '
               'to share with your care team.',
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.inkMuted,
+                color: context.palette.inkMuted,
                 height: 1.4,
               ),
             ),
@@ -121,16 +122,16 @@ class _HealthRecordsScreenState extends State<HealthRecordsScreen> {
             TextField(
               decoration: InputDecoration(
                 hintText: 'Search records (e.g. blood test, GP visit)',
-                prefixIcon: const Icon(Icons.search, color: AppColors.inkMuted),
+                prefixIcon: Icon(Icons.search, color: context.palette.inkMuted),
                 filled: true,
-                fillColor: AppColors.white,
+                fillColor: context.palette.elevated,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppRadius.pill),
-                  borderSide: const BorderSide(color: AppColors.line),
+                  borderSide: BorderSide(color: context.palette.line),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppRadius.pill),
-                  borderSide: const BorderSide(color: AppColors.line),
+                  borderSide: BorderSide(color: context.palette.line),
                 ),
               ),
             ),
@@ -154,9 +155,9 @@ class _HealthRecordsScreenState extends State<HealthRecordsScreen> {
               ],
             ),
             const SizedBox(height: AppSpacing.md),
-            const Text(
+            Text(
               'Sample records',
-              style: TextStyle(fontSize: 13, color: AppColors.inkMuted),
+              style: TextStyle(fontSize: 13, color: context.palette.inkMuted),
             ),
             const SizedBox(height: AppSpacing.sm),
             for (final record in records) ...[
@@ -178,7 +179,9 @@ class _HealthRecordsScreenState extends State<HealthRecordsScreen> {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: AppColors.white.withValues(alpha: 0.18),
+                          color: context.palette.elevated.withValues(
+                            alpha: 0.18,
+                          ),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -220,7 +223,7 @@ class _HealthRecordsScreenState extends State<HealthRecordsScreen> {
             ),
             const SizedBox(height: AppSpacing.sm),
             Material(
-              color: AppColors.surface,
+              color: context.palette.surface,
               borderRadius: BorderRadius.circular(AppRadius.card),
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppRadius.card),
@@ -235,18 +238,18 @@ class _HealthRecordsScreenState extends State<HealthRecordsScreen> {
                       Container(
                         width: 40,
                         height: 40,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFE3EEFB),
+                        decoration: BoxDecoration(
+                          color: context.palette.tintBlue,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.people_outline,
-                          color: AppColors.blue,
+                          color: context.palette.accent,
                           size: 20,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.sm),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -255,22 +258,22 @@ class _HealthRecordsScreenState extends State<HealthRecordsScreen> {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.ink,
+                                color: context.palette.ink,
                               ),
                             ),
                             Text(
                               'Choose who can view your records.',
                               style: TextStyle(
                                 fontSize: 12.5,
-                                color: AppColors.inkMuted,
+                                color: context.palette.inkMuted,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const Icon(
+                      Icon(
                         Icons.chevron_right,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                     ],
                   ),
@@ -281,13 +284,17 @@ class _HealthRecordsScreenState extends State<HealthRecordsScreen> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.sm),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: context.palette.surface,
                 borderRadius: BorderRadius.circular(AppRadius.control),
               ),
-              child: const Row(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.info_outline, size: 16, color: AppColors.blue),
+                  Icon(
+                    Icons.info_outline,
+                    size: 16,
+                    color: context.palette.accent,
+                  ),
                   SizedBox(width: AppSpacing.xs),
                   Expanded(
                     child: Text(
@@ -295,7 +302,7 @@ class _HealthRecordsScreenState extends State<HealthRecordsScreen> {
                       'history.',
                       style: TextStyle(
                         fontSize: 12.5,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                         height: 1.4,
                       ),
                     ),
@@ -336,7 +343,7 @@ class _FilterChip extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: selected ? AppColors.white : AppColors.inkMuted,
+              color: selected ? AppColors.white : context.palette.inkMuted,
             ),
           ),
         ),
@@ -353,7 +360,7 @@ class _RecordCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: record.background,
+      color: context.palette.adapt(record.background),
       borderRadius: BorderRadius.circular(AppRadius.card),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.card),
@@ -366,11 +373,15 @@ class _RecordCard extends StatelessWidget {
               Container(
                 width: 40,
                 height: 40,
-                decoration: const BoxDecoration(
-                  color: AppColors.white,
+                decoration: BoxDecoration(
+                  color: context.palette.elevated,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(record.icon, color: record.iconColor, size: 20),
+                child: Icon(
+                  record.icon,
+                  color: context.palette.adapt(record.iconColor),
+                  size: 20,
+                ),
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
@@ -379,24 +390,24 @@ class _RecordCard extends StatelessWidget {
                   children: [
                     Text(
                       record.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     Text(
                       record.date,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.5,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                     ),
                     Text(
                       record.meta,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.5,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                     ),
                   ],
@@ -412,7 +423,7 @@ class _RecordCard extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: record.statusBackground,
+                      color: context.palette.adapt(record.statusBackground),
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(
@@ -421,15 +432,15 @@ class _RecordCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w600,
-                        color: record.statusColor,
+                        color: context.palette.adapt(record.statusColor),
                       ),
                     ),
                   ),
                   const SizedBox(height: 6),
-                  const Icon(
+                  Icon(
                     Icons.chevron_right,
                     size: 18,
-                    color: AppColors.inkMuted,
+                    color: context.palette.inkMuted,
                   ),
                 ],
               ),

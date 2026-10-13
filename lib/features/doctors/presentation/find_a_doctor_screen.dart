@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
@@ -67,28 +68,28 @@ class _FindADoctorScreenState extends State<FindADoctorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             AppHeaderBar(showBack: true, onBack: () => context.pop()),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Find an appointment',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               "Choose how you'd like to see a GP and find a time that "
               'works for you.',
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.inkMuted,
+                color: context.palette.inkMuted,
                 height: 1.4,
               ),
             ),
@@ -182,7 +183,7 @@ class _ModeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected ? AppColors.blue : AppColors.surface,
+      color: selected ? AppColors.blue : context.palette.surface,
       borderRadius: BorderRadius.circular(AppRadius.control),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.control),
@@ -196,7 +197,7 @@ class _ModeButton extends StatelessWidget {
               Icon(
                 icon,
                 size: 20,
-                color: selected ? AppColors.white : AppColors.ink,
+                color: selected ? AppColors.white : context.palette.ink,
               ),
               const SizedBox(width: 8),
               Text(
@@ -204,7 +205,7 @@ class _ModeButton extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: selected ? AppColors.white : AppColors.ink,
+                  color: selected ? AppColors.white : context.palette.ink,
                 ),
               ),
             ],
@@ -229,7 +230,7 @@ class _FilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.white,
+      color: context.palette.elevated,
       borderRadius: BorderRadius.circular(AppRadius.pill),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.pill),
@@ -240,26 +241,26 @@ class _FilterChip extends StatelessWidget {
             vertical: AppSpacing.xs,
           ),
           decoration: BoxDecoration(
-            border: Border.all(color: AppColors.line),
+            border: Border.all(color: context.palette.line),
             borderRadius: BorderRadius.circular(AppRadius.pill),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 16, color: AppColors.ink),
+              Icon(icon, size: 16, color: context.palette.ink),
               const SizedBox(width: 4),
               Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.ink,
+                  color: context.palette.ink,
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.keyboard_arrow_down,
                 size: 16,
-                color: AppColors.inkMuted,
+                color: context.palette.inkMuted,
               ),
             ],
           ),
@@ -289,8 +290,8 @@ class _DoctorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final background = green
-        ? const Color(0xFFEAF7E8)
-        : const Color(0xFFE3EEFB);
+        ? context.palette.tintGreen
+        : context.palette.tintBlue;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
@@ -304,10 +305,14 @@ class _DoctorCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 26,
-                backgroundColor: Color(0xFFD9E3EC),
-                child: Icon(Icons.person, color: Color(0xFF8AA0B4), size: 30),
+                backgroundColor: context.palette.adapt(const Color(0xFFD9E3EC)),
+                child: Icon(
+                  Icons.person,
+                  color: context.palette.adapt(const Color(0xFF8AA0B4)),
+                  size: 30,
+                ),
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
@@ -316,29 +321,32 @@ class _DoctorCard extends StatelessWidget {
                   children: [
                     Text(
                       doctor.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
-                    const Text(
+                    Text(
                       'GP',
-                      style: TextStyle(fontSize: 13, color: AppColors.inkMuted),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: context.palette.inkMuted,
+                      ),
                     ),
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.chat_bubble_outline,
                           size: 13,
-                          color: AppColors.inkMuted,
+                          color: context.palette.inkMuted,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           doctor.languages.first,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12.5,
-                            color: AppColors.inkMuted,
+                            color: context.palette.inkMuted,
                           ),
                         ),
                       ],
@@ -348,7 +356,7 @@ class _DoctorCard extends StatelessWidget {
               ),
               InkWell(
                 onTap: onViewProfile,
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
@@ -356,10 +364,14 @@ class _DoctorCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.blue,
+                        color: context.palette.accent,
                       ),
                     ),
-                    Icon(Icons.chevron_right, size: 16, color: AppColors.blue),
+                    Icon(
+                      Icons.chevron_right,
+                      size: 16,
+                      color: context.palette.accent,
+                    ),
                   ],
                 ),
               ),
@@ -368,12 +380,12 @@ class _DoctorCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Row(
             children: [
-              const Text(
+              Text(
                 'Available times',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.ink,
+                  color: context.palette.ink,
                 ),
               ),
               const Spacer(),
@@ -381,7 +393,7 @@ class _DoctorCard extends StatelessWidget {
                 'Sample availability',
                 style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.inkMuted.withValues(alpha: 0.8),
+                  color: context.palette.inkMuted.withValues(alpha: 0.8),
                 ),
               ),
             ],
@@ -424,7 +436,7 @@ class _SlotPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected ? AppColors.blue : AppColors.white,
+      color: selected ? AppColors.blue : context.palette.elevated,
       borderRadius: BorderRadius.circular(AppRadius.control),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.control),
@@ -440,7 +452,7 @@ class _SlotPill extends StatelessWidget {
                   fontSize: 11,
                   color: selected
                       ? AppColors.white.withValues(alpha: 0.85)
-                      : AppColors.inkMuted,
+                      : context.palette.inkMuted,
                 ),
               ),
               Text(
@@ -448,7 +460,7 @@ class _SlotPill extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: selected ? AppColors.white : AppColors.ink,
+                  color: selected ? AppColors.white : context.palette.ink,
                 ),
               ),
             ],

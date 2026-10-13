@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/providers/core_providers.dart';
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/buttons/tinted_button.dart';
@@ -67,7 +67,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(
@@ -86,35 +86,35 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       onPressed: () => context.pop(),
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.arrow_back_ios_new,
                         size: 18,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     const SizedBox(width: 8),
                     SvgPicture.asset(
-                      'assets/images/logo/lifecome-live-logo.svg',
+                      context.palette.logoAsset,
                       height: 24,
                       semanticsLabel: 'LifeCome Live',
                     ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.xxl),
-                const Text(
+                Text(
                   'Reset your password',
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.ink,
+                    color: context.palette.ink,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xxs),
-                const Text(
+                Text(
                   'Enter your personal email to receive a reset link.',
                   style: TextStyle(
                     fontSize: 15,
-                    color: AppColors.inkMuted,
+                    color: context.palette.inkMuted,
                     height: 1.4,
                   ),
                 ),

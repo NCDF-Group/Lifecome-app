@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/providers/core_providers.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/services/session_store.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
@@ -62,7 +62,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     const countryName = 'England';
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
@@ -71,19 +71,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             const SizedBox(height: 20),
             Text(
               '$_greeting, $_firstName',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: AppColors.inkMuted,
+                color: context.palette.inkMuted,
               ),
             ),
             const SizedBox(height: 2),
-            const Text(
+            Text(
               'How can we help today?',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 18),
@@ -100,8 +100,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   Expanded(
                     child: _QuickCard(
                       icon: Icons.computer_outlined,
-                      background: const Color(0xFFEAF7E8),
-                      iconColor: AppColors.greenStrong,
+                      background: context.palette.tintGreen,
+                      iconColor: context.palette.positive,
                       title: 'Online GP',
                       subtitle: 'Care while in $countryName',
                       onTap: _openDirectBooking,
@@ -111,8 +111,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   Expanded(
                     child: _QuickCard(
                       icon: Icons.apartment_outlined,
-                      background: const Color(0xFFE3EEFB),
-                      iconColor: AppColors.blue,
+                      background: context.palette.tintBlue,
+                      iconColor: context.palette.accent,
                       title: 'Clinic care',
                       subtitle: 'Find a clinic',
                       onTap: _openDirectBooking,
@@ -125,7 +125,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF7E8),
+                color: context.palette.tintGreen,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Column(
@@ -137,17 +137,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: AppColors.white,
+                          color: context.palette.elevated,
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.eco_outlined,
-                          color: AppColors.greenStrong,
+                          color: context.palette.positive,
                           size: 20,
                         ),
                       ),
                       const SizedBox(width: 12),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -156,14 +156,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               style: TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.ink,
+                                color: context.palette.ink,
                               ),
                             ),
                             Text(
                               'Practical support for healthier living.',
                               style: TextStyle(
                                 fontSize: 12.5,
-                                color: AppColors.inkMuted,
+                                color: context.palette.inkMuted,
                               ),
                             ),
                           ],
@@ -194,8 +194,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   Expanded(
                     child: _QuickCard(
                       icon: Icons.calendar_month_outlined,
-                      background: const Color(0xFFEAF7E8),
-                      iconColor: AppColors.greenStrong,
+                      background: context.palette.tintGreen,
+                      iconColor: context.palette.positive,
                       title: 'My bookings',
                       subtitle: 'Appointments and sessions',
                       onTap: () => context.go(RoutePaths.visits),
@@ -205,8 +205,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   Expanded(
                     child: _QuickCard(
                       icon: Icons.description_outlined,
-                      background: const Color(0xFFE3EEFB),
-                      iconColor: AppColors.blue,
+                      background: context.palette.tintBlue,
+                      iconColor: context.palette.accent,
                       title: 'Health records',
                       subtitle: 'Your clinical care',
                       onTap: () => context.go(RoutePaths.healthRecords),
@@ -218,7 +218,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             const SizedBox(height: 10),
             _WideRow(
               icon: Icons.business_outlined,
-              iconColor: AppColors.blue,
+              iconColor: context.palette.accent,
               title: 'Employer access',
               subtitle: 'Check what your package includes',
               onTap: () => context.push(RoutePaths.payerSelectHmo),
@@ -226,10 +226,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             const SizedBox(height: 10),
             _WideRow(
               icon: Icons.emergency_outlined,
-              iconColor: AppColors.error,
+              iconColor: context.palette.danger,
               title: 'Need urgent help?',
-              titleColor: AppColors.error,
-              background: const Color(0xFFFCEAEA),
+              titleColor: context.palette.danger,
+              background: context.palette.tintRed,
               onTap: () =>
                   showComingSoonPopup(context, feature: 'Emergency guidance'),
             ),
@@ -280,15 +280,15 @@ class _QuickCard extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.ink,
+                  color: context.palette.ink,
                 ),
               ),
               Text(
                 subtitle,
-                style: const TextStyle(fontSize: 12, color: AppColors.inkMuted),
+                style: TextStyle(fontSize: 12, color: context.palette.inkMuted),
               ),
             ],
           ),
@@ -307,7 +307,7 @@ class _WellbeingRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.white,
+      color: context.palette.elevated,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
@@ -319,17 +319,17 @@ class _WellbeingRow extends StatelessWidget {
               Expanded(
                 child: Text(
                   service.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.ink,
+                    color: context.palette.ink,
                   ),
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.chevron_right,
                 size: 18,
-                color: AppColors.greenStrong,
+                color: context.palette.positive,
               ),
             ],
           ),
@@ -346,22 +346,22 @@ class _WideRow extends StatelessWidget {
     required this.title,
     required this.onTap,
     this.subtitle,
-    this.titleColor = AppColors.ink,
-    this.background = AppColors.surface,
+    this.titleColor,
+    this.background,
   });
 
   final IconData icon;
   final Color iconColor;
   final String title;
   final String? subtitle;
-  final Color titleColor;
-  final Color background;
+  final Color? titleColor;
+  final Color? background;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: background,
+      color: background ?? context.palette.surface,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
@@ -381,15 +381,15 @@ class _WideRow extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        color: titleColor,
+                        color: titleColor ?? context.palette.ink,
                       ),
                     ),
                     if (subtitle != null)
                       Text(
                         subtitle!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.inkMuted,
+                          color: context.palette.inkMuted,
                         ),
                       ),
                   ],

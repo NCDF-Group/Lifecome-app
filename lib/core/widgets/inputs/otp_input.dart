@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../theme/app_colors.dart';
+import '../../theme/app_palette.dart';
 import '../../theme/app_radius.dart';
 
 /// A row of single-digit boxes for entering a verification code, matching
@@ -109,8 +110,8 @@ class OtpInputState extends State<OtpInput> {
           const SizedBox(height: 8),
           Text(
             widget.errorText!,
-            style: const TextStyle(
-              color: AppColors.error,
+            style: TextStyle(
+              color: context.palette.danger,
               fontSize: 13,
               fontWeight: FontWeight.w600,
             ),
@@ -143,14 +144,14 @@ class _OtpBox extends StatelessWidget {
       builder: (context, child) {
         final focused = focusNode.hasFocus;
         final ringColor = hasError
-            ? AppColors.error
-            : (focused ? AppColors.blue : Colors.transparent);
+            ? context.palette.danger
+            : (focused ? context.palette.accent : Colors.transparent);
 
         return Container(
           width: size,
           height: size + 8,
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: context.palette.elevated,
             borderRadius: BorderRadius.circular(AppRadius.control),
             border: Border.all(color: ringColor, width: 2),
             boxShadow: [
@@ -170,20 +171,20 @@ class _OtpBox extends StatelessWidget {
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,
         maxLength: 1,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 22,
           fontWeight: FontWeight.w600,
-          color: AppColors.ink,
+          color: context.palette.ink,
         ),
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           counterText: '',
           contentPadding: EdgeInsets.zero,
           hintText: '0',
           hintStyle: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w600,
-            color: AppColors.line,
+            color: context.palette.line,
           ),
           border: InputBorder.none,
           enabledBorder: InputBorder.none,

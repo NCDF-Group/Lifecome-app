@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
@@ -17,35 +17,35 @@ class ChooseAccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             AppHeaderBar(showBack: true, onBack: () => context.pop()),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Choose your access',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'We check eligibility for each booking. Your clinical account '
               'stays private.',
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.inkMuted,
+                color: context.palette.inkMuted,
                 height: 1.4,
               ),
             ),
             const SizedBox(height: AppSpacing.md),
             _AccessRow(
-              background: const Color(0xFFEAF7E8),
-              iconColor: AppColors.greenStrong,
+              background: context.palette.tintGreen,
+              iconColor: context.palette.positive,
               icon: Icons.credit_card_outlined,
               title: 'Pay per visit',
               subtitle: 'Pay for the care you need.',
@@ -56,8 +56,8 @@ class ChooseAccessScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             _AccessRow(
-              background: const Color(0xFFE3EEFB),
-              iconColor: AppColors.blue,
+              background: context.palette.tintBlue,
+              iconColor: context.palette.accent,
               icon: Icons.landscape_outlined,
               title: 'Membership',
               subtitle: 'Explore individual or adult household options.',
@@ -65,8 +65,8 @@ class ChooseAccessScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             _AccessRow(
-              background: const Color(0xFFE3EEFB),
-              iconColor: AppColors.blue,
+              background: context.palette.tintBlue,
+              iconColor: context.palette.accent,
               icon: Icons.apartment_outlined,
               title: 'Employer access',
               subtitle: 'Activate employer or sponsor access.',
@@ -74,8 +74,8 @@ class ChooseAccessScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             _AccessRow(
-              background: const Color(0xFFEAF7E8),
-              iconColor: AppColors.greenStrong,
+              background: context.palette.tintGreen,
+              iconColor: context.palette.positive,
               icon: Icons.shield_outlined,
               title: 'Health plan access',
               subtitle: 'Link LifeCome Benefits or a participating plan.',
@@ -119,7 +119,7 @@ class _AccessRow extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 22,
-                backgroundColor: AppColors.white,
+                backgroundColor: context.palette.elevated,
                 child: Icon(icon, color: iconColor),
               ),
               const SizedBox(width: AppSpacing.sm),
@@ -129,24 +129,24 @@ class _AccessRow extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                         height: 1.3,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppColors.blue),
+              Icon(Icons.chevron_right, color: context.palette.accent),
             ],
           ),
         ),

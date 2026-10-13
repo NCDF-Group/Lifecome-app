@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
@@ -25,31 +26,31 @@ class AppointmentCheckScreen extends StatelessWidget {
     const city = 'London';
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             AppHeaderBar(showBack: true, onBack: () => context.pop()),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Check your appointment',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Complete the steps below before your visit.',
-              style: TextStyle(fontSize: 14, color: AppColors.inkMuted),
+              style: TextStyle(fontSize: 14, color: context.palette.inkMuted),
             ),
             const SizedBox(height: AppSpacing.md),
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFE3EEFB),
+                color: context.palette.tintBlue,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Column(
@@ -57,12 +58,12 @@ class AppointmentCheckScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 22,
-                        backgroundColor: AppColors.white,
+                        backgroundColor: context.palette.elevated,
                         child: Icon(
                           Icons.videocam_outlined,
-                          color: AppColors.blue,
+                          color: context.palette.accent,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.sm),
@@ -72,33 +73,33 @@ class AppointmentCheckScreen extends StatelessWidget {
                           children: [
                             Text(
                               selection.service?.title ?? 'GP consultation',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.ink,
+                                color: context.palette.ink,
                               ),
                             ),
-                            const Text(
+                            Text(
                               'Online video',
                               style: TextStyle(
                                 fontSize: 13,
-                                color: AppColors.inkMuted,
+                                color: context.palette.inkMuted,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Row(
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.location_on_outlined,
                                   size: 15,
-                                  color: AppColors.inkMuted,
+                                  color: context.palette.inkMuted,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
                                   city,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13,
-                                    color: AppColors.inkMuted,
+                                    color: context.palette.inkMuted,
                                   ),
                                 ),
                               ],
@@ -115,16 +116,16 @@ class AppointmentCheckScreen extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEAF7E8),
+                      color: context.palette.tintGreen,
                       borderRadius: BorderRadius.circular(999),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
                           Icons.check_circle,
                           size: 14,
-                          color: AppColors.greenStrong,
+                          color: context.palette.positive,
                         ),
                         SizedBox(width: 4),
                         Text(
@@ -132,15 +133,18 @@ class AppointmentCheckScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.greenStrong,
+                            color: context.palette.positive,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                    child: Divider(height: 1, color: Color(0xFFCBDFF3)),
+                    child: Divider(
+                      height: 1,
+                      color: context.palette.tintBlueLine,
+                    ),
                   ),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,9 +172,9 @@ class AppointmentCheckScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             _CheckCard(
-              background: const Color(0xFFEAF7E8),
+              background: context.palette.tintGreen,
               icon: Icons.assignment_outlined,
-              iconColor: AppColors.greenStrong,
+              iconColor: context.palette.positive,
               title: 'Clinical suitability',
               status: 'Complete questions',
               body:
@@ -184,9 +188,9 @@ class AppointmentCheckScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             _CheckCard(
-              background: const Color(0xFFE3EEFB),
+              background: context.palette.tintBlue,
               icon: Icons.credit_card_outlined,
-              iconColor: AppColors.blue,
+              iconColor: context.palette.accent,
               title: 'Funding',
               status: 'Check selected service',
               body:
@@ -200,7 +204,7 @@ class AppointmentCheckScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             Material(
-              color: const Color(0xFFFCEAEA),
+              color: context.palette.tintRed,
               borderRadius: BorderRadius.circular(AppRadius.card),
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppRadius.card),
@@ -210,9 +214,9 @@ class AppointmentCheckScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(AppSpacing.md),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.warning_amber_rounded,
-                        color: AppColors.error,
+                        color: context.palette.danger,
                         size: 20,
                       ),
                       const SizedBox(width: AppSpacing.sm),
@@ -220,25 +224,27 @@ class AppointmentCheckScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'Need urgent help?',
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.error,
+                                color: context.palette.danger,
                               ),
                             ),
                             Text(
                               'View emergency guidance.',
                               style: TextStyle(
                                 fontSize: 12.5,
-                                color: AppColors.ink.withValues(alpha: 0.7),
+                                color: context.palette.ink.withValues(
+                                  alpha: 0.7,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const Icon(Icons.chevron_right, color: AppColors.error),
+                      Icon(Icons.chevron_right, color: context.palette.danger),
                     ],
                   ),
                 ),
@@ -288,7 +294,7 @@ class _SummaryField extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 18, color: AppColors.inkMuted),
+        Icon(icon, size: 18, color: context.palette.inkMuted),
         const SizedBox(width: AppSpacing.xs),
         Expanded(
           child: Column(
@@ -296,27 +302,27 @@ class _SummaryField extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 10.5,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.inkMuted,
+                  color: context.palette.inkMuted,
                   letterSpacing: 0.4,
                 ),
               ),
               Text(
                 value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.ink,
+                  color: context.palette.ink,
                 ),
               ),
               if (valueSecondLine != null && valueSecondLine!.isNotEmpty)
                 Text(
                   valueSecondLine!,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12.5,
-                    color: AppColors.inkMuted,
+                    color: context.palette.inkMuted,
                   ),
                 ),
             ],
@@ -363,7 +369,7 @@ class _CheckCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 22,
-                backgroundColor: AppColors.white,
+                backgroundColor: context.palette.elevated,
                 child: Icon(icon, color: iconColor),
               ),
               const SizedBox(width: AppSpacing.sm),
@@ -373,18 +379,18 @@ class _CheckCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     Text(
                       status,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                   ],
@@ -395,9 +401,9 @@ class _CheckCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Text(
             body,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13.5,
-              color: AppColors.inkMuted,
+              color: context.palette.inkMuted,
               height: 1.4,
             ),
           ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 
 const _sections = [
@@ -39,43 +39,50 @@ class TermsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Terms and Conditions',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            color: context.palette.ink,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
-            const Text(
+            Text(
               'Last updated: 30 September 2026',
-              style: TextStyle(fontSize: 12, color: AppColors.inkMuted),
+              style: TextStyle(fontSize: 12, color: context.palette.inkMuted),
             ),
             const SizedBox(height: AppSpacing.md),
-            const Text(
+            Text(
               'These terms govern your use of LifeCome Live. By creating an account, you agree '
               'to them.',
-              style: TextStyle(fontSize: 14, color: AppColors.ink, height: 1.5),
+              style: TextStyle(
+                fontSize: 14,
+                color: context.palette.ink,
+                height: 1.5,
+              ),
             ),
             for (final section in _sections) ...[
               const SizedBox(height: AppSpacing.lg),
               Text(
                 section.$1,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.ink,
+                  color: context.palette.ink,
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
                 section.$2,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
-                  color: AppColors.inkMuted,
+                  color: context.palette.inkMuted,
                   height: 1.5,
                 ),
               ),

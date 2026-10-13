@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-import '../theme/app_colors.dart';
+import '../theme/app_palette.dart';
 
 /// Hosts the five bottom-nav tabs (Home, Services, Visit, Messages, Profile
 /// — view 04 onward in the blueprint) behind a `StatefulShellRoute`, so
@@ -86,9 +86,9 @@ class _BottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.line)),
+      decoration: BoxDecoration(
+        color: context.palette.surface,
+        border: Border(top: BorderSide(color: context.palette.line)),
       ),
       child: SafeArea(
         top: false,
@@ -125,7 +125,7 @@ class _NavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = selected ? AppColors.blue : AppColors.inkMuted;
+    final color = selected ? context.palette.accent : context.palette.inkMuted;
 
     return Semantics(
       button: true,
@@ -161,7 +161,10 @@ class _NavButton extends StatelessWidget {
                   AnimatedOpacity(
                     duration: const Duration(milliseconds: 150),
                     opacity: selected ? 1 : 0,
-                    child: Container(height: 2.5, color: AppColors.blue),
+                    child: Container(
+                      height: 2.5,
+                      color: context.palette.accent,
+                    ),
                   ),
                 ],
               ),

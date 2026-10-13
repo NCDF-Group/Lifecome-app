@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
@@ -24,27 +25,27 @@ class ManageAppointmentScreen extends StatelessWidget {
         : '${_weekday(date)} ${date.day} ${_month(date)}, ${selection.time ?? ''}';
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             AppHeaderBar(showBack: true, onBack: () => context.pop()),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Manage appointment',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Change or cancel your appointment, or view more details.',
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.inkMuted,
+                color: context.palette.inkMuted,
                 height: 1.4,
               ),
             ),
@@ -52,34 +53,37 @@ class ManageAppointmentScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFE3EEFB),
+                color: context.palette.tintBlue,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 22,
-                    backgroundColor: AppColors.white,
-                    child: Icon(Icons.videocam_outlined, color: AppColors.blue),
+                    backgroundColor: context.palette.elevated,
+                    child: Icon(
+                      Icons.videocam_outlined,
+                      color: context.palette.accent,
+                    ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Video GP',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: context.palette.ink,
                           ),
                         ),
                         Text(
                           when,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            color: AppColors.inkMuted,
+                            color: context.palette.inkMuted,
                           ),
                         ),
                       ],
@@ -91,8 +95,8 @@ class ManageAppointmentScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _ActionRow(
               icon: Icons.calendar_month_outlined,
-              background: const Color(0xFFEAF7E8),
-              iconColor: AppColors.greenStrong,
+              background: context.palette.tintGreen,
+              iconColor: context.palette.positive,
               title: 'Reschedule appointment',
               subtitle: 'Choose a new date or time.',
               onTap: () => showComingSoonPopup(
@@ -103,8 +107,8 @@ class ManageAppointmentScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _ActionRow(
               icon: Icons.delete_outline,
-              background: const Color(0xFFFCEAEA),
-              iconColor: AppColors.error,
+              background: context.palette.tintRed,
+              iconColor: context.palette.danger,
               title: 'Cancel appointment',
               subtitle: 'View any refund or fee before confirming.',
               onTap: () => showComingSoonPopup(
@@ -115,8 +119,8 @@ class ManageAppointmentScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _ActionRow(
               icon: Icons.description_outlined,
-              background: const Color(0xFFE3EEFB),
-              iconColor: AppColors.blue,
+              background: context.palette.tintBlue,
+              iconColor: context.palette.accent,
               title: 'View receipt',
               subtitle: 'See your payment details.',
               onTap: () =>
@@ -125,8 +129,8 @@ class ManageAppointmentScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             _ActionRow(
               icon: Icons.support_agent_outlined,
-              background: const Color(0xFFE3EEFB),
-              iconColor: AppColors.blue,
+              background: context.palette.tintBlue,
+              iconColor: context.palette.accent,
               title: 'Contact support',
               subtitle: 'Get help with your appointment.',
               onTap: () =>
@@ -230,8 +234,8 @@ class _ActionRow extends StatelessWidget {
               Container(
                 width: 40,
                 height: 40,
-                decoration: const BoxDecoration(
-                  color: AppColors.white,
+                decoration: BoxDecoration(
+                  color: context.palette.elevated,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, color: iconColor, size: 20),
@@ -243,17 +247,17 @@ class _ActionRow extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.5,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                         height: 1.4,
                       ),
                     ),

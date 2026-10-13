@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
@@ -57,7 +58,7 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -66,24 +67,24 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
               child: Row(
                 children: [
                   SvgPicture.asset(
-                    'assets/images/logo/lifecome-live-logo.svg',
+                    context.palette.logoAsset,
                     height: 24,
                     semanticsLabel: 'LifeCome Live',
                   ),
                   const Spacer(),
                   Material(
-                    color: AppColors.surface,
+                    color: context.palette.surface,
                     shape: const CircleBorder(),
                     child: InkWell(
                       customBorder: const CircleBorder(),
                       onTap: () => context.go(RoutePaths.profile),
-                      child: const SizedBox(
+                      child: SizedBox(
                         width: 38,
                         height: 38,
                         child: Icon(
                           Icons.person_outline,
                           size: 20,
-                          color: AppColors.ink,
+                          color: context.palette.ink,
                         ),
                       ),
                     ),
@@ -96,37 +97,43 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Messages',
-                    style: TextStyle(fontSize: 13, color: AppColors.inkMuted),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: context.palette.inkMuted,
+                    ),
                   ),
                   const SizedBox(height: 2),
-                  const Text(
+                  Text(
                     'Care team messages',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.ink,
+                      color: context.palette.ink,
                     ),
                   ),
                   const SizedBox(height: 2),
-                  const Text(
+                  Text(
                     'Patient support.',
-                    style: TextStyle(fontSize: 14, color: AppColors.inkMuted),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: context.palette.inkMuted,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.md),
                   Container(
                     padding: const EdgeInsets.all(AppSpacing.sm),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE3EEFB),
+                      color: context.palette.tintBlue,
                       borderRadius: BorderRadius.circular(AppRadius.control),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
                         Icon(
                           Icons.info_outline,
                           size: 18,
-                          color: AppColors.blue,
+                          color: context.palette.accent,
                         ),
                         SizedBox(width: AppSpacing.xs),
                         Expanded(
@@ -134,7 +141,7 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
                             'Messages are reviewed during service hours, not continuously.',
                             style: TextStyle(
                               fontSize: 13,
-                              color: AppColors.ink,
+                              color: context.palette.ink,
                               height: 1.4,
                             ),
                           ),
@@ -154,7 +161,7 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
                         vertical: AppSpacing.sm,
                       ),
                       children: [
-                        const Center(
+                        Center(
                           child: Padding(
                             padding: EdgeInsets.symmetric(
                               vertical: AppSpacing.xs,
@@ -163,7 +170,7 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
                               'Today',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: AppColors.inkMuted,
+                                color: context.palette.inkMuted,
                               ),
                             ),
                           ),
@@ -185,9 +192,9 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
                   IconButton(
                     onPressed: () =>
                         showComingSoonPopup(context, feature: 'Attachments'),
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.attach_file,
-                      color: AppColors.inkMuted,
+                      color: context.palette.inkMuted,
                     ),
                   ),
                   Expanded(
@@ -196,18 +203,18 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
                       decoration: InputDecoration(
                         hintText: 'Type a message...',
                         filled: true,
-                        fillColor: AppColors.white,
+                        fillColor: context.palette.elevated,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.md,
                           vertical: AppSpacing.sm,
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(AppRadius.pill),
-                          borderSide: const BorderSide(color: AppColors.line),
+                          borderSide: BorderSide(color: context.palette.line),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(AppRadius.pill),
-                          borderSide: const BorderSide(color: AppColors.line),
+                          borderSide: BorderSide(color: context.palette.line),
                         ),
                       ),
                       onSubmitted: (_) => _send(),
@@ -242,7 +249,7 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
                 AppSpacing.sm,
               ),
               child: Material(
-                color: const Color(0xFFFCEAEA),
+                color: context.palette.tintRed,
                 borderRadius: BorderRadius.circular(AppRadius.control),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(AppRadius.control),
@@ -258,29 +265,29 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.emergency_outlined,
                           size: 18,
-                          color: AppColors.error,
+                          color: context.palette.danger,
                         ),
                         const SizedBox(width: AppSpacing.xs),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'Need urgent help?',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.error,
+                                  color: context.palette.danger,
                                 ),
                               ),
                               Text(
                                 'View emergency guidance.',
                                 style: TextStyle(
                                   fontSize: 12.5,
-                                  color: AppColors.error.withValues(
+                                  color: context.palette.danger.withValues(
                                     alpha: 0.85,
                                   ),
                                 ),
@@ -288,10 +295,10 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
                             ],
                           ),
                         ),
-                        const Icon(
+                        Icon(
                           Icons.chevron_right,
                           size: 18,
-                          color: AppColors.error,
+                          color: context.palette.danger,
                         ),
                       ],
                     ),
@@ -320,32 +327,32 @@ class _EmptyThread extends StatelessWidget {
             Container(
               width: 64,
               height: 64,
-              decoration: const BoxDecoration(
-                color: Color(0xFFE3EEFB),
+              decoration: BoxDecoration(
+                color: context.palette.tintBlue,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.forum_outlined,
-                color: AppColors.blue,
+                color: context.palette.accent,
                 size: 28,
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
-            const Text(
+            Text(
               'No messages yet',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Send a message to start a conversation with your care team.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
-                color: AppColors.inkMuted,
+                color: context.palette.inkMuted,
                 height: 1.4,
               ),
             ),
@@ -371,7 +378,7 @@ class _MessageBubble extends StatelessWidget {
           children: [
             Text(
               message.time,
-              style: const TextStyle(fontSize: 11, color: AppColors.inkMuted),
+              style: TextStyle(fontSize: 11, color: context.palette.inkMuted),
             ),
             const SizedBox(height: 2),
             Align(
@@ -385,12 +392,12 @@ class _MessageBubble extends StatelessWidget {
                   vertical: AppSpacing.sm,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEAF7E8),
+                  color: context.palette.tintGreen,
                   borderRadius: BorderRadius.circular(AppRadius.control),
                 ),
                 child: Text(
                   message.text,
-                  style: const TextStyle(fontSize: 14, color: AppColors.ink),
+                  style: TextStyle(fontSize: 14, color: context.palette.ink),
                 ),
               ),
             ),
@@ -404,10 +411,14 @@ class _MessageBubble extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const CircleAvatar(
+          CircleAvatar(
             radius: 16,
-            backgroundColor: Color(0xFFE3EEFB),
-            child: Icon(Icons.support_agent, size: 16, color: AppColors.blue),
+            backgroundColor: context.palette.tintBlue,
+            child: Icon(
+              Icons.support_agent,
+              size: 16,
+              color: context.palette.accent,
+            ),
           ),
           const SizedBox(width: AppSpacing.xs),
           Expanded(
@@ -416,20 +427,20 @@ class _MessageBubble extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Text(
+                    Text(
                       'Care team',
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     const SizedBox(width: AppSpacing.xs),
                     Text(
                       message.time,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                     ),
                   ],
@@ -438,12 +449,12 @@ class _MessageBubble extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE3EEFB),
+                    color: context.palette.tintBlue,
                     borderRadius: BorderRadius.circular(AppRadius.control),
                   ),
                   child: Text(
                     message.text,
-                    style: const TextStyle(fontSize: 14, color: AppColors.ink),
+                    style: TextStyle(fontSize: 14, color: context.palette.ink),
                   ),
                 ),
               ],

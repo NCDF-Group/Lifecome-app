@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
@@ -45,7 +46,7 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -55,21 +56,21 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
                 children: [
                   AppHeaderBar(showBack: true, onBack: () => context.pop()),
                   const SizedBox(height: 20),
-                  const Text(
+                  Text(
                     'What care do you need?',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.ink,
+                      color: context.palette.ink,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     'Choose a service to get started. Services depend on '
                     'your location and availability.',
                     style: TextStyle(
                       fontSize: 14,
-                      color: AppColors.inkMuted,
+                      color: context.palette.inkMuted,
                       height: 1.4,
                     ),
                   ),
@@ -79,23 +80,23 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
                       padding: const EdgeInsets.all(AppSpacing.sm),
                       margin: const EdgeInsets.only(bottom: AppSpacing.md),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEAF7E8),
+                        color: context.palette.tintGreen,
                         borderRadius: BorderRadius.circular(AppRadius.control),
                       ),
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.health_and_safety_outlined,
-                            color: AppColors.greenStrong,
+                            color: context.palette.positive,
                             size: 18,
                           ),
                           const SizedBox(width: AppSpacing.xs),
                           Text(
                             'Access: ${widget.hmoName}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.ink,
+                              color: context.palette.ink,
                             ),
                           ),
                         ],
@@ -113,17 +114,20 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
                     const SizedBox(height: AppSpacing.sm),
                   ],
                   const SizedBox(height: AppSpacing.xs),
-                  const Text(
+                  Text(
                     'How would you like to have your appointment?',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.ink,
+                      color: context.palette.ink,
                     ),
                   ),
-                  const Text(
+                  Text(
                     'Choose one option.',
-                    style: TextStyle(fontSize: 13, color: AppColors.inkMuted),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: context.palette.inkMuted,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   IntrinsicHeight(
@@ -132,8 +136,8 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
                       children: [
                         Expanded(
                           child: _FormatCard(
-                            background: const Color(0xFFEAF7E8),
-                            iconColor: AppColors.greenStrong,
+                            background: context.palette.tintGreen,
+                            iconColor: context.palette.positive,
                             icon: Icons.desktop_windows_outlined,
                             title: 'Online GP',
                             subtitle: 'Video or telephone\nappointment.',
@@ -146,8 +150,8 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
                         const SizedBox(width: AppSpacing.sm),
                         Expanded(
                           child: _FormatCard(
-                            background: const Color(0xFFE3EEFB),
-                            iconColor: AppColors.blue,
+                            background: context.palette.tintBlue,
+                            iconColor: context.palette.accent,
                             icon: Icons.apartment_outlined,
                             title: 'Smart GP clinic',
                             subtitle: 'In person\nat a local clinic.',
@@ -205,10 +209,10 @@ class _ServiceTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tint = green ? AppColors.greenStrong : AppColors.blue;
+    final tint = green ? context.palette.positive : context.palette.accent;
     final background = green
-        ? const Color(0xFFEAF7E8)
-        : const Color(0xFFE3EEFB);
+        ? context.palette.tintGreen
+        : context.palette.tintBlue;
 
     return Material(
       color: background,
@@ -221,7 +225,7 @@ class _ServiceTile extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.card),
             border: Border.all(
-              color: selected ? AppColors.blue : Colors.transparent,
+              color: selected ? context.palette.accent : Colors.transparent,
               width: 1.5,
             ),
           ),
@@ -229,7 +233,7 @@ class _ServiceTile extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundColor: AppColors.white,
+                backgroundColor: context.palette.elevated,
                 child: Icon(
                   _serviceIcons[service.id] ?? Icons.medical_services_outlined,
                   color: tint,
@@ -242,17 +246,17 @@ class _ServiceTile extends StatelessWidget {
                   children: [
                     Text(
                       service.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     Text(
                       service.description,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                     ),
                     if (isHmo) ...[
@@ -278,8 +282,8 @@ class _ServiceTile extends StatelessWidget {
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: service.requiresAuthorisation
-                                ? AppColors.gold
-                                : AppColors.greenStrong,
+                                ? context.palette.warning
+                                : context.palette.positive,
                           ),
                         ),
                       ),
@@ -328,7 +332,7 @@ class _FormatCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.card),
             border: Border.all(
-              color: selected ? AppColors.blue : Colors.transparent,
+              color: selected ? context.palette.accent : Colors.transparent,
               width: 1.5,
             ),
           ),
@@ -341,7 +345,7 @@ class _FormatCard extends StatelessWidget {
                     width: 36,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: AppColors.white,
+                      color: context.palette.elevated,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Icon(icon, color: iconColor, size: 20),
@@ -353,15 +357,15 @@ class _FormatCard extends StatelessWidget {
               const SizedBox(height: AppSpacing.xs),
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.ink,
+                  color: context.palette.ink,
                 ),
               ),
               Text(
                 subtitle,
-                style: const TextStyle(fontSize: 12, color: AppColors.inkMuted),
+                style: TextStyle(fontSize: 12, color: context.palette.inkMuted),
               ),
             ],
           ),
@@ -384,7 +388,7 @@ class _RadioCircle extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: selected ? AppColors.blue : AppColors.line,
+          color: selected ? context.palette.accent : context.palette.line,
           width: 2,
         ),
       ),

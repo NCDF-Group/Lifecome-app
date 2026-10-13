@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../booking/domain/models/appointment.dart';
 import '../domain/models/wellbeing_service.dart';
@@ -18,38 +18,38 @@ class ServicesScreen extends StatelessWidget {
     const countryName = 'England';
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             const AppHeaderBar(),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Explore our services',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 2),
-            const Text(
+            Text(
               'Choose the support that is right for you.',
-              style: TextStyle(fontSize: 14, color: AppColors.inkMuted),
+              style: TextStyle(fontSize: 14, color: context.palette.inkMuted),
             ),
             const SizedBox(height: 22),
-            const _SectionHeading(
+            _SectionHeading(
               label: 'GP care',
               badge: 'Medical care',
-              badgeColor: AppColors.blue,
+              badgeColor: context.palette.accent,
             ),
             const SizedBox(height: 10),
             _ServiceRow(
               icon: Icons.videocam_outlined,
-              iconColor: AppColors.greenStrong,
-              background: const Color(0xFFE3EEFB),
-              iconBackground: const Color(0xFFDCEEFA),
+              iconColor: context.palette.positive,
+              background: context.palette.tintBlue,
+              iconBackground: context.palette.tintBlueStrong,
               title: 'Online GP',
               subtitle: 'Video or telephone appointments.',
               onTap: () => _openDirectBooking(context),
@@ -57,39 +57,39 @@ class ServicesScreen extends StatelessWidget {
             const SizedBox(height: 10),
             _ServiceRow(
               icon: Icons.badge_outlined,
-              iconColor: AppColors.blue,
-              background: const Color(0xFFE3EEFB),
-              iconBackground: const Color(0xFFDCEEFA),
+              iconColor: context.palette.accent,
+              background: context.palette.tintBlue,
+              iconBackground: context.palette.tintBlueStrong,
               title: 'Clinic care',
               subtitle: 'In-person GP care.',
               linkLabel: 'Find a clinic',
               onTap: () => _openDirectBooking(context),
             ),
             const SizedBox(height: 10),
-            const Text(
+            Text(
               'Follow-up, results review and referral advice where appropriate.',
-              style: TextStyle(fontSize: 12, color: AppColors.inkMuted),
+              style: TextStyle(fontSize: 12, color: context.palette.inkMuted),
             ),
             const SizedBox(height: 10),
-            const Divider(color: AppColors.line),
+            Divider(color: context.palette.line),
             const SizedBox(height: 10),
             Text(
               'GP care for adults physically in $countryName.',
-              style: const TextStyle(fontSize: 12, color: AppColors.inkMuted),
+              style: TextStyle(fontSize: 12, color: context.palette.inkMuted),
             ),
             const SizedBox(height: 24),
-            const _SectionHeading(
+            _SectionHeading(
               label: 'Everyday wellbeing',
               badge: 'Non-medical support',
-              badgeColor: AppColors.greenStrong,
+              badgeColor: context.palette.positive,
             ),
             const SizedBox(height: 10),
             for (final service in wellbeingServices) ...[
               _ServiceRow(
                 icon: service.heroIcon,
-                iconColor: AppColors.greenStrong,
-                background: const Color(0xFFEAF7E8),
-                iconBackground: const Color(0xFFD7F0D2),
+                iconColor: context.palette.positive,
+                background: context.palette.tintGreen,
+                iconBackground: context.palette.tintGreenStrong,
                 title: service.title,
                 subtitle: service.subtitle,
                 onTap: () =>
@@ -99,9 +99,9 @@ class ServicesScreen extends StatelessWidget {
             ],
             _ServiceRow(
               icon: Icons.badge_outlined,
-              iconColor: AppColors.blue,
-              background: const Color(0xFFE3EEFB),
-              iconBackground: const Color(0xFFDCEEFA),
+              iconColor: context.palette.accent,
+              background: context.palette.tintBlue,
+              iconBackground: context.palette.tintBlueStrong,
               title: 'Have employer access?',
               subtitle: 'Check your benefits.',
               onTap: () => context.push(RoutePaths.payerSelectHmo),
@@ -138,10 +138,10 @@ class _SectionHeading extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 19,
             fontWeight: FontWeight.w600,
-            color: AppColors.ink,
+            color: context.palette.ink,
           ),
         ),
         const SizedBox(height: 6),
@@ -214,26 +214,26 @@ class _ServiceRow extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.5,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                     ),
                     if (linkLabel != null)
                       Text(
                         linkLabel!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.blue,
+                          color: context.palette.accent,
                         ),
                       ),
                   ],

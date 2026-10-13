@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/providers/core_providers.dart';
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// The launch screen: the LifeCome Live mark, animating in, while
 /// [SessionStore] is checked in the background for a remembered session.
@@ -63,14 +63,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: Center(
         child: FadeTransition(
           opacity: _opacity,
           child: ScaleTransition(
             scale: _scale,
             child: SvgPicture.asset(
-              'assets/images/logo/lifecome-live-logo.svg',
+              context.palette.logoAsset,
               height: 40,
               semanticsLabel: 'LifeCome Live',
             ),

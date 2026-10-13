@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
@@ -31,23 +32,26 @@ class SelectHmoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Select your HMO',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            color: context.palette.ink,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
-            const Text(
+            Text(
               "Choose your health plan from our participating HMOs. If you can't see "
               'your HMO, you can still pay directly.',
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.inkMuted,
+                color: context.palette.inkMuted,
                 height: 1.4,
               ),
             ),
@@ -57,7 +61,7 @@ class SelectHmoScreen extends StatelessWidget {
                 hintText: 'Search for your HMO (e.g. Bupa, AXA, Vitality)',
                 prefixIcon: const Icon(Icons.search),
                 filled: true,
-                fillColor: AppColors.surface,
+                fillColor: context.palette.surface,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                   borderSide: BorderSide.none,
@@ -65,12 +69,12 @@ class SelectHmoScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.md),
-            const Text(
+            Text(
               'Participating HMOs',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -82,17 +86,20 @@ class SelectHmoScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFE8F4FC),
+                color: context.palette.tintBlueFaint,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.info_outline, color: AppColors.blue),
+                  Icon(Icons.info_outline, color: context.palette.accent),
                   const SizedBox(width: AppSpacing.sm),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       "Can't find your HMO? You can still pay directly for your consultation.",
-                      style: TextStyle(fontSize: 13, color: AppColors.ink),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: context.palette.ink,
+                      ),
                     ),
                   ),
                   TextButton(
@@ -121,7 +128,7 @@ class _HmoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: isDefault ? const Color(0xFFEAF7E8) : AppColors.white,
+      color: isDefault ? context.palette.tintGreen : context.palette.elevated,
       borderRadius: BorderRadius.circular(AppRadius.control),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.control),
@@ -132,7 +139,9 @@ class _HmoTile extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.control),
             border: Border.all(
-              color: isDefault ? AppColors.greenStrong : AppColors.line,
+              color: isDefault
+                  ? context.palette.positive
+                  : context.palette.line,
             ),
           ),
           child: Row(
@@ -141,9 +150,9 @@ class _HmoTile extends StatelessWidget {
                 backgroundColor: AppColors.blue.withValues(alpha: 0.1),
                 child: Text(
                   hmo.name[0],
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w600,
-                    color: AppColors.blue,
+                    color: context.palette.accent,
                   ),
                 ),
               ),
@@ -154,17 +163,17 @@ class _HmoTile extends StatelessWidget {
                   children: [
                     Text(
                       hmo.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     Text(
                       hmo.tagline,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                     ),
                   ],
@@ -190,7 +199,7 @@ class _HmoTile extends StatelessWidget {
                   ),
                 )
               else
-                const Icon(Icons.chevron_right, color: AppColors.inkMuted),
+                Icon(Icons.chevron_right, color: context.palette.inkMuted),
             ],
           ),
         ),

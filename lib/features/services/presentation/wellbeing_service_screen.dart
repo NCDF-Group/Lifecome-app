@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
@@ -20,7 +21,7 @@ class WellbeingServiceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -35,14 +36,16 @@ class WellbeingServiceScreen extends StatelessWidget {
                   Container(
                     height: 150,
                     decoration: BoxDecoration(
-                      color: service.heroColor.withValues(alpha: 0.12),
+                      color: context.palette
+                          .adapt(service.heroColor)
+                          .withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Center(
                       child: Icon(
                         service.heroIcon,
                         size: 56,
-                        color: service.heroColor,
+                        color: context.palette.adapt(service.heroColor),
                       ),
                     ),
                   ),
@@ -53,33 +56,33 @@ class WellbeingServiceScreen extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEAF7E8),
+                      color: context.palette.tintGreen,
                       borderRadius: BorderRadius.circular(999),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Everyday wellbeing',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.greenStrong,
+                        color: context.palette.positive,
                       ),
                     ),
                   ),
                   const SizedBox(height: 10),
                   Text(
                     service.title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.ink,
+                      color: context.palette.ink,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     service.subtitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
-                      color: AppColors.inkMuted,
+                      color: context.palette.inkMuted,
                       height: 1.4,
                     ),
                   ),
@@ -93,7 +96,7 @@ class WellbeingServiceScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: service.explorePanelColor,
+                        color: context.palette.adapt(service.explorePanelColor),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Row(
@@ -101,13 +104,14 @@ class WellbeingServiceScreen extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             radius: 18,
-                            backgroundColor: AppColors.white.withValues(
-                              alpha: 0.6,
-                            ),
+                            backgroundColor: context.palette.elevated
+                                .withValues(alpha: 0.6),
                             child: Icon(
                               service.highlightIcon,
                               size: 18,
-                              color: service.explorePanelIconColor,
+                              color: context.palette.adapt(
+                                service.explorePanelIconColor,
+                              ),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -117,18 +121,18 @@ class WellbeingServiceScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   service.highlightTitle!,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
-                                    color: AppColors.ink,
+                                    color: context.palette.ink,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   service.highlightDescription ?? '',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13,
-                                    color: AppColors.inkMuted,
+                                    color: context.palette.inkMuted,
                                     height: 1.4,
                                   ),
                                 ),
@@ -146,36 +150,40 @@ class WellbeingServiceScreen extends StatelessWidget {
                   const SizedBox(height: 22),
                   Text(
                     service.exploreHeading,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.ink,
+                      color: context.palette.ink,
                     ),
                   ),
                   const SizedBox(height: 10),
                   for (final item in service.exploreItems) ...[
                     _ExploreRow(
                       item: item,
-                      background: service.explorePanelColor,
-                      defaultIconColor: service.explorePanelIconColor,
+                      background: context.palette.adapt(
+                        service.explorePanelColor,
+                      ),
+                      defaultIconColor: context.palette.adapt(
+                        service.explorePanelIconColor,
+                      ),
                     ),
                     const SizedBox(height: 10),
                   ],
                   if (service.journeySteps != null) ...[
                     const SizedBox(height: 12),
-                    const Text(
+                    Text(
                       'Your coaching journey',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     const SizedBox(height: 10),
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: service.explorePanelColor,
+                        color: context.palette.adapt(service.explorePanelColor),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: _Journey(steps: service.journeySteps!),
@@ -205,18 +213,18 @@ class WellbeingServiceScreen extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.info_outline,
                         size: 14,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           service.disclaimer,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.inkMuted,
+                            color: context.palette.inkMuted,
                           ),
                         ),
                       ),
@@ -229,26 +237,26 @@ class WellbeingServiceScreen extends StatelessWidget {
                           showComingSoonPopup(context, feature: 'GP care'),
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.favorite_border,
                             size: 15,
-                            color: AppColors.blue,
+                            color: context.palette.accent,
                           ),
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
                               service.extraLinkLabel!,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 13,
-                                color: AppColors.blue,
+                                color: context.palette.accent,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
-                          const Icon(
+                          Icon(
                             Icons.chevron_right,
                             size: 16,
-                            color: AppColors.blue,
+                            color: context.palette.accent,
                           ),
                         ],
                       ),
@@ -268,9 +276,9 @@ class WellbeingServiceScreen extends StatelessWidget {
                     Center(
                       child: Text(
                         service.footerNote!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.inkMuted,
+                          color: context.palette.inkMuted,
                         ),
                       ),
                     ),
@@ -308,25 +316,25 @@ class _ExploreRow extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 18,
-            backgroundColor: AppColors.white,
+            backgroundColor: context.palette.elevated,
             child: Icon(
               item.icon,
               size: 18,
-              color: item.color ?? defaultIconColor,
+              color: context.palette.adapt(item.color ?? defaultIconColor),
             ),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Text(
               item.label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
-                color: AppColors.ink,
+                color: context.palette.ink,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ),
-          const Icon(Icons.chevron_right, size: 20, color: AppColors.blue),
+          Icon(Icons.chevron_right, size: 20, color: context.palette.accent),
         ],
       ),
     );
@@ -377,18 +385,18 @@ class _Journey extends StatelessWidget {
                     children: [
                       Text(
                         steps[i].title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.ink,
+                          color: context.palette.ink,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         steps[i].description,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12.5,
-                          color: AppColors.inkMuted,
+                          color: context.palette.inkMuted,
                           height: 1.4,
                         ),
                       ),
@@ -419,7 +427,7 @@ class _LinkRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: const Color(0xFFE3EEFB),
+      color: context.palette.tintBlue,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
@@ -430,8 +438,8 @@ class _LinkRow extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 18,
-                backgroundColor: AppColors.white,
-                child: Icon(icon, size: 18, color: AppColors.blue),
+                backgroundColor: context.palette.elevated,
+                child: Icon(icon, size: 18, color: context.palette.accent),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -440,23 +448,27 @@ class _LinkRow extends StatelessWidget {
                   children: [
                     Text(
                       label,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     Text(
                       sublabel,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, size: 20, color: AppColors.blue),
+              Icon(
+                Icons.chevron_right,
+                size: 20,
+                color: context.palette.accent,
+              ),
             ],
           ),
         ),
@@ -475,20 +487,24 @@ class _BadgePill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: const Color(0xFFE8F4FC),
+        color: context.palette.tintBlueFaint,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.computer_outlined, size: 15, color: AppColors.blue),
+          Icon(
+            Icons.computer_outlined,
+            size: 15,
+            color: context.palette.accent,
+          ),
           const SizedBox(width: 5),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: AppColors.blue,
+              color: context.palette.accent,
             ),
           ),
         ],

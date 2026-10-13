@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_palette.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 
@@ -29,7 +29,7 @@ class AuthFormCard extends StatelessWidget {
             AppSpacing.lg,
           ),
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: context.palette.elevated,
             borderRadius: BorderRadius.circular(AppRadius.card),
           ),
           child: child,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
@@ -16,43 +17,43 @@ class MembershipPlansScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             AppHeaderBar(showBack: true, onBack: () => context.pop()),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Membership',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               "Choose the option that's right for you.",
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 2),
-            const Text(
+            Text(
               'Fees, allowances and availability are shown before you join.',
               style: TextStyle(
                 fontSize: 13,
-                color: AppColors.inkMuted,
+                color: context.palette.inkMuted,
                 height: 1.4,
               ),
             ),
             const SizedBox(height: AppSpacing.md),
             _PlanCard(
-              background: const Color(0xFFEAF7E8),
-              accent: AppColors.greenStrong,
+              background: context.palette.tintGreen,
+              accent: context.palette.positive,
               icon: Icons.person_outline,
               title: 'Individual membership',
               subtitle: 'For your own care.',
@@ -67,8 +68,8 @@ class MembershipPlansScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             _PlanCard(
-              background: const Color(0xFFE3EEFB),
-              accent: AppColors.blue,
+              background: context.palette.tintBlue,
+              accent: context.palette.accent,
               icon: Icons.people_outline,
               title: 'Adult household membership',
               subtitle: 'Separate accounts for each adult.',
@@ -83,7 +84,7 @@ class MembershipPlansScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             Material(
-              color: AppColors.white,
+              color: context.palette.elevated,
               borderRadius: BorderRadius.circular(AppRadius.card),
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppRadius.card),
@@ -93,7 +94,7 @@ class MembershipPlansScreen extends StatelessWidget {
                 ),
                 child: Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.line),
+                    border: Border.all(color: context.palette.line),
                     borderRadius: BorderRadius.circular(AppRadius.card),
                   ),
                   padding: const EdgeInsets.all(AppSpacing.md),
@@ -102,18 +103,18 @@ class MembershipPlansScreen extends StatelessWidget {
                       Container(
                         width: 40,
                         height: 40,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFE3EEFB),
+                        decoration: BoxDecoration(
+                          color: context.palette.tintBlue,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.description_outlined,
-                          color: AppColors.blue,
+                          color: context.palette.accent,
                           size: 20,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.sm),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -122,20 +123,20 @@ class MembershipPlansScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.ink,
+                                color: context.palette.ink,
                               ),
                             ),
                             Text(
                               'Activate your membership.',
                               style: TextStyle(
                                 fontSize: 12.5,
-                                color: AppColors.inkMuted,
+                                color: context.palette.inkMuted,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const Icon(Icons.chevron_right, color: AppColors.blue),
+                      Icon(Icons.chevron_right, color: context.palette.accent),
                     ],
                   ),
                 ),
@@ -182,7 +183,7 @@ class _PlanCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundColor: AppColors.white,
+                backgroundColor: context.palette.elevated,
                 child: Icon(icon, color: accent),
               ),
               const SizedBox(width: AppSpacing.sm),
@@ -192,17 +193,17 @@ class _PlanCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                     ),
                   ],
@@ -222,9 +223,9 @@ class _PlanCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       bullet,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13.5,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                   ),

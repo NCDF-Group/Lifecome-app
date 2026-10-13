@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
@@ -74,7 +74,7 @@ class _VerifyMobileScreenState extends ConsumerState<VerifyMobileScreen> {
     final verifying = authState.status == AuthStatus.verifying;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(
@@ -93,43 +93,43 @@ class _VerifyMobileScreenState extends ConsumerState<VerifyMobileScreen> {
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       onPressed: () => context.pop(),
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.arrow_back_ios_new,
                         size: 18,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     const SizedBox(width: 8),
                     SvgPicture.asset(
-                      'assets/images/logo/lifecome-live-logo.svg',
+                      context.palette.logoAsset,
                       height: 24,
                       semanticsLabel: 'LifeCome Live',
                     ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                const Text(
+                Text(
                   'Verify your mobile',
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.ink,
+                    color: context.palette.ink,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xxs),
                 Text.rich(
                   TextSpan(
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
-                      color: AppColors.inkMuted,
+                      color: context.palette.inkMuted,
                       height: 1.4,
                     ),
                     children: [
                       const TextSpan(text: 'Enter the 6-digit code sent to\n'),
                       TextSpan(
                         text: _maskPhoneNumber(widget.args.phoneNumber),
-                        style: const TextStyle(
-                          color: AppColors.ink,
+                        style: TextStyle(
+                          color: context.palette.ink,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -167,18 +167,18 @@ class _VerifyMobileScreenState extends ConsumerState<VerifyMobileScreen> {
                       : const SizedBox.shrink(),
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                const _InfoCard(
-                  background: Color(0xFFEAF7E8),
-                  iconColor: AppColors.greenStrong,
+                _InfoCard(
+                  background: context.palette.tintGreen,
+                  iconColor: context.palette.positive,
                   icon: Icons.sms_outlined,
                   title: 'Get verification help',
                   subtitle: "See options if you're having trouble receiving your code.",
                   onTap: _showVerificationHelp,
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                const _InfoCard(
-                  background: Color(0xFFE3EEFB),
-                  iconColor: AppColors.blue,
+                _InfoCard(
+                  background: context.palette.tintBlue,
+                  iconColor: context.palette.accent,
                   icon: Icons.lock_outline,
                   title: 'Never share your code',
                   subtitle: 'LifeCome Live will never ask for your code by phone, email or text.',
@@ -227,8 +227,8 @@ class _InfoCard extends StatelessWidget {
           Container(
             width: 36,
             height: 36,
-            decoration: const BoxDecoration(
-              color: AppColors.white,
+            decoration: BoxDecoration(
+              color: context.palette.elevated,
               shape: BoxShape.circle,
             ),
             child: Icon(icon, size: 18, color: iconColor),
@@ -240,18 +240,18 @@ class _InfoCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.ink,
+                    color: context.palette.ink,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12.5,
-                    color: AppColors.inkMuted,
+                    color: context.palette.inkMuted,
                     height: 1.4,
                   ),
                 ),

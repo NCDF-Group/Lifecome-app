@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
@@ -18,27 +19,27 @@ class MyBenefitsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             AppHeaderBar(showBack: true, onBack: () => context.pop()),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'My benefits',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'See what your plan includes and how to access care.',
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.inkMuted,
+                color: context.palette.inkMuted,
                 height: 1.4,
               ),
             ),
@@ -46,21 +47,21 @@ class MyBenefitsScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF7E8),
+                color: context.palette.tintGreen,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 22,
-                    backgroundColor: AppColors.white,
+                    backgroundColor: context.palette.elevated,
                     child: Icon(
                       Icons.shield_outlined,
-                      color: AppColors.greenStrong,
+                      color: context.palette.positive,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -69,7 +70,7 @@ class MyBenefitsScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: context.palette.ink,
                           ),
                         ),
                         SizedBox(height: 2),
@@ -78,7 +79,7 @@ class MyBenefitsScreen extends StatelessWidget {
                             Icon(
                               Icons.circle,
                               size: 8,
-                              color: AppColors.greenStrong,
+                              color: context.palette.positive,
                             ),
                             SizedBox(width: 6),
                             Text(
@@ -86,7 +87,7 @@ class MyBenefitsScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.greenStrong,
+                                color: context.palette.positive,
                               ),
                             ),
                           ],
@@ -96,7 +97,7 @@ class MyBenefitsScreen extends StatelessWidget {
                           'Your plan is active and linked to this account.',
                           style: TextStyle(
                             fontSize: 12.5,
-                            color: AppColors.inkMuted,
+                            color: context.palette.inkMuted,
                             height: 1.4,
                           ),
                         ),
@@ -109,7 +110,7 @@ class MyBenefitsScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
             Container(
               decoration: BoxDecoration(
-                border: Border.all(color: AppColors.line),
+                border: Border.all(color: context.palette.line),
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -117,29 +118,29 @@ class MyBenefitsScreen extends StatelessWidget {
                 children: [
                   _BenefitRow(
                     icon: Icons.desktop_windows_outlined,
-                    background: const Color(0xFFEAF7E8),
-                    iconColor: AppColors.greenStrong,
+                    background: context.palette.tintGreen,
+                    iconColor: context.palette.positive,
                     title: 'Digital GP access',
                     subtitle: 'Care wherever you are.',
                     actionLabel: 'Check cover',
                     onTap: () =>
                         showComingSoonPopup(context, feature: 'Checking cover'),
                   ),
-                  const Divider(height: 1, color: AppColors.line),
+                  Divider(height: 1, color: context.palette.line),
                   _BenefitRow(
                     icon: Icons.apartment_outlined,
-                    background: const Color(0xFFE3EEFB),
-                    iconColor: AppColors.blue,
+                    background: context.palette.tintBlue,
+                    iconColor: context.palette.accent,
                     title: 'Clinic consultations',
                     subtitle: 'Care in person.',
                     actionLabel: 'Check separately',
                     onTap: () => context.push(RoutePaths.findSmartGpClinic),
                   ),
-                  const Divider(height: 1, color: AppColors.line),
+                  Divider(height: 1, color: context.palette.line),
                   _BenefitRow(
                     icon: Icons.groups_outlined,
-                    background: const Color(0xFFEAF7E8),
-                    iconColor: AppColors.greenStrong,
+                    background: context.palette.tintGreen,
+                    iconColor: context.palette.positive,
                     title: 'Follow-up care',
                     subtitle: 'Coordinated when needed.',
                     actionLabel: 'Subject to your plan',
@@ -193,18 +194,18 @@ class MyBenefitsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            const Text(
+            Text(
               'Plan details',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: context.palette.ink,
               ),
             ),
             const SizedBox(height: AppSpacing.xs),
             Container(
               decoration: BoxDecoration(
-                border: Border.all(color: AppColors.line),
+                border: Border.all(color: context.palette.line),
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -219,7 +220,7 @@ class MyBenefitsScreen extends StatelessWidget {
                       feature: 'Allowance and validity',
                     ),
                   ),
-                  const Divider(height: 1, color: AppColors.line),
+                  Divider(height: 1, color: context.palette.line),
                   _PlanDetailRow(
                     icon: Icons.apartment_outlined,
                     title: 'Funding provider',
@@ -229,7 +230,7 @@ class MyBenefitsScreen extends StatelessWidget {
                       feature: 'Funding provider',
                     ),
                   ),
-                  const Divider(height: 1, color: AppColors.line),
+                  Divider(height: 1, color: context.palette.line),
                   _PlanDetailRow(
                     icon: Icons.description_outlined,
                     title: 'Terms and exclusions',
@@ -246,19 +247,23 @@ class MyBenefitsScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.sm),
               decoration: BoxDecoration(
-                color: const Color(0xFFE3EEFB),
+                color: context.palette.tintBlue,
                 borderRadius: BorderRadius.circular(AppRadius.control),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.info_outline, size: 16, color: AppColors.blue),
+                  Icon(
+                    Icons.info_outline,
+                    size: 16,
+                    color: context.palette.accent,
+                  ),
                   SizedBox(width: AppSpacing.xs),
                   Expanded(
                     child: Text(
                       'Medicines, tests and specialist care may cost extra.',
                       style: TextStyle(
                         fontSize: 12.5,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                     ),
                   ),
@@ -313,17 +318,17 @@ class _BenefitRow extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.5,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                     ),
                   ],
@@ -337,17 +342,17 @@ class _BenefitRow extends StatelessWidget {
                       child: Text(
                         actionLabel,
                         textAlign: TextAlign.right,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.blue,
+                          color: context.palette.accent,
                         ),
                       ),
                     ),
-                    const Icon(
+                    Icon(
                       Icons.chevron_right,
                       size: 18,
-                      color: AppColors.blue,
+                      color: context.palette.accent,
                     ),
                   ],
                 ),
@@ -385,8 +390,8 @@ class _PlanDetailRow extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundColor: const Color(0xFFE3EEFB),
-                child: Icon(icon, color: AppColors.blue, size: 20),
+                backgroundColor: context.palette.tintBlue,
+                child: Icon(icon, color: context.palette.accent, size: 20),
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
@@ -395,23 +400,23 @@ class _PlanDetailRow extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: context.palette.ink,
                       ),
                     ),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.5,
-                        color: AppColors.inkMuted,
+                        color: context.palette.inkMuted,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppColors.blue),
+              Icon(Icons.chevron_right, color: context.palette.accent),
             ],
           ),
         ),
