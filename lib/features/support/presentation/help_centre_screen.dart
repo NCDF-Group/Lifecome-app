@@ -73,7 +73,7 @@ class HelpCentreScreen extends StatelessWidget {
               'Help and support',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -132,7 +132,7 @@ class HelpCentreScreen extends StatelessWidget {
                               'Contact patient support',
                               style: TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.white,
                               ),
                             ),
@@ -187,7 +187,7 @@ class HelpCentreScreen extends StatelessWidget {
                               'Urgent or emergency help',
                               style: TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.error,
                               ),
                             ),
@@ -214,7 +214,7 @@ class HelpCentreScreen extends StatelessWidget {
                                     'View local urgent-care options',
                                     style: TextStyle(
                                       fontSize: 13,
-                                      fontWeight: FontWeight.w700,
+                                      fontWeight: FontWeight.w600,
                                       color: AppColors.blue,
                                     ),
                                   ),
@@ -284,7 +284,7 @@ class _TopicRow extends StatelessWidget {
                       topic.title,
                       style: const TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.ink,
                       ),
                     ),

@@ -124,7 +124,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   'Enter reset code',
                   style: TextStyle(
                     fontSize: 26,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.ink,
                   ),
                 ),
@@ -142,7 +142,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                         text: widget.args.email,
                         style: const TextStyle(
                           color: AppColors.ink,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],

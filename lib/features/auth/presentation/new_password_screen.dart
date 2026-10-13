@@ -120,7 +120,7 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
                   'Choose a new password',
                   style: TextStyle(
                     fontSize: 26,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.ink,
                   ),
                 ),

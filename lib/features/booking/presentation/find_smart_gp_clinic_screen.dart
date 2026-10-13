@@ -69,7 +69,7 @@ class _FindSmartGpClinicScreenState extends State<FindSmartGpClinicScreen> {
               'Find a Smart GP clinic',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -110,7 +110,7 @@ class _FindSmartGpClinicScreenState extends State<FindSmartGpClinicScreen> {
                         _location,
                         style: const TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                           color: AppColors.ink,
                         ),
                       ),
@@ -128,7 +128,7 @@ class _FindSmartGpClinicScreenState extends State<FindSmartGpClinicScreen> {
                   child: const Text(
                     'Change',
                     style: TextStyle(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.blue,
                     ),
                   ),
@@ -179,7 +179,7 @@ class _FindSmartGpClinicScreenState extends State<FindSmartGpClinicScreen> {
                               'London clinic',
                               style: TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.ink,
                               ),
                             ),
@@ -255,7 +255,7 @@ class _FindSmartGpClinicScreenState extends State<FindSmartGpClinicScreen> {
                               'Need help choosing?',
                               style: TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.ink,
                               ),
                             ),
@@ -313,7 +313,7 @@ class _ClinicLinkRow extends StatelessWidget {
                     label,
                     style: const TextStyle(
                       fontSize: 14.5,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.ink,
                     ),
                   ),

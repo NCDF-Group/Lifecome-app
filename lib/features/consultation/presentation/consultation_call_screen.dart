@@ -136,7 +136,7 @@ class _ConsultationCallScreenState extends State<ConsultationCallScreen> {
                             doctor.name,
                             style: const TextStyle(
                               fontSize: 15,
-                              fontWeight: FontWeight.w800,
+                              fontWeight: FontWeight.w600,
                               color: AppColors.white,
                             ),
                           ),

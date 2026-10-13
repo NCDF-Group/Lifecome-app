@@ -79,7 +79,7 @@ class _BookingLocationScreenState extends State<BookingLocationScreen> {
                   'Enter your location',
                   style: TextStyle(
                     fontSize: 26,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.ink,
                   ),
                 ),
@@ -145,7 +145,7 @@ class _BookingLocationScreenState extends State<BookingLocationScreen> {
                               'Try device location again',
                               style: TextStyle(
                                 fontSize: 13,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.blue,
                               ),
                             ),

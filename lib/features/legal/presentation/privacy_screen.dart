@@ -46,7 +46,7 @@ class PrivacyScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'Privacy Policy',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
+          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
@@ -69,7 +69,7 @@ class PrivacyScreen extends StatelessWidget {
                 section.$1,
                 style: const TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.ink,
                 ),
               ),

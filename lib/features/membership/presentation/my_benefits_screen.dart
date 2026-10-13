@@ -29,7 +29,7 @@ class MyBenefitsScreen extends StatelessWidget {
               'My benefits',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -68,7 +68,7 @@ class MyBenefitsScreen extends StatelessWidget {
                           'LifeCome Benefits',
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.ink,
                           ),
                         ),
@@ -85,7 +85,7 @@ class MyBenefitsScreen extends StatelessWidget {
                               'Connected',
                               style: TextStyle(
                                 fontSize: 13,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.greenStrong,
                               ),
                             ),
@@ -177,7 +177,7 @@ class MyBenefitsScreen extends StatelessWidget {
                           'Check a service',
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.white,
                           ),
                         ),
@@ -197,7 +197,7 @@ class MyBenefitsScreen extends StatelessWidget {
               'Plan details',
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -315,7 +315,7 @@ class _BenefitRow extends StatelessWidget {
                       title,
                       style: const TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.ink,
                       ),
                     ),
@@ -339,7 +339,7 @@ class _BenefitRow extends StatelessWidget {
                         textAlign: TextAlign.right,
                         style: const TextStyle(
                           fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           color: AppColors.blue,
                         ),
                       ),
@@ -397,7 +397,7 @@ class _PlanDetailRow extends StatelessWidget {
                       title,
                       style: const TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.ink,
                       ),
                     ),

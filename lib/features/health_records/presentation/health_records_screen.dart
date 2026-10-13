@@ -103,7 +103,7 @@ class _HealthRecordsScreenState extends State<HealthRecordsScreen> {
               'Your health records',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -196,7 +196,7 @@ class _HealthRecordsScreenState extends State<HealthRecordsScreen> {
                               'Upload a document',
                               style: TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.white,
                               ),
                             ),
@@ -254,7 +254,7 @@ class _HealthRecordsScreenState extends State<HealthRecordsScreen> {
                               'Manage sharing permissions',
                               style: TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.ink,
                               ),
                             ),
@@ -335,7 +335,7 @@ class _FilterChip extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w500,
               color: selected ? AppColors.white : AppColors.inkMuted,
             ),
           ),
@@ -381,7 +381,7 @@ class _RecordCard extends StatelessWidget {
                       record.title,
                       style: const TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.ink,
                       ),
                     ),
@@ -420,7 +420,7 @@ class _RecordCard extends StatelessWidget {
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         fontSize: 11.5,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         color: record.statusColor,
                       ),
                     ),

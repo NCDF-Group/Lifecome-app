@@ -83,7 +83,7 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
               'Link your health plan',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -111,7 +111,7 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
                     'Plan provider',
                     style: TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w500,
                       color: AppColors.ink,
                     ),
                   ),
@@ -147,7 +147,7 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
                                     provider,
                                     style: const TextStyle(
                                       fontSize: 15,
-                                      fontWeight: FontWeight.w700,
+                                      fontWeight: FontWeight.w600,
                                       color: AppColors.ink,
                                     ),
                                   ),
@@ -205,7 +205,7 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
                                     'Check my cover',
                                     style: TextStyle(
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w700,
+                                      fontWeight: FontWeight.w600,
                                       color: AppColors.white,
                                     ),
                                   ),
@@ -250,7 +250,7 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
                           'Your information stays private',
                           style: TextStyle(
                             fontSize: 14,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.ink,
                           ),
                         ),
@@ -274,7 +274,7 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
               "What's covered?",
               style: TextStyle(
                 fontSize: 17,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -339,7 +339,7 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
                               "Can't find your plan?",
                               style: TextStyle(
                                 fontSize: 14,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.ink,
                               ),
                             ),
@@ -405,7 +405,7 @@ class _CoverageRow extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     fontSize: 15,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.ink,
                   ),
                 ),

@@ -82,7 +82,7 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
               'Your profile',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -257,7 +257,7 @@ class _ProfileRow extends StatelessWidget {
                       title,
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: titleColor,
                       ),
                     ),
@@ -302,7 +302,7 @@ class _FooterLink extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 12.5,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
             color: color,
           ),
         ),

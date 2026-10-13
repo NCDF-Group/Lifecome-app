@@ -43,7 +43,7 @@ class _BeforeYourVisitScreenState extends State<BeforeYourVisitScreen> {
       appBar: AppBar(
         title: const Text(
           'Help your doctor prepare',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
+          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
@@ -59,7 +59,7 @@ class _BeforeYourVisitScreenState extends State<BeforeYourVisitScreen> {
               'What would you like to discuss?',
               style: TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w500,
                 color: AppColors.ink,
               ),
             ),
@@ -79,7 +79,7 @@ class _BeforeYourVisitScreenState extends State<BeforeYourVisitScreen> {
               'How long has this been happening?',
               style: TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w500,
                 color: AppColors.ink,
               ),
             ),

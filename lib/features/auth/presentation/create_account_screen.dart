@@ -174,7 +174,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                   'Create your account',
                   style: TextStyle(
                     fontSize: 26,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.ink,
                   ),
                 ),
@@ -291,7 +291,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                                 text: 'Terms of use',
                                 style: const TextStyle(
                                   color: AppColors.blue,
-                                  fontWeight: FontWeight.w700,
+                                  fontWeight: FontWeight.w600,
                                 ),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = _openTerms,
@@ -327,7 +327,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                         text: 'Privacy notice',
                         style: const TextStyle(
                           color: AppColors.blue,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = _openPrivacy,
@@ -368,7 +368,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                           'Use your own contact details, even when someone else pays.',
                           style: TextStyle(
                             fontSize: 13,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.ink,
                             height: 1.4,
                           ),

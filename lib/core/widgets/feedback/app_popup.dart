@@ -258,7 +258,7 @@ class _AppPopupCard extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 20,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.ink,
                       ),
                     ),
@@ -289,7 +289,7 @@ class _AppPopupCard extends StatelessWidget {
                                 shape: const StadiumBorder(),
                                 textStyle: const TextStyle(
                                   fontSize: 15,
-                                  fontWeight: FontWeight.w800,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                               child: Text(primaryLabel),

@@ -72,7 +72,7 @@ class _OtpTimerState extends State<OtpTimer> {
           "Didn't get any code? Resend",
           style: TextStyle(
             color: AppColors.blue,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w500,
             fontSize: 14,
           ),
         ),

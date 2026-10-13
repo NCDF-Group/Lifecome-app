@@ -129,7 +129,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                     TextSpan(
                       style: const TextStyle(
                         fontSize: 28,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.ink,
                         height: 1.15,
                       ),
@@ -193,7 +193,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                         'Forgot Password?',
                         style: TextStyle(
                           color: AppColors.blue,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
                       ),
@@ -273,7 +273,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                         'Not you? Sign in with another account',
                         style: TextStyle(
                           color: AppColors.inkMuted,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
                       ),

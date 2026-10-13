@@ -34,7 +34,7 @@ class WelcomeScreen extends StatelessWidget {
                     TextSpan(
                       style: TextStyle(
                         fontSize: 32,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         height: 1.15,
                         letterSpacing: -0.6,
                         color: AppColors.ink,
@@ -122,7 +122,7 @@ class WelcomeScreen extends StatelessWidget {
                         shape: const StadiumBorder(),
                         textStyle: const TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       child: const Text('Log in'),
@@ -385,7 +385,7 @@ class _FeatureIcon extends StatelessWidget {
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 13,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
             color: AppColors.ink,
           ),
         ),

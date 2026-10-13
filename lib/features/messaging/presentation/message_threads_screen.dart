@@ -105,7 +105,7 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
                     'Care team messages',
                     style: TextStyle(
                       fontSize: 24,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.ink,
                     ),
                   ),
@@ -272,7 +272,7 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
                                 'Need urgent help?',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  fontWeight: FontWeight.w800,
+                                  fontWeight: FontWeight.w600,
                                   color: AppColors.error,
                                 ),
                               ),
@@ -335,7 +335,7 @@ class _EmptyThread extends StatelessWidget {
               'No messages yet',
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -420,7 +420,7 @@ class _MessageBubble extends StatelessWidget {
                       'Care team',
                       style: TextStyle(
                         fontSize: 13,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.ink,
                       ),
                     ),

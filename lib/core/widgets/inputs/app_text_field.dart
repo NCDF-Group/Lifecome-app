@@ -56,7 +56,7 @@ class AppTextField extends StatelessWidget {
           label,
           style: const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w500,
             color: AppColors.ink,
           ),
         ),

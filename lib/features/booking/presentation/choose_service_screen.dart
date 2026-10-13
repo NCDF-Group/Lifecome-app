@@ -59,7 +59,7 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
                     'What care do you need?',
                     style: TextStyle(
                       fontSize: 24,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.ink,
                     ),
                   ),
@@ -94,7 +94,7 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
                             'Access: ${widget.hmoName}',
                             style: const TextStyle(
                               fontSize: 13,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                               color: AppColors.ink,
                             ),
                           ),
@@ -117,7 +117,7 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
                     'How would you like to have your appointment?',
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.ink,
                     ),
                   ),
@@ -244,7 +244,7 @@ class _ServiceTile extends StatelessWidget {
                       service.title,
                       style: const TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.ink,
                       ),
                     ),
@@ -276,7 +276,7 @@ class _ServiceTile extends StatelessWidget {
                               : 'Covered',
                           style: TextStyle(
                             fontSize: 11,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                             color: service.requiresAuthorisation
                                 ? AppColors.gold
                                 : AppColors.greenStrong,
@@ -355,7 +355,7 @@ class _FormatCard extends StatelessWidget {
                 title,
                 style: const TextStyle(
                   fontSize: 15,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.ink,
                 ),
               ),

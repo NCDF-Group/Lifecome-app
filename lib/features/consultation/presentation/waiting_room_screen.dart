@@ -34,7 +34,7 @@ class WaitingRoomScreen extends StatelessWidget {
               'Your waiting room',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -77,7 +77,7 @@ class WaitingRoomScreen extends StatelessWidget {
                         selection.time ?? '',
                         style: const TextStyle(
                           fontSize: 17,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                           color: AppColors.ink,
                         ),
                       ),
@@ -101,7 +101,7 @@ class WaitingRoomScreen extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 17,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -161,7 +161,7 @@ class WaitingRoomScreen extends StatelessWidget {
                               'London',
                               style: TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.ink,
                               ),
                             ),
@@ -172,7 +172,7 @@ class WaitingRoomScreen extends StatelessWidget {
                         'Confirm or update',
                         style: TextStyle(
                           fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           color: AppColors.blue,
                         ),
                       ),
@@ -221,7 +221,7 @@ class WaitingRoomScreen extends StatelessWidget {
                               'Trouble connecting?',
                               style: TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.ink,
                               ),
                             ),
@@ -249,7 +249,7 @@ class WaitingRoomScreen extends StatelessWidget {
                   'Leave waiting room',
                   style: TextStyle(
                     color: AppColors.blue,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),

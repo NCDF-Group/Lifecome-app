@@ -30,7 +30,7 @@ class MembershipBillingScreen extends StatelessWidget {
               'Membership and billing',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -69,7 +69,7 @@ class MembershipBillingScreen extends StatelessWidget {
                           'Adult household plan',
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.ink,
                           ),
                         ),
@@ -92,7 +92,7 @@ class MembershipBillingScreen extends StatelessWidget {
               'Members',
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -140,7 +140,7 @@ class MembershipBillingScreen extends StatelessWidget {
               'Billing and membership',
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -203,7 +203,7 @@ class MembershipBillingScreen extends StatelessWidget {
                         'Manage membership',
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           color: AppColors.white,
                         ),
                       ),
@@ -272,7 +272,7 @@ class _MemberRow extends StatelessWidget {
                           name,
                           style: const TextStyle(
                             fontSize: 15,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.ink,
                           ),
                         ),
@@ -290,7 +290,7 @@ class _MemberRow extends StatelessWidget {
                             badge,
                             style: TextStyle(
                               fontSize: 11,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                               color: badgeColor,
                             ),
                           ),
@@ -363,7 +363,7 @@ class _BillingRow extends StatelessWidget {
                       title,
                       style: const TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.ink,
                       ),
                     ),

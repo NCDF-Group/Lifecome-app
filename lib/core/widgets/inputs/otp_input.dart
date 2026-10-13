@@ -112,7 +112,7 @@ class OtpInputState extends State<OtpInput> {
             style: const TextStyle(
               color: AppColors.error,
               fontSize: 13,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -172,7 +172,7 @@ class _OtpBox extends StatelessWidget {
         maxLength: 1,
         style: const TextStyle(
           fontSize: 22,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w600,
           color: AppColors.ink,
         ),
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -182,7 +182,7 @@ class _OtpBox extends StatelessWidget {
           hintText: '0',
           hintStyle: TextStyle(
             fontSize: 22,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
             color: AppColors.line,
           ),
           border: InputBorder.none,

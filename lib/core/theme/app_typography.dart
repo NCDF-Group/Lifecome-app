@@ -6,12 +6,16 @@ import 'app_colors.dart';
 /// `fonts:` block in pubspec.yaml).
 const appFontFamily = 'Manrope';
 
-/// Headings read ExtraBold; everything else (body, labels, buttons) reads
-/// Regular by default so a screen's own explicit weights (a bold title next
-/// to a plain-weight subtitle, for instance) aren't overridden by the
+/// Headings read SemiBold; everything else (body, labels, buttons) reads
+/// Regular by default so a screen's own explicit weights (a SemiBold title
+/// next to a plain-weight subtitle, for instance) aren't overridden by the
 /// ambient text style every unstyled `Text` widget inherits.
+///
+/// The app's weight scale tops out at SemiBold (w600): titles, buttons and
+/// small chips use w600, list-row text and secondary emphasis use w500, body
+/// text w400. Avoid Bold and ExtraBold.
 TextTheme buildAppTextTheme(TextTheme base) {
-  TextStyle? heading(TextStyle? s) => s?.copyWith(fontWeight: FontWeight.w800);
+  TextStyle? heading(TextStyle? s) => s?.copyWith(fontWeight: FontWeight.w600);
   TextStyle? body(TextStyle? s) => s?.copyWith(fontWeight: FontWeight.w400);
 
   return base

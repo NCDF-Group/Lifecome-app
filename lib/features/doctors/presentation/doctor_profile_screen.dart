@@ -31,7 +31,7 @@ class DoctorProfileScreen extends StatelessWidget {
               'Your clinician',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -62,7 +62,7 @@ class DoctorProfileScreen extends StatelessWidget {
                           doctor.name,
                           style: const TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.ink,
                           ),
                         ),
@@ -117,7 +117,7 @@ class DoctorProfileScreen extends StatelessWidget {
                     'About your visit',
                     style: TextStyle(
                       fontSize: 17,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.ink,
                     ),
                   ),
@@ -180,7 +180,7 @@ class _InfoRow extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     fontSize: 15,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.ink,
                   ),
                 ),

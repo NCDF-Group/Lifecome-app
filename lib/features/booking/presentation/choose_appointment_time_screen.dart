@@ -91,7 +91,7 @@ class _ChooseAppointmentTimeScreenState
                     'Choose a time',
                     style: TextStyle(
                       fontSize: 24,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.ink,
                     ),
                   ),
@@ -131,7 +131,7 @@ class _ChooseAppointmentTimeScreenState
                                     doctor.name,
                                     style: const TextStyle(
                                       fontSize: 15,
-                                      fontWeight: FontWeight.w800,
+                                      fontWeight: FontWeight.w600,
                                       color: AppColors.ink,
                                     ),
                                   ),
@@ -161,7 +161,7 @@ class _ChooseAppointmentTimeScreenState
                     'How would you like to be seen?',
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.ink,
                     ),
                   ),
@@ -200,7 +200,7 @@ class _ChooseAppointmentTimeScreenState
                     'Select a date',
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.ink,
                     ),
                   ),
@@ -230,7 +230,7 @@ class _ChooseAppointmentTimeScreenState
                         'Available times',
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                           color: AppColors.ink,
                         ),
                       ),
@@ -303,7 +303,7 @@ class _ChooseAppointmentTimeScreenState
                                 '${_selectedDay.year} at $_selectedTime',
                                 style: const TextStyle(
                                   fontSize: 14,
-                                  fontWeight: FontWeight.w800,
+                                  fontWeight: FontWeight.w600,
                                   color: AppColors.ink,
                                 ),
                               ),
@@ -395,7 +395,7 @@ class _ModeCard extends StatelessWidget {
                 title,
                 style: const TextStyle(
                   fontSize: 15,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.ink,
                 ),
               ),
@@ -449,7 +449,7 @@ class _DayCard extends StatelessWidget {
                 '${day.day} ${_months[day.month - 1]}',
                 style: const TextStyle(
                   fontSize: 15,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.ink,
                 ),
               ),
@@ -489,7 +489,7 @@ class _TimeChip extends StatelessWidget {
             time,
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w500,
               color: selected ? AppColors.white : AppColors.ink,
             ),
           ),

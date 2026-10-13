@@ -63,7 +63,7 @@ class AuthSuccessView extends StatelessWidget {
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontSize: 24,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.ink,
                           ),
                         ),

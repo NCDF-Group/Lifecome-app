@@ -76,7 +76,7 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
               'Verify your eligibility',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -116,7 +116,7 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
                           'Invitation recognised',
                           style: TextStyle(
                             fontSize: 13,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.greenStrong,
                           ),
                         ),
@@ -124,7 +124,7 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
                           'Employer or sponsor access',
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.ink,
                           ),
                         ),
@@ -220,7 +220,7 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
               'If your details do not match',
               style: TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -302,7 +302,7 @@ class _FallbackCard extends StatelessWidget {
                 title,
                 style: const TextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.ink,
                 ),
               ),

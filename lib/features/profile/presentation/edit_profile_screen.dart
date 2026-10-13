@@ -128,7 +128,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       appBar: AppBar(
         title: const Text(
           'Your care profile',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
+          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
@@ -318,7 +318,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                               'Medical history',
                               style: TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.ink,
                               ),
                             ),
@@ -421,7 +421,7 @@ class _SectionCard extends StatelessWidget {
                 title,
                 style: const TextStyle(
                   fontSize: 15,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.ink,
                 ),
               ),

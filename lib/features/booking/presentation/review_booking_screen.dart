@@ -45,7 +45,7 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
       appBar: AppBar(
         title: const Text(
           'Review and confirm',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
+          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
@@ -86,7 +86,7 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
                                 doctor.name,
                                 style: const TextStyle(
                                   fontSize: 15,
-                                  fontWeight: FontWeight.w800,
+                                  fontWeight: FontWeight.w600,
                                   color: AppColors.ink,
                                 ),
                               ),
@@ -107,7 +107,7 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
                               '${selection.date!.day}/${selection.date!.month}/${selection.date!.year}',
                               style: const TextStyle(
                                 fontSize: 13,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.ink,
                               ),
                             ),
@@ -228,7 +228,7 @@ class _ReviewRow extends StatelessWidget {
                   value,
                   style: const TextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w500,
                     color: AppColors.ink,
                   ),
                 ),
@@ -240,7 +240,7 @@ class _ReviewRow extends StatelessWidget {
               trailing!,
               style: TextStyle(
                 fontSize: 13,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 color: trailingColor ?? AppColors.ink,
               ),
             ),

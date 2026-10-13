@@ -64,7 +64,7 @@ class HmoCoverageScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'Your HMO coverage',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
+          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
@@ -97,7 +97,7 @@ class HmoCoverageScreen extends StatelessWidget {
                           hmoName,
                           style: const TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.ink,
                           ),
                         ),
@@ -115,7 +115,7 @@ class HmoCoverageScreen extends StatelessWidget {
                             'Active',
                             style: TextStyle(
                               fontSize: 11,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                               color: AppColors.white,
                             ),
                           ),
@@ -137,7 +137,7 @@ class HmoCoverageScreen extends StatelessWidget {
                         'Premier Plan',
                         style: TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w500,
                           color: AppColors.ink,
                         ),
                       ),
@@ -151,7 +151,7 @@ class HmoCoverageScreen extends StatelessWidget {
               'Your covered services',
               style: TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -221,7 +221,7 @@ class _ServiceRow extends StatelessWidget {
                   service.title,
                   style: const TextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.ink,
                   ),
                 ),
@@ -249,7 +249,7 @@ class _ServiceRow extends StatelessWidget {
               service.covered ? 'Covered' : 'Requires authorisation',
               style: TextStyle(
                 fontSize: 11,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 color: service.covered ? AppColors.greenStrong : AppColors.gold,
               ),
             ),

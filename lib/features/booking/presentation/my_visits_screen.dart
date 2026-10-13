@@ -20,7 +20,7 @@ class MyVisitsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'My visits',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
+          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
@@ -47,7 +47,7 @@ class MyVisitsScreen extends StatelessWidget {
                 'No visits yet',
                 style: TextStyle(
                   fontSize: 20,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.ink,
                 ),
               ),

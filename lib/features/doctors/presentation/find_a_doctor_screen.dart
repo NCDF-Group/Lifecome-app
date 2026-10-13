@@ -78,7 +78,7 @@ class _FindADoctorScreenState extends State<FindADoctorScreen> {
               'Find an appointment',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -203,7 +203,7 @@ class _ModeButton extends StatelessWidget {
                 label,
                 style: TextStyle(
                   fontSize: 15,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   color: selected ? AppColors.white : AppColors.ink,
                 ),
               ),
@@ -252,7 +252,7 @@ class _FilterChip extends StatelessWidget {
                 label,
                 style: const TextStyle(
                   fontSize: 13,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.ink,
                 ),
               ),
@@ -318,7 +318,7 @@ class _DoctorCard extends StatelessWidget {
                       doctor.name,
                       style: const TextStyle(
                         fontSize: 17,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.ink,
                       ),
                     ),
@@ -355,7 +355,7 @@ class _DoctorCard extends StatelessWidget {
                       'View profile',
                       style: TextStyle(
                         fontSize: 13,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.blue,
                       ),
                     ),
@@ -372,7 +372,7 @@ class _DoctorCard extends StatelessWidget {
                 'Available times',
                 style: TextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.ink,
                 ),
               ),
@@ -447,7 +447,7 @@ class _SlotPill extends StatelessWidget {
                 time,
                 style: TextStyle(
                   fontSize: 13,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                   color: selected ? AppColors.white : AppColors.ink,
                 ),
               ),

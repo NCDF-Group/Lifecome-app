@@ -66,7 +66,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                           'Appointment confirmed',
                           style: TextStyle(
                             fontSize: 17,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.ink,
                           ),
                         ),
@@ -117,7 +117,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                               'Online GP video consultation',
                               style: TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.ink,
                               ),
                             ),
@@ -226,7 +226,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                           'Join from a private place',
                           style: TextStyle(
                             fontSize: 14,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.ink,
                           ),
                         ),
@@ -313,7 +313,7 @@ class _DetailRow extends StatelessWidget {
             value,
             style: const TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w500,
               color: AppColors.ink,
             ),
           ),
@@ -367,7 +367,7 @@ class _ActionRow extends StatelessWidget {
                   label,
                   style: TextStyle(
                     fontSize: 15,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                     color: fg,
                   ),
                 ),
@@ -439,7 +439,7 @@ class _BookingDetailsExpanderState extends State<_BookingDetailsExpander> {
                           'Booking details',
                           style: TextStyle(
                             fontSize: 15,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.ink,
                           ),
                         ),

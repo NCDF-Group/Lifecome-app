@@ -29,7 +29,7 @@ class ServicesScreen extends StatelessWidget {
               'Explore our services',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -140,7 +140,7 @@ class _SectionHeading extends StatelessWidget {
           label,
           style: const TextStyle(
             fontSize: 19,
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w600,
             color: AppColors.ink,
           ),
         ),
@@ -155,7 +155,7 @@ class _SectionHeading extends StatelessWidget {
             badge,
             style: TextStyle(
               fontSize: 12,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w600,
               color: badgeColor,
             ),
           ),
@@ -216,7 +216,7 @@ class _ServiceRow extends StatelessWidget {
                       title,
                       style: const TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.ink,
                       ),
                     ),
@@ -232,7 +232,7 @@ class _ServiceRow extends StatelessWidget {
                         linkLabel!,
                         style: const TextStyle(
                           fontSize: 12.5,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           color: AppColors.blue,
                         ),
                       ),

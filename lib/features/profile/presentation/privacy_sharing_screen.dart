@@ -30,7 +30,7 @@ class PrivacySharingScreen extends StatelessWidget {
               'Privacy and sharing',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -72,7 +72,7 @@ class PrivacySharingScreen extends StatelessWidget {
                           'No sharing permissions active',
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.ink,
                           ),
                         ),
@@ -149,7 +149,7 @@ class PrivacySharingScreen extends StatelessWidget {
                           'records.',
                           style: TextStyle(
                             fontSize: 14,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.ink,
                           ),
                         ),
@@ -179,7 +179,7 @@ class PrivacySharingScreen extends StatelessWidget {
                       'Read our privacy notice',
                       style: TextStyle(
                         fontSize: 14,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w500,
                         color: AppColors.blue,
                       ),
                     ),
@@ -242,7 +242,7 @@ class _PrivacyRow extends StatelessWidget {
                       title,
                       style: const TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.ink,
                       ),
                     ),

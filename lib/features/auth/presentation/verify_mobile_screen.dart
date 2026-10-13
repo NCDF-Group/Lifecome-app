@@ -112,7 +112,7 @@ class _VerifyMobileScreenState extends ConsumerState<VerifyMobileScreen> {
                   'Verify your mobile',
                   style: TextStyle(
                     fontSize: 26,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.ink,
                   ),
                 ),
@@ -130,7 +130,7 @@ class _VerifyMobileScreenState extends ConsumerState<VerifyMobileScreen> {
                         text: _maskPhoneNumber(widget.args.phoneNumber),
                         style: const TextStyle(
                           color: AppColors.ink,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
@@ -242,7 +242,7 @@ class _InfoCard extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.ink,
                   ),
                 ),

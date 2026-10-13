@@ -55,7 +55,7 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
           widget.label,
           style: const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w500,
             color: AppColors.ink,
           ),
         ),
@@ -79,7 +79,7 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
                       style: TextStyle(
                         fontSize: 16,
                         color: AppColors.ink,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],

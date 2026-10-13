@@ -35,7 +35,7 @@ class ManageAppointmentScreen extends StatelessWidget {
               'Manage appointment',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -71,7 +71,7 @@ class ManageAppointmentScreen extends StatelessWidget {
                           'Video GP',
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.ink,
                           ),
                         ),
@@ -151,7 +151,7 @@ class ManageAppointmentScreen extends StatelessWidget {
                         'Back to appointment',
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           color: AppColors.white,
                         ),
                       ),
@@ -245,7 +245,7 @@ class _ActionRow extends StatelessWidget {
                       title,
                       style: const TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.ink,
                       ),
                     ),

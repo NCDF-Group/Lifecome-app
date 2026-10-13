@@ -90,7 +90,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             PrimaryButton(
               label: 'Book a GP appointment',
               icon: Icons.arrow_forward,
-              fontWeight: FontWeight.w600,
               onPressed: _openDirectBooking,
             ),
             const SizedBox(height: 12),

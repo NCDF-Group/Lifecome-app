@@ -35,7 +35,7 @@ class SelectHmoScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'Select your HMO',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800),
+          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
@@ -69,7 +69,7 @@ class SelectHmoScreen extends StatelessWidget {
               'Participating HMOs',
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -142,7 +142,7 @@ class _HmoTile extends StatelessWidget {
                 child: Text(
                   hmo.name[0],
                   style: const TextStyle(
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.blue,
                   ),
                 ),
@@ -156,7 +156,7 @@ class _HmoTile extends StatelessWidget {
                       hmo.name,
                       style: const TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.ink,
                       ),
                     ),
@@ -184,7 +184,7 @@ class _HmoTile extends StatelessWidget {
                     'Default',
                     style: TextStyle(
                       fontSize: 11,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.white,
                     ),
                   ),

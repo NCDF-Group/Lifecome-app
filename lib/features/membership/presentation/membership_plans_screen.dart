@@ -27,7 +27,7 @@ class MembershipPlansScreen extends StatelessWidget {
               'Membership',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -36,7 +36,7 @@ class MembershipPlansScreen extends StatelessWidget {
               "Choose the option that's right for you.",
               style: TextStyle(
                 fontSize: 15,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -121,7 +121,7 @@ class MembershipPlansScreen extends StatelessWidget {
                               'Existing member?',
                               style: TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.ink,
                               ),
                             ),
@@ -194,7 +194,7 @@ class _PlanCard extends StatelessWidget {
                       title,
                       style: const TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.ink,
                       ),
                     ),
@@ -248,7 +248,7 @@ class _PlanCard extends StatelessWidget {
                         'View benefits and pricing',
                         style: TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           color: AppColors.white,
                         ),
                       ),

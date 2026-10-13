@@ -60,7 +60,7 @@ class WellbeingServiceScreen extends StatelessWidget {
                       'Everyday wellbeing',
                       style: TextStyle(
                         fontSize: 12,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.greenStrong,
                       ),
                     ),
@@ -70,7 +70,7 @@ class WellbeingServiceScreen extends StatelessWidget {
                     service.title,
                     style: const TextStyle(
                       fontSize: 24,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.ink,
                     ),
                   ),
@@ -119,7 +119,7 @@ class WellbeingServiceScreen extends StatelessWidget {
                                   service.highlightTitle!,
                                   style: const TextStyle(
                                     fontSize: 16,
-                                    fontWeight: FontWeight.w800,
+                                    fontWeight: FontWeight.w600,
                                     color: AppColors.ink,
                                   ),
                                 ),
@@ -148,7 +148,7 @@ class WellbeingServiceScreen extends StatelessWidget {
                     service.exploreHeading,
                     style: const TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.ink,
                     ),
                   ),
@@ -167,7 +167,7 @@ class WellbeingServiceScreen extends StatelessWidget {
                       'Your coaching journey',
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.ink,
                       ),
                     ),
@@ -357,7 +357,7 @@ class _Journey extends StatelessWidget {
                         '${i + 1}',
                         style: const TextStyle(
                           fontSize: 12,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                           color: AppColors.white,
                         ),
                       ),
@@ -379,7 +379,7 @@ class _Journey extends StatelessWidget {
                         steps[i].title,
                         style: const TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                           color: AppColors.ink,
                         ),
                       ),
@@ -442,7 +442,7 @@ class _LinkRow extends StatelessWidget {
                       label,
                       style: const TextStyle(
                         fontSize: 14,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w500,
                         color: AppColors.ink,
                       ),
                     ),
@@ -487,7 +487,7 @@ class _BadgePill extends StatelessWidget {
             label,
             style: const TextStyle(
               fontSize: 12,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w600,
               color: AppColors.blue,
             ),
           ),

@@ -109,7 +109,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     'Welcome to LifeCome Live.',
                     style: TextStyle(
                       fontSize: 28,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.ink,
                       height: 1.2,
                     ),
@@ -175,7 +175,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                         'Forgot password?',
                         style: TextStyle(
                           color: AppColors.blue,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
                       ),
@@ -219,7 +219,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                             text: 'Privacy notice',
                             style: const TextStyle(
                               color: AppColors.blue,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () => showComingSoonPopup(
@@ -250,7 +250,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                         'Get help',
                         style: TextStyle(
                           color: AppColors.blue,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w500,
                           fontSize: 14,
                         ),
                       ),

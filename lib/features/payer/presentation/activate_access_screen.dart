@@ -62,7 +62,7 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
               'Activate your access',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -131,7 +131,7 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
                               : 'Personal membership access',
                           style: const TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.ink,
                           ),
                         ),
@@ -196,7 +196,7 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
                                   : 'Check membership',
                               style: const TextStyle(
                                 fontSize: 16,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.white,
                               ),
                             ),
@@ -238,7 +238,7 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
                           _isEmployer ? 'No invitation?' : 'No code?',
                           style: const TextStyle(
                             fontSize: 14,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.ink,
                           ),
                         ),
@@ -262,7 +262,7 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
               'Choose another access route',
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -299,7 +299,7 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
                                   : 'Use employer or sponsor access',
                               style: const TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.ink,
                               ),
                             ),
@@ -358,7 +358,7 @@ class _TabButton extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w500,
               color: selected ? AppColors.white : AppColors.ink,
             ),
           ),
