@@ -9,6 +9,7 @@ import '../../../core/services/session_store.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/theme_mode_controller.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
 import '../../auth/application/auth_controller.dart';
 
@@ -39,6 +40,16 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
     if (mounted) context.go(RoutePaths.welcome);
   }
 
+  Future<void> _chooseAppearance() async {
+    final mode = await showAppearancePopup(
+      context,
+      current: ref.read(themeModeProvider),
+    );
+    if (mode != null) {
+      await ref.read(themeModeProvider.notifier).set(mode);
+    }
+  }
+
   Future<void> _confirmDeleteAccount() async {
     final confirmed = await showConfirmPopup(
       context,
@@ -65,6 +76,7 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
     final firstName = (_session?.displayName ?? 'Your account')
         .split(' ')
         .first;
+    final themeMode = ref.watch(themeModeProvider);
 
     return Scaffold(
       backgroundColor: context.palette.background,
@@ -162,6 +174,19 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
             const SizedBox(height: AppSpacing.sm),
             _ProfileRow(
               green: false,
+              icon: Icons.brightness_6_outlined,
+              title: 'Appearance',
+              subtitle: switch (themeMode) {
+                ThemeMode.system =>
+                  "Matches your phone's light or dark setting.",
+                ThemeMode.light => 'Always light.',
+                ThemeMode.dark => 'Always dark.',
+              },
+              onTap: _chooseAppearance,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _ProfileRow(
+              green: true,
               icon: Icons.help_outline,
               title: 'Help and support',
               subtitle: 'Get help, view FAQs or contact support.',

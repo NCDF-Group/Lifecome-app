@@ -194,6 +194,43 @@ Future<PhotoSource?> showUploadPhotoPopup(BuildContext context) {
   );
 }
 
+/// Lets the user choose how the app looks; resolves `null` if dismissed.
+/// [current] gets the tick.
+Future<ThemeMode?> showAppearancePopup(
+  BuildContext context, {
+  required ThemeMode current,
+}) {
+  Widget option(ThemeMode mode, IconData icon, String label) => _OptionTile(
+    value: mode,
+    leading: Icon(icon, color: context.palette.accent, size: 22),
+    label: label,
+    selected: current == mode,
+  );
+
+  return showAppPopup<ThemeMode>(
+    context,
+    kind: AppPopupKind.info,
+    title: 'Appearance',
+    message:
+        'Choose how LifeCome Live looks. System default follows your '
+        "phone's light or dark setting.",
+    primaryLabel: 'Cancel',
+    body: Column(
+      children: [
+        option(
+          ThemeMode.system,
+          Icons.brightness_auto_rounded,
+          'System default',
+        ),
+        SizedBox(height: AppSpacing.xs),
+        option(ThemeMode.light, Icons.light_mode_rounded, 'Light'),
+        SizedBox(height: AppSpacing.xs),
+        option(ThemeMode.dark, Icons.dark_mode_rounded, 'Dark'),
+      ],
+    ),
+  );
+}
+
 class _AppPopupCard extends StatelessWidget {
   const _AppPopupCard({
     required this.kind,
