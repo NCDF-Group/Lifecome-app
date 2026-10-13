@@ -70,7 +70,7 @@ class _CountryChip extends StatelessWidget {
             AppCountry.unitedKingdom.name,
             style: const TextStyle(
               fontSize: 13,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w600,
               color: AppColors.ink,
             ),
           ),

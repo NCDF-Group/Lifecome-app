@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../theme/app_colors.dart';
@@ -9,6 +10,10 @@ import '../theme/app_colors.dart';
 /// it. A hand-rolled bar rather than Material 3's `NavigationBar`: the
 /// design's selected state is a thin underline below the whole item, not
 /// `NavigationBar`'s pill-behind-the-icon indicator.
+///
+/// The tab icons are SVGs in assets/icons/nav (Heroicons and Iconsax — see
+/// assets/icons/NOTICE.md), an outline for each tab and a filled twin for
+/// its selected state, drawn on a 24x24 grid and tinted to the item colour.
 class AppShell extends StatelessWidget {
   const AppShell({super.key, required this.navigationShell});
 
@@ -37,35 +42,38 @@ class _NavItem {
   });
 
   final String label;
-  final Widget icon;
-  final Widget selectedIcon;
+
+  /// SVG asset paths: the outline icon, and the filled one shown when the
+  /// tab is selected.
+  final String icon;
+  final String selectedIcon;
 }
 
 const _items = [
   _NavItem(
     label: 'Home',
-    icon: Icon(Icons.home_outlined),
-    selectedIcon: Icon(Icons.home_rounded),
+    icon: 'assets/icons/nav/home.svg',
+    selectedIcon: 'assets/icons/nav/home-filled.svg',
   ),
   _NavItem(
     label: 'Services',
-    icon: Icon(Icons.grid_view_outlined),
-    selectedIcon: Icon(Icons.grid_view_rounded),
+    icon: 'assets/icons/nav/services.svg',
+    selectedIcon: 'assets/icons/nav/services-filled.svg',
   ),
   _NavItem(
     label: 'Visit',
-    icon: Icon(Icons.calendar_month_outlined),
-    selectedIcon: Icon(Icons.calendar_month_rounded),
+    icon: 'assets/icons/nav/visit.svg',
+    selectedIcon: 'assets/icons/nav/visit-filled.svg',
   ),
   _NavItem(
     label: 'Messages',
-    icon: Icon(Icons.forum_outlined),
-    selectedIcon: Icon(Icons.forum_rounded),
+    icon: 'assets/icons/nav/messages.svg',
+    selectedIcon: 'assets/icons/nav/messages-filled.svg',
   ),
   _NavItem(
     label: 'Profile',
-    icon: Icon(Icons.person_outline),
-    selectedIcon: Icon(Icons.person_rounded),
+    icon: 'assets/icons/nav/profile.svg',
+    selectedIcon: 'assets/icons/nav/profile-filled.svg',
   ),
 ];
 
@@ -128,9 +136,11 @@ class _NavButton extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            IconTheme(
-              data: IconThemeData(color: color, size: 24),
-              child: selected ? item.selectedIcon : item.icon,
+            SvgPicture.asset(
+              selected ? item.selectedIcon : item.icon,
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
             ),
             const SizedBox(height: 4),
             // IntrinsicWidth so the underline below can match the label's
@@ -143,7 +153,7 @@ class _NavButton extends StatelessWidget {
                     item.label,
                     style: TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: selected ? FontWeight.w500 : FontWeight.w400,
                       color: color,
                     ),
                   ),

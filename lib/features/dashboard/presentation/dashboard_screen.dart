@@ -73,7 +73,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               '$_greeting, $_firstName',
               style: const TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
                 color: AppColors.inkMuted,
               ),
             ),
@@ -82,7 +82,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               'How can we help today?',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: AppColors.ink,
               ),
             ),
@@ -90,6 +90,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             PrimaryButton(
               label: 'Book a GP appointment',
               icon: Icons.arrow_forward,
+              fontWeight: FontWeight.w600,
               onPressed: _openDirectBooking,
             ),
             const SizedBox(height: 12),
@@ -155,7 +156,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               'Everyday wellbeing',
                               style: TextStyle(
                                 fontSize: 17,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.ink,
                               ),
                             ),
@@ -282,7 +283,7 @@ class _QuickCard extends StatelessWidget {
                 title,
                 style: const TextStyle(
                   fontSize: 15,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.ink,
                 ),
               ),
@@ -321,7 +322,7 @@ class _WellbeingRow extends StatelessWidget {
                   service.title,
                   style: const TextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w500,
                     color: AppColors.ink,
                   ),
                 ),
@@ -380,7 +381,7 @@ class _WideRow extends StatelessWidget {
                       title,
                       style: TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: titleColor,
                       ),
                     ),

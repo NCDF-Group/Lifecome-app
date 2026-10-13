@@ -15,6 +15,7 @@ class PrimaryButton extends StatelessWidget {
     this.loading = false,
     this.icon,
     this.squared = false,
+    this.fontWeight = FontWeight.w700,
   });
 
   final String label;
@@ -25,6 +26,10 @@ class PrimaryButton extends StatelessWidget {
   /// True for a square-cornered button (the sign-up flow) instead of the
   /// usual pill shape.
   final bool squared;
+
+  /// Label weight. Bold by default; a screen whose design reads lighter
+  /// (Home) passes a lighter one.
+  final FontWeight fontWeight;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +47,7 @@ class PrimaryButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(squared ? 0 : AppRadius.pill),
           ),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+          textStyle: TextStyle(fontSize: 16, fontWeight: fontWeight),
         ),
         child: loading
             ? const SizedBox(
