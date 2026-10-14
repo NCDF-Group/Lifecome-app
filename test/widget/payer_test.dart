@@ -5,7 +5,10 @@ import 'package:lifecome_mobile/core/router/route_paths.dart';
 import 'package:lifecome_mobile/features/booking/presentation/booking_confirmation_screen.dart';
 import 'package:lifecome_mobile/features/booking/presentation/choose_service_screen.dart';
 import 'package:lifecome_mobile/features/booking/presentation/review_booking_screen.dart';
+import 'package:lifecome_mobile/features/messaging/domain/models/message_thread.dart';
+import 'package:lifecome_mobile/features/messaging/presentation/thread_detail_screen.dart';
 import 'package:lifecome_mobile/features/payer/domain/models/authorisation.dart';
+import 'package:lifecome_mobile/features/payer/presentation/activate_access_screen.dart';
 import 'package:lifecome_mobile/features/payer/domain/models/eligibility_status.dart';
 import 'package:lifecome_mobile/features/payer/presentation/hmo_coverage_screen.dart';
 import 'package:lifecome_mobile/features/payer/presentation/link_health_plan_screen.dart';
@@ -369,6 +372,115 @@ void main() {
       );
       await tapBack(tester);
       expect(find.byType(LinkHealthPlanScreen), findsNothing);
+
+      await disposeApp(tester);
+    });
+  });
+
+  group('Activate your access', () {
+    testWidgets('starts from the account email and checks both fields', (
+      tester,
+    ) async {
+      await pumpAppAt(
+        tester,
+        RoutePaths.activateAccess,
+        overrides: backend.overrides,
+      );
+      expect(find.byType(ActivateAccessScreen), findsOneWidget);
+      expect(find.text('alex.morgan@example.com'), findsOneWidget);
+
+      await tapText(tester, 'Send for activation');
+      expect(find.text('Enter your invitation code.'), findsOneWidget);
+
+      await tester.enterText(field(0), 'a!');
+      await tester.enterText(field(1), 'not-an-email');
+      await tester.pump();
+      expect(
+        find.text('Codes are 4 to 20 letters, numbers or dashes.'),
+        findsOneWidget,
+      );
+      expect(find.text('Enter a valid email address.'), findsOneWidget);
+      expect(backend.messaging.calls, isNot(contains('createThread')));
+
+      await disposeApp(tester);
+    });
+
+    testWidgets('sends the code to the care team and says what happens', (
+      tester,
+    ) async {
+      await pumpAppAt(
+        tester,
+        RoutePaths.activateAccess,
+        overrides: backend.overrides,
+      );
+
+      await tester.enterText(field(0), '  acme-2026  ');
+      await tester.pump();
+      await tapText(tester, 'Send for activation');
+
+      expect(backend.messaging.lastTopic, MessageTopic.bookingPayments);
+      final body = backend.messaging.lastBody!;
+      expect(body, contains('Employer or sponsor invitation'));
+      expect(body, contains('Code: acme-2026'));
+      expect(body, contains('Email: alex.morgan@example.com'));
+
+      // Nothing claims the code was checked.
+      expect(find.text('Request sent'), findsOneWidget);
+      expect(find.textContaining('once your access is active'), findsOneWidget);
+      await tapText(tester, 'Done');
+      expect(find.byType(ThreadDetailScreen), findsOneWidget);
+
+      await disposeApp(tester);
+    });
+
+    testWidgets('the membership tab says it is a membership', (tester) async {
+      await pumpAppAt(
+        tester,
+        RoutePaths.activateAccess,
+        overrides: backend.overrides,
+      );
+      await tapText(tester, 'Membership');
+      await tester.enterText(field(0), 'MEMBER99');
+      await tester.pump();
+      await tapText(tester, 'Send for activation');
+
+      expect(backend.messaging.lastBody, contains('Type: Membership'));
+      expect(backend.messaging.lastBody, contains('Code: MEMBER99'));
+
+      await disposeApp(tester);
+    });
+
+    testWidgets('a person without a profile is asked to finish it', (
+      tester,
+    ) async {
+      backend.messaging.createFailure = const ApiException(
+        'Complete your profile before continuing.',
+        code: 'PROFILE_REQUIRED',
+        statusCode: 403,
+      );
+      await pumpAppAt(
+        tester,
+        RoutePaths.activateAccess,
+        overrides: backend.overrides,
+      );
+      await tester.enterText(field(0), 'ACME2026');
+      await tester.pump();
+      await tapText(tester, 'Send for activation');
+
+      expect(find.text('Finish your profile first'), findsOneWidget);
+      expect(find.text('Request sent'), findsNothing);
+
+      await disposeApp(tester);
+    });
+
+    testWidgets('has a back button', (tester) async {
+      await pumpAppAt(
+        tester,
+        RoutePaths.activateAccess,
+        overrides: backend.overrides,
+      );
+      await tapBack(tester);
+      expect(find.byType(ActivateAccessScreen), findsNothing);
 
       await disposeApp(tester);
     });

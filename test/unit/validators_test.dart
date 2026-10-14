@@ -358,11 +358,11 @@ void main() {
       expect(Validators.accessCode(''), 'Enter your invitation code.');
       expect(
         Validators.accessCode('abc'),
-        'Codes are 4 to 20 letters and numbers.',
+        'Codes are 4 to 20 letters, numbers or dashes.',
       );
       expect(
         Validators.accessCode('ABCD EFGH'),
-        'Codes are 4 to 20 letters and numbers.',
+        'Codes are 4 to 20 letters, numbers or dashes.',
       );
       expect(Validators.accessCode('WORK-2026'), isNull);
     });

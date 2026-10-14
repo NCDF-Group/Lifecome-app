@@ -1,34 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/network/api_exception.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/utils/validators.dart';
+import '../../../core/widgets/buttons/primary_button.dart';
+import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/layout/screen_title.dart';
+import '../../messaging/application/messaging_controller.dart';
+import '../../messaging/domain/models/message_thread.dart';
+import '../../profile/application/profile_controller.dart';
+import '../../profile/presentation/profile_required_prompt.dart';
 
 enum _AccessTab { membership, employer }
 
-/// "Activate your access" — enter an invitation or membership code to
-/// link funding to the account. No eligibility backend exists yet, so
-/// "Check invitation"/"Check membership" always succeeds after a short
-/// delay.
-class ActivateAccessScreen extends StatefulWidget {
+/// "Activate your access" — send an invitation or membership code so funding
+/// can be linked to the account.
+///
+/// The backend has no way to redeem a code yet, so nothing here pretends to
+/// check one: the code goes to the care team as a message, and they reply in
+/// Messages once the access is on the account.
+class ActivateAccessScreen extends ConsumerStatefulWidget {
   const ActivateAccessScreen({super.key});
 
   @override
-  State<ActivateAccessScreen> createState() => _ActivateAccessScreenState();
+  ConsumerState<ActivateAccessScreen> createState() =>
+      _ActivateAccessScreenState();
 }
 
-class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
+class _ActivateAccessScreenState extends ConsumerState<ActivateAccessScreen> {
   _AccessTab _tab = _AccessTab.employer;
   final _codeController = TextEditingController();
   final _emailController = TextEditingController();
+  String? _codeError;
+  String? _emailError;
+  bool _submitted = false;
   bool _loading = false;
 
   bool get _isEmployer => _tab == _AccessTab.employer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Start from the account's own email; the person can change it.
+    ref.listenManual(meProvider, (_, next) {
+      final email = next.value?.account.email;
+      if (email != null && _emailController.text.isEmpty) {
+        _emailController.text = email;
+      }
+    }, fireImmediately: true);
+  }
 
   @override
   void dispose() {
@@ -37,15 +66,56 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
     super.dispose();
   }
 
-  Future<void> _check() async {
+  bool _validate() {
+    setState(() {
+      _codeError = Validators.accessCode(_codeController.text);
+      _emailError = Validators.email(_emailController.text);
+    });
+    return _codeError == null && _emailError == null;
+  }
+
+  String get _request =>
+      'Please activate my access.\n\n'
+      'Type: ${_isEmployer ? 'Employer or sponsor invitation' : 'Membership'}'
+      '\nCode: ${_codeController.text.trim()}'
+      '\nEmail: ${_emailController.text.trim()}';
+
+  Future<void> _send() async {
+    if (_loading) return;
+    setState(() => _submitted = true);
+    if (!_validate()) return;
+
     setState(() => _loading = true);
-    await Future<void>.delayed(const Duration(milliseconds: 900));
-    if (!mounted) return;
-    setState(() => _loading = false);
-    if (_isEmployer) {
-      context.push(RoutePaths.payerCoverage, extra: 'Your employer scheme');
-    } else {
-      context.push(RoutePaths.myBenefits);
+    try {
+      final thread = await ref
+          .read(threadsProvider.notifier)
+          .start(topic: MessageTopic.bookingPayments, body: _request);
+      if (!mounted) return;
+      await showSuccessPopup(
+        context,
+        title: 'Request sent',
+        message:
+            'Our care team will check your code and reply in Messages once '
+            'your access is active.',
+      );
+      if (!mounted) return;
+      context.pushReplacement('${RoutePaths.messageThread}/${thread.id}');
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      if (error.code == 'PROFILE_REQUIRED') {
+        await promptCompleteProfile(context);
+      } else {
+        await showErrorPopup(context, error.message);
+      }
+    } catch (_) {
+      if (mounted) {
+        await showErrorPopup(
+          context,
+          'Something went wrong. Please try again.',
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
     }
   }
 
@@ -57,20 +127,14 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            AppHeaderBar(showBack: true, onBack: () => context.pop()),
-            const SizedBox(height: 20),
-            Text(
-              'Activate your access',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: context.palette.ink,
-              ),
+            const AppHeaderBar(
+              showBack: true,
+              backFallback: RoutePaths.chooseAccess,
             ),
-            const SizedBox(height: 4),
-            Text(
-              'An invitation links funding to your private account.',
-              style: TextStyle(fontSize: 14, color: context.palette.inkMuted),
+            const SizedBox(height: 20),
+            const ScreenTitle(
+              title: 'Activate your access',
+              subtitle: 'An invitation links funding to your private account.',
             ),
             const SizedBox(height: AppSpacing.md),
             Container(
@@ -161,6 +225,12 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
               hintText: _isEmployer
                   ? 'Enter invitation code'
                   : 'Enter membership code',
+              textCapitalization: TextCapitalization.characters,
+              textInputAction: TextInputAction.next,
+              errorText: _codeError,
+              onChanged: (_) {
+                if (_submitted) _validate();
+              },
             ),
             const SizedBox(height: AppSpacing.md),
             AppTextField(
@@ -168,49 +238,25 @@ class _ActivateAccessScreenState extends State<ActivateAccessScreen> {
               controller: _emailController,
               hintText: 'name@example.com',
               keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.done,
+              errorText: _emailError,
+              onChanged: (_) {
+                if (_submitted) _validate();
+              },
+              onSubmitted: (_) => _send(),
             ),
             const SizedBox(height: AppSpacing.md),
-            Material(
-              color: AppColors.blue,
-              borderRadius: BorderRadius.circular(AppRadius.pill),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(AppRadius.pill),
-                onTap: _loading ? null : _check,
-                child: Container(
-                  height: 52,
-                  alignment: Alignment.center,
-                  child: _loading
-                      ? const SizedBox(
-                          height: 22,
-                          width: 22,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.4,
-                            color: AppColors.white,
-                          ),
-                        )
-                      : Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              _isEmployer
-                                  ? 'Check invitation'
-                                  : 'Check membership',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.white,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Icon(
-                              Icons.arrow_forward,
-                              color: AppColors.white,
-                              size: 20,
-                            ),
-                          ],
-                        ),
-                ),
-              ),
+            PrimaryButton(
+              label: 'Send for activation',
+              icon: Icons.arrow_forward,
+              loading: _loading,
+              onPressed: _send,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            const InfoBanner(
+              message:
+                  'Codes are activated by our care team for now. We will '
+                  'reply in Messages once your access is on your account.',
             ),
             const SizedBox(height: AppSpacing.sm),
             Container(

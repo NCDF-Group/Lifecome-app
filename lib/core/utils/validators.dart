@@ -258,7 +258,7 @@ abstract final class Validators {
     final text = (value ?? '').trim();
     if (text.isEmpty) return 'Enter your invitation code.';
     if (!_accessCode.hasMatch(text)) {
-      return 'Codes are 4 to 20 letters and numbers.';
+      return 'Codes are 4 to 20 letters, numbers or dashes.';
     }
     return null;
   }
