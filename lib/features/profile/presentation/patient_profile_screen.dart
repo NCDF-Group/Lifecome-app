@@ -35,7 +35,7 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
   }
 
   Future<void> _signOut() async {
-    await ref.read(sessionStoreProvider).clear();
+    await ref.read(sessionManagerProvider).end();
     ref.read(authControllerProvider.notifier).reset();
     if (mounted) context.go(RoutePaths.welcome);
   }

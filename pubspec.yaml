@@ -24,6 +24,9 @@ dependencies:
   # HTTP client for Lifecome-Backen (see core/network/api_client.dart)
   dio: ^5.9.0
 
+  # Keeps the sign-in token in the iOS Keychain / Android Keystore
+  flutter_secure_storage: ^9.2.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

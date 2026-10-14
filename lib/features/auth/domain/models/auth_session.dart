@@ -18,6 +18,7 @@ class AuthSessionState {
     this.fullName,
     required this.email,
     this.errorMessage,
+    this.fieldErrors = const {},
     this.resendAvailableAt,
   });
 
@@ -26,6 +27,11 @@ class AuthSessionState {
   final String? fullName;
   final String email;
   final String? errorMessage;
+
+  /// The backend's complaint about individual fields (`phoneNumber`,
+  /// `email`...) after a rejected sign-up, so the form can show each one
+  /// under its own input.
+  final Map<String, String> fieldErrors;
 
   /// When the "resend code" action becomes available again.
   final DateTime? resendAvailableAt;
@@ -39,6 +45,8 @@ class AuthSessionState {
     String? email,
     String? errorMessage,
     bool clearError = false,
+    Map<String, String>? fieldErrors,
+    bool clearFieldErrors = false,
     DateTime? resendAvailableAt,
   }) {
     return AuthSessionState(
@@ -47,6 +55,9 @@ class AuthSessionState {
       fullName: fullName ?? this.fullName,
       email: email ?? this.email,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      fieldErrors: clearFieldErrors
+          ? const {}
+          : (fieldErrors ?? this.fieldErrors),
       resendAvailableAt: resendAvailableAt ?? this.resendAvailableAt,
     );
   }

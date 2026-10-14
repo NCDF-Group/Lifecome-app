@@ -61,13 +61,25 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
     setState(() => _step = _UnlockStep.checking);
     final success = await ref.read(biometricServiceProvider).authenticate();
     if (!mounted) return;
-    if (success) {
-      setState(() => _step = _UnlockStep.unlocked);
-      await Future<void>.delayed(const Duration(milliseconds: 500));
-      if (mounted) context.go(RoutePaths.home);
-    } else {
+    if (!success) {
       setState(() => _step = _UnlockStep.idle);
+      return;
     }
+
+    // The phone says it's them; now the saved sign-in has to be put back so
+    // the app can talk to the backend. If it's gone, fall back to the password.
+    final restored = await ref.read(sessionManagerProvider).restore();
+    if (!mounted) return;
+    if (!restored) {
+      setState(() {
+        _step = _UnlockStep.idle;
+        _passwordError = 'Enter your password to sign in again.';
+      });
+      return;
+    }
+    setState(() => _step = _UnlockStep.unlocked);
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+    if (mounted) context.go(RoutePaths.home);
   }
 
   Future<void> _unlockWithPassword() async {
@@ -96,7 +108,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
   }
 
   Future<void> _signInWithAnotherAccount() async {
-    await ref.read(sessionStoreProvider).clear();
+    await ref.read(sessionManagerProvider).end();
     if (!mounted) return;
     context.go(RoutePaths.signIn);
   }

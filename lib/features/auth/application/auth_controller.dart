@@ -14,17 +14,18 @@ class AuthController extends Notifier<AuthSessionState> {
   AuthSessionState build() => AuthSessionState.empty();
 
   /// The first name to greet the user with (app-lock screen, session
-  /// store). Falls back to the part of the email before "@" when no full
-  /// name is known, since sign-in alone never collects one.
-  String _displayNameFor(String email, String? fullName) {
-    final parts = fullName?.trim().split(' ') ?? const <String>[];
-    final firstName = parts.isNotEmpty ? parts.first : '';
+  /// store). The backend's own first name when it has one, otherwise the part
+  /// of the email before "@".
+  String _displayNameFor(SignedInAccount account) {
+    final firstName = account.firstName?.trim() ?? '';
     if (firstName.isNotEmpty) return firstName;
-    final local = email.split('@').first;
-    return local.isEmpty ? email : local[0].toUpperCase() + local.substring(1);
+    final local = account.email.split('@').first;
+    return local.isEmpty
+        ? account.email
+        : local[0].toUpperCase() + local.substring(1);
   }
 
-  /// Email + password sign in. Unlike [requestCode], this resolves
+  /// Email + password sign in. Unlike [signUp], this resolves
   /// immediately, there is no separate verification step. [rememberMe]
   /// controls whether the session is persisted — unchecked, the app
   /// forgets this sign-in once it's closed, so the next launch goes back
@@ -42,17 +43,17 @@ class AuthController extends Notifier<AuthSessionState> {
     );
 
     try {
-      await ref
+      final account = await ref
           .read(authRepositoryProvider)
           .signInWithPassword(email: email, password: password);
-      if (rememberMe) {
-        await ref
-            .read(sessionStoreProvider)
-            .save(
-              email: email,
-              displayName: _displayNameFor(email, state.fullName),
-            );
-      }
+      await ref
+          .read(sessionManagerProvider)
+          .start(
+            accessToken: account.accessToken,
+            email: account.email,
+            displayName: _displayNameFor(account),
+            remember: rememberMe,
+          );
       state = state.copyWith(status: AuthStatus.verified);
       return true;
     } on AuthException catch (error) {
@@ -87,6 +88,7 @@ class AuthController extends Notifier<AuthSessionState> {
       email: email,
       fullName: '$firstName $lastName',
       clearError: true,
+      clearFieldErrors: true,
     );
 
     try {
@@ -108,6 +110,7 @@ class AuthController extends Notifier<AuthSessionState> {
       state = state.copyWith(
         status: AuthStatus.failed,
         errorMessage: error.message,
+        fieldErrors: error.fieldErrors,
       );
       return false;
     } catch (_) {
@@ -125,14 +128,16 @@ class AuthController extends Notifier<AuthSessionState> {
     state = state.copyWith(status: AuthStatus.verifying, clearError: true);
 
     try {
-      await ref
+      final account = await ref
           .read(authRepositoryProvider)
           .verifyPhoneCode(email: state.email, code: code);
       await ref
-          .read(sessionStoreProvider)
-          .save(
-            email: state.email,
-            displayName: _displayNameFor(state.email, state.fullName),
+          .read(sessionManagerProvider)
+          .start(
+            accessToken: account.accessToken,
+            email: account.email,
+            displayName: _displayNameFor(account),
+            remember: true,
           );
       state = state.copyWith(status: AuthStatus.verified);
       return true;

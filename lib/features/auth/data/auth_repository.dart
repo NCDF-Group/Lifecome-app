@@ -1,13 +1,42 @@
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_exception.dart';
 
-/// Talks to the backend's identity endpoints (see Lifecome-backend's
+/// What a successful sign-in (or sign-up verification) gives back: the access
+/// token for the backend and who the account belongs to.
+class SignedInAccount {
+  const SignedInAccount({
+    required this.accessToken,
+    required this.userAccountId,
+    required this.email,
+    this.firstName,
+    this.lastName,
+  });
+
+  factory SignedInAccount.fromJson(Map<String, dynamic> json) {
+    final account = json['account'] as Map<String, dynamic>;
+    return SignedInAccount(
+      accessToken: json['accessToken'] as String,
+      userAccountId: account['id'] as String,
+      email: account['email'] as String,
+      firstName: account['firstName'] as String?,
+      lastName: account['lastName'] as String?,
+    );
+  }
+
+  final String accessToken;
+  final String userAccountId;
+  final String email;
+  final String? firstName;
+  final String? lastName;
+}
+
+/// Talks to the backend's identity endpoints (see Lifecome-Backend's
 /// `IdentityModule`). Kept as an interface so the UI and controller never
 /// depend on how a request is actually made.
 abstract interface class AuthRepository {
   /// Signs in with an email and password. Throws an [AuthException] if the
   /// credentials are wrong.
-  Future<void> signInWithPassword({
+  Future<SignedInAccount> signInWithPassword({
     required String email,
     required String password,
   });
@@ -27,7 +56,10 @@ abstract interface class AuthRepository {
   /// was already set at [register], so a successful verify signs the
   /// account straight in — throws an [AuthException] if the code is wrong,
   /// expired, or has been tried too many times.
-  Future<void> verifyPhoneCode({required String email, required String code});
+  Future<SignedInAccount> verifyPhoneCode({
+    required String email,
+    required String code,
+  });
 
   /// Requests a new code for an account that already has one pending.
   Future<void> resendPhoneCode({required String email});
@@ -52,105 +84,27 @@ abstract interface class AuthRepository {
 }
 
 class AuthException implements Exception {
-  const AuthException(this.message);
+  const AuthException(this.message, {this.code, this.fieldErrors = const {}});
+
+  factory AuthException.from(ApiException error) => AuthException(
+    error.message,
+    code: error.code,
+    fieldErrors: error.fieldErrors,
+  );
+
   final String message;
+
+  /// The backend's machine-readable code (`OTP_INCORRECT`, `INVALID_CREDENTIALS`...).
+  final String? code;
+
+  /// Per-field complaints from the backend's own validation.
+  final Map<String, String> fieldErrors;
 
   @override
   String toString() => message;
 }
 
-/// A fake, in-memory implementation used until the backend's identity
-/// endpoints are wired in through `core/network`. Accepts the fixed
-/// password "password123" for sign in, and the fixed code 123456 for both
-/// email verification and password reset, so the flow can be built and
-/// demonstrated without a live server. Swap this for a real Dio-backed
-/// implementation without changing anything in `application/` or
-/// `presentation/`.
-class FakeAuthRepository implements AuthRepository {
-  static const _demoPassword = 'password123';
-  static const _demoCode = '123456';
-
-  @override
-  Future<void> signInWithPassword({
-    required String email,
-    required String password,
-  }) async {
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-    if (password != _demoPassword) {
-      throw const AuthException(
-        'Incorrect email or password. Use password123 in this demo build.',
-      );
-    }
-  }
-
-  @override
-  Future<String> register({
-    required String firstName,
-    required String lastName,
-    required String email,
-    required String phoneNumber,
-    required String password,
-  }) async {
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-    if (password.length < 8) {
-      throw const AuthException('Your password must be at least 8 characters.');
-    }
-    return 'demo-account-id';
-  }
-
-  @override
-  Future<void> verifyPhoneCode({
-    required String email,
-    required String code,
-  }) async {
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-    if (code != _demoCode) {
-      throw const AuthException(
-        'That code is not correct. Use 123456 in this demo build.',
-      );
-    }
-  }
-
-  @override
-  Future<void> resendPhoneCode({required String email}) async {
-    await Future<void>.delayed(const Duration(milliseconds: 500));
-  }
-
-  @override
-  Future<void> requestPasswordReset({required String email}) async {
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-  }
-
-  @override
-  Future<void> verifyPasswordResetCode({
-    required String email,
-    required String code,
-  }) async {
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-    if (code != _demoCode) {
-      throw const AuthException(
-        'That code is not correct. Use 123456 in this demo build.',
-      );
-    }
-  }
-
-  @override
-  Future<void> setNewPassword({
-    required String email,
-    required String code,
-    required String newPassword,
-  }) async {
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-    if (newPassword.length < 8) {
-      throw const AuthException(
-        'Your new password must be at least 8 characters.',
-      );
-    }
-  }
-}
-
-/// Talks to the real backend (see Lifecome-Backen's `IdentityModule`). Replaces
-/// [FakeAuthRepository] in `core/providers/core_providers.dart`.
+/// Talks to the real backend (see Lifecome-Backend's `IdentityModule`).
 class DioAuthRepository implements AuthRepository {
   DioAuthRepository(this._client);
 
@@ -163,7 +117,7 @@ class DioAuthRepository implements AuthRepository {
   final Map<String, String> _accountIdByEmail = {};
 
   @override
-  Future<void> signInWithPassword({
+  Future<SignedInAccount> signInWithPassword({
     required String email,
     required String password,
   }) async {
@@ -171,10 +125,11 @@ class DioAuthRepository implements AuthRepository {
       final response = await _client.post(
         '/identity/login',
         data: {'email': email, 'password': password},
+        authenticated: false,
       );
-      _client.accessToken = response['accessToken'] as String?;
+      return SignedInAccount.fromJson(response);
     } on ApiException catch (error) {
-      throw AuthException(error.message);
+      throw AuthException.from(error);
     }
   }
 
@@ -196,17 +151,26 @@ class DioAuthRepository implements AuthRepository {
           'phoneNumber': phoneNumber,
           'password': password,
         },
+        authenticated: false,
       );
+      // The backend answers a known email with the existing account rather than
+      // an error. An active one means this person already signed up.
+      if (response['status'] == 'active') {
+        throw const AuthException(
+          'An account with this email already exists. Sign in instead.',
+          code: 'ACCOUNT_EXISTS',
+        );
+      }
       final id = response['id'] as String;
       _accountIdByEmail[email] = id;
       return id;
     } on ApiException catch (error) {
-      throw AuthException(error.message);
+      throw AuthException.from(error);
     }
   }
 
   @override
-  Future<void> verifyPhoneCode({
+  Future<SignedInAccount> verifyPhoneCode({
     required String email,
     required String code,
   }) async {
@@ -215,10 +179,11 @@ class DioAuthRepository implements AuthRepository {
       final response = await _client.post(
         '/identity/otp/verify',
         data: {'userAccountId': accountId, 'code': code},
+        authenticated: false,
       );
-      _client.accessToken = response['accessToken'] as String?;
+      return SignedInAccount.fromJson(response);
     } on ApiException catch (error) {
-      throw AuthException(error.message);
+      throw AuthException.from(error);
     }
   }
 
@@ -229,9 +194,10 @@ class DioAuthRepository implements AuthRepository {
       await _client.post(
         '/identity/otp/request',
         data: {'userAccountId': accountId},
+        authenticated: false,
       );
     } on ApiException catch (error) {
-      throw AuthException(error.message);
+      throw AuthException.from(error);
     }
   }
 
@@ -241,9 +207,10 @@ class DioAuthRepository implements AuthRepository {
       await _client.post(
         '/identity/password-reset/request',
         data: {'email': email},
+        authenticated: false,
       );
     } on ApiException catch (error) {
-      throw AuthException(error.message);
+      throw AuthException.from(error);
     }
   }
 
@@ -256,9 +223,10 @@ class DioAuthRepository implements AuthRepository {
       await _client.post(
         '/identity/password-reset/verify',
         data: {'email': email, 'code': code},
+        authenticated: false,
       );
     } on ApiException catch (error) {
-      throw AuthException(error.message);
+      throw AuthException.from(error);
     }
   }
 
@@ -272,9 +240,10 @@ class DioAuthRepository implements AuthRepository {
       await _client.post(
         '/identity/password-reset/confirm',
         data: {'email': email, 'code': code, 'newPassword': newPassword},
+        authenticated: false,
       );
     } on ApiException catch (error) {
-      throw AuthException(error.message);
+      throw AuthException.from(error);
     }
   }
 
