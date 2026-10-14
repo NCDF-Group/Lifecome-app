@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/providers/core_providers.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/utils/validators.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
+import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
 import '../data/auth_repository.dart';
+import 'widgets/auth_header.dart';
 import 'widgets/password_rules_checklist.dart';
 
 /// What this screen needs to know: which email and (already-verified)
@@ -41,6 +43,10 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
   String _password = '';
   bool _loading = false;
 
+  /// Errors stay quiet until the first attempt to submit; after that each
+  /// field re-checks as it is edited.
+  bool _submitted = false;
+
   @override
   void dispose() {
     _passwordController.dispose();
@@ -48,18 +54,25 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
     super.dispose();
   }
 
-  Future<void> _submit() async {
-    final password = _passwordController.text;
-    final confirm = _confirmController.text;
-
+  bool _validate() {
     setState(() {
-      _passwordError = password.length < 8
-          ? 'Use at least 8 characters.'
-          : null;
-      _confirmError = confirm != password ? 'Passwords do not match.' : null;
+      _passwordError = Validators.newPassword(_passwordController.text);
+      _confirmError = Validators.confirmPassword(
+        _confirmController.text,
+        _passwordController.text,
+      );
     });
+    return _passwordError == null && _confirmError == null;
+  }
 
-    if (_passwordError != null || _confirmError != null) return;
+  void _revalidate() {
+    if (_submitted) _validate();
+  }
+
+  Future<void> _submit() async {
+    if (_loading) return;
+    setState(() => _submitted = true);
+    if (!_validate()) return;
 
     setState(() => _loading = true);
     try {
@@ -68,12 +81,24 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
           .setNewPassword(
             email: widget.args.email,
             code: widget.args.code,
-            newPassword: password,
+            newPassword: _passwordController.text,
           );
       if (!mounted) return;
       context.go(RoutePaths.passwordChanged);
     } on AuthException catch (error) {
-      setState(() => _passwordError = error.message);
+      if (!mounted) return;
+      final fieldError = error.fieldErrors['newPassword'];
+      if (fieldError != null) {
+        setState(() => _passwordError = fieldError);
+      } else {
+        // The code was already checked on the previous screen, so what is
+        // left is usually that it has since expired: say so, and let the
+        // person go back (the back arrow) and ask for a new one.
+        showErrorPopup(context, error.message);
+      }
+    } catch (_) {
+      if (!mounted) return;
+      showErrorPopup(context, 'Something went wrong. Please try again.');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -95,26 +120,7 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
-                  children: [
-                    IconButton(
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      onPressed: () => context.pop(),
-                      icon: Icon(
-                        Icons.arrow_back_ios_new,
-                        size: 18,
-                        color: context.palette.ink,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    SvgPicture.asset(
-                      context.palette.logoAsset,
-                      height: 24,
-                      semanticsLabel: 'LifeCome Live',
-                    ),
-                  ],
-                ),
+                const AuthHeader(fallback: RoutePaths.forgotPassword),
                 const SizedBox(height: AppSpacing.xxl),
                 Text(
                   'Choose a new password',
@@ -126,7 +132,7 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
                 ),
                 const SizedBox(height: AppSpacing.xxs),
                 Text(
-                  'Use at least 8 characters. You will use this password to sign in from now on.',
+                  'You will use this password to sign in from now on.',
                   style: TextStyle(
                     fontSize: 15,
                     color: context.palette.inkMuted,
@@ -141,8 +147,14 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
                   textInputAction: TextInputAction.next,
                   autofillHints: const [AutofillHints.newPassword],
                   errorText: _passwordError,
-                  onChanged: (value) => setState(() => _password = value),
+                  onChanged: (value) {
+                    setState(() => _password = value);
+                    _revalidate();
+                  },
                   suffixIcon: IconButton(
+                    tooltip: _obscurePassword
+                        ? 'Show password'
+                        : 'Hide password',
                     icon: Icon(
                       _obscurePassword
                           ? Icons.visibility_outlined
@@ -164,8 +176,12 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
                   textInputAction: TextInputAction.done,
                   autofillHints: const [AutofillHints.newPassword],
                   errorText: _confirmError,
+                  onChanged: (_) => _revalidate(),
                   onSubmitted: (_) => _submit(),
                   suffixIcon: IconButton(
+                    tooltip: _obscureConfirm
+                        ? 'Show password'
+                        : 'Hide password',
                     icon: Icon(
                       _obscureConfirm
                           ? Icons.visibility_outlined

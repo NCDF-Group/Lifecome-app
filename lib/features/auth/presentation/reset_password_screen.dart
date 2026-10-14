@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/providers/core_providers.dart';
 import '../../../core/router/route_paths.dart';
+import '../../../core/router/safe_back.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/utils/validators.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/buttons/tinted_button.dart';
+import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/inputs/otp_input.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
 import '../data/auth_repository.dart';
 import 'new_password_screen.dart';
+import 'widgets/auth_header.dart';
 import 'widgets/otp_timer.dart';
-import '../../../core/widgets/feedback/app_popup.dart';
 
 /// What this screen needs to know: which email the reset code was sent to.
 class ResetPasswordArgs {
@@ -40,9 +42,20 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   bool _loading = false;
   DateTime _resendAvailableAt = DateTime.now().add(const Duration(seconds: 30));
 
+  void _resetCodeInput() {
+    _otpKey.currentState?.clear();
+    setState(() => _code = '');
+  }
+
   Future<void> _submit([String? completedCode]) async {
-    final code = completedCode ?? _code;
-    if (code.length != 6) return;
+    if (_loading) return;
+    final code = (completedCode ?? _code).trim();
+
+    final invalid = Validators.otpCode(code);
+    if (invalid != null) {
+      setState(() => _errorText = invalid);
+      return;
+    }
 
     setState(() {
       _loading = true;
@@ -59,9 +72,13 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         extra: NewPasswordArgs(email: widget.args.email, code: code),
       );
     } on AuthException catch (error) {
+      if (!mounted) return;
       setState(() => _errorText = error.message);
-      _otpKey.currentState?.clear();
-      setState(() => _code = '');
+      _resetCodeInput();
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _errorText = 'Something went wrong. Please try again.');
+      _resetCodeInput();
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -72,14 +89,17 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       await ref
           .read(authRepositoryProvider)
           .requestPasswordReset(email: widget.args.email);
-      setState(
-        () => _resendAvailableAt = DateTime.now().add(
-          const Duration(seconds: 30),
-        ),
-      );
+      if (!mounted) return;
+      setState(() {
+        _errorText = null;
+        _resendAvailableAt = DateTime.now().add(const Duration(seconds: 30));
+      });
     } on AuthException catch (error) {
       if (!mounted) return;
       showErrorPopup(context, error.message);
+    } catch (_) {
+      if (!mounted) return;
+      showErrorPopup(context, 'Could not resend the code. Please try again.');
     }
   }
 
@@ -99,26 +119,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
-                  children: [
-                    IconButton(
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      onPressed: () => context.pop(),
-                      icon: Icon(
-                        Icons.arrow_back_ios_new,
-                        size: 18,
-                        color: context.palette.ink,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    SvgPicture.asset(
-                      context.palette.logoAsset,
-                      height: 24,
-                      semanticsLabel: 'LifeCome Live',
-                    ),
-                  ],
-                ),
+                const AuthHeader(fallback: RoutePaths.forgotPassword),
                 const SizedBox(height: AppSpacing.xxl),
                 Text(
                   'Enter reset code',
@@ -152,7 +153,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                 OtpInput(
                   key: _otpKey,
                   onCompleted: (code) => _submit(code),
-                  onChanged: (value) => setState(() => _code = value),
+                  onChanged: (value) => setState(() {
+                    _code = value;
+                    _errorText = null;
+                  }),
                   errorText: _errorText,
                 ),
                 const SizedBox(height: AppSpacing.lg),
@@ -160,12 +164,13 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   label: 'Verify code',
                   icon: Icons.arrow_forward,
                   loading: _loading,
-                  onPressed: _code.length == 6 ? () => _submit() : null,
+                  onPressed: () => _submit(),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 TintedButton(
                   label: 'Change email',
-                  onPressed: () => context.pop(),
+                  onPressed: () =>
+                      context.goBack(fallback: RoutePaths.forgotPassword),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Center(

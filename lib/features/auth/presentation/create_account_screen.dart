@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/animation/fade_in.dart';
@@ -9,6 +8,7 @@ import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/utils/validators.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
@@ -17,6 +17,8 @@ import '../../../core/widgets/layout/max_content_width.dart';
 import '../application/auth_controller.dart';
 import '../domain/models/auth_session.dart';
 import 'verify_mobile_screen.dart';
+import 'widgets/auth_header.dart';
+import 'widgets/password_rules_checklist.dart';
 
 /// View 01 (Create Account) — one page: name, email, mobile number and
 /// password together, matching the app's current single-step sign-up
@@ -39,9 +41,15 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
   final _confirmController = TextEditingController();
 
   String _phoneNumber = '';
+  String _password = '';
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   bool _agreedToTerms = false;
+
+  /// Errors stay quiet until the first attempt to submit; after that each
+  /// field re-checks as it is edited, so a message clears the moment it is
+  /// fixed.
+  bool _submitted = false;
 
   String? _firstNameError;
   String? _lastNameError;
@@ -61,34 +69,30 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
     super.dispose();
   }
 
-  bool _isValidEmail(String value) {
-    return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value.trim());
-  }
-
-  Future<void> _submit() async {
-    final firstName = _firstNameController.text.trim();
-    final lastName = _lastNameController.text.trim();
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
-    final confirm = _confirmController.text;
-
+  /// Checks every field and shows what is wrong. Returns true when all pass.
+  bool _validate() {
     setState(() {
-      _firstNameError = firstName.isEmpty ? 'Enter your first name.' : null;
-      _lastNameError = lastName.isEmpty ? 'Enter your last name.' : null;
-      _emailError = _isValidEmail(email)
-          ? null
-          : 'Enter a valid email address.';
-      _phoneError = _phoneNumber.isEmpty ? 'Enter your mobile number.' : null;
-      _passwordError = password.length < 8
-          ? 'Your password must be at least 8 characters.'
-          : null;
-      _confirmError = confirm != password ? 'Passwords do not match.' : null;
+      _firstNameError = Validators.personName(
+        _firstNameController.text,
+        label: 'first name',
+      );
+      _lastNameError = Validators.personName(
+        _lastNameController.text,
+        label: 'last name',
+      );
+      _emailError = Validators.email(_emailController.text);
+      _phoneError = Validators.ukMobile(_phoneNumber);
+      _passwordError = Validators.newPassword(_passwordController.text);
+      _confirmError = Validators.confirmPassword(
+        _confirmController.text,
+        _passwordController.text,
+      );
       _termsError = _agreedToTerms
           ? null
           : 'You must agree to the terms of use.';
     });
 
-    if ([
+    return [
       _firstNameError,
       _lastNameError,
       _emailError,
@@ -96,40 +100,55 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
       _passwordError,
       _confirmError,
       _termsError,
-    ].any((error) => error != null)) {
-      return;
-    }
+    ].every((error) => error == null);
+  }
+
+  /// Re-checks as the person types, once they have tried to submit.
+  void _revalidate() {
+    if (_submitted) _validate();
+  }
+
+  /// Shows the backend's own complaints under the right fields.
+  void _showServerErrors(Map<String, String> errors) {
+    setState(() {
+      _firstNameError = errors['firstName'] ?? _firstNameError;
+      _lastNameError = errors['lastName'] ?? _lastNameError;
+      _emailError = errors['email'] ?? _emailError;
+      _phoneError = errors['phoneNumber'] ?? _phoneError;
+      _passwordError = errors['password'] ?? _passwordError;
+    });
+  }
+
+  Future<void> _submit() async {
+    setState(() => _submitted = true);
+    if (!_validate()) return;
+
+    final phoneNumber = Validators.normalizeUkMobile(_phoneNumber)!;
+    final email = _emailController.text.trim();
 
     final sent = await ref
         .read(authControllerProvider.notifier)
         .signUp(
-          firstName: firstName,
-          lastName: lastName,
+          firstName: _firstNameController.text.trim(),
+          lastName: _lastNameController.text.trim(),
           email: email,
-          phoneNumber: _phoneNumber,
-          password: password,
+          phoneNumber: phoneNumber,
+          password: _passwordController.text,
         );
 
     if (!mounted) return;
     if (sent) {
       context.push(
         RoutePaths.verifyMobile,
-        extra: VerifyMobileArgs(email: email, phoneNumber: _phoneNumber),
+        extra: VerifyMobileArgs(email: email, phoneNumber: phoneNumber),
       );
     } else {
-      final message = ref.read(authControllerProvider).errorMessage;
-      if (message != null) showErrorPopup(context, message);
-    }
-  }
-
-  /// Back goes to wherever the person came from. If nothing is behind this
-  /// screen (it was opened with `go`, or restored on its own), `pop` has
-  /// nowhere to go, so fall back to the welcome screen.
-  void _goBack() {
-    if (context.canPop()) {
-      context.pop();
-    } else {
-      context.go(RoutePaths.welcome);
+      final state = ref.read(authControllerProvider);
+      if (state.fieldErrors.isNotEmpty) {
+        _showServerErrors(state.fieldErrors);
+      } else if (state.errorMessage != null) {
+        showErrorPopup(context, state.errorMessage!);
+      }
     }
   }
 
@@ -158,28 +177,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                FadeIn(
-                  child: Row(
-                    children: [
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        onPressed: _goBack,
-                        icon: Icon(
-                          Icons.arrow_back_ios_new,
-                          size: 18,
-                          color: context.palette.ink,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      SvgPicture.asset(
-                        context.palette.logoAsset,
-                        height: 24,
-                        semanticsLabel: 'LifeCome Live',
-                      ),
-                    ],
-                  ),
-                ),
+                const FadeIn(child: AuthHeader()),
                 const SizedBox(height: AppSpacing.lg),
                 Text(
                   'Create your account',
@@ -205,6 +203,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                   textInputAction: TextInputAction.next,
                   autofillHints: const [AutofillHints.givenName],
                   errorText: _firstNameError,
+                  onChanged: (_) => _revalidate(),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 AppTextField(
@@ -213,6 +212,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                   textInputAction: TextInputAction.next,
                   autofillHints: const [AutofillHints.familyName],
                   errorText: _lastNameError,
+                  onChanged: (_) => _revalidate(),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 AppTextField(
@@ -222,11 +222,15 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                   textInputAction: TextInputAction.next,
                   autofillHints: const [AutofillHints.email],
                   errorText: _emailError,
+                  onChanged: (_) => _revalidate(),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 PhoneNumberField(
                   label: 'Mobile number',
-                  onChanged: (value) => _phoneNumber = value,
+                  onChanged: (value) {
+                    _phoneNumber = value;
+                    _revalidate();
+                  },
                   errorText: _phoneError,
                 ),
                 const SizedBox(height: AppSpacing.md),
@@ -237,7 +241,14 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                   textInputAction: TextInputAction.next,
                   autofillHints: const [AutofillHints.newPassword],
                   errorText: _passwordError,
+                  onChanged: (value) {
+                    setState(() => _password = value);
+                    _revalidate();
+                  },
                   suffixIcon: IconButton(
+                    tooltip: _obscurePassword
+                        ? 'Show password'
+                        : 'Hide password',
                     icon: Icon(
                       _obscurePassword
                           ? Icons.visibility_outlined
@@ -249,6 +260,8 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                         setState(() => _obscurePassword = !_obscurePassword),
                   ),
                 ),
+                const SizedBox(height: AppSpacing.xs),
+                PasswordRulesChecklist(password: _password),
                 const SizedBox(height: AppSpacing.md),
                 AppTextField(
                   label: 'Confirm password',
@@ -257,8 +270,12 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                   textInputAction: TextInputAction.done,
                   autofillHints: const [AutofillHints.newPassword],
                   errorText: _confirmError,
+                  onChanged: (_) => _revalidate(),
                   onSubmitted: (_) => _submit(),
                   suffixIcon: IconButton(
+                    tooltip: _obscureConfirm
+                        ? 'Show password'
+                        : 'Hide password',
                     icon: Icon(
                       _obscureConfirm
                           ? Icons.visibility_outlined
@@ -279,10 +296,10 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                       height: 22,
                       child: Checkbox(
                         value: _agreedToTerms,
-                        onChanged: (value) => setState(() {
-                          _agreedToTerms = value ?? false;
-                          _termsError = null;
-                        }),
+                        onChanged: (value) {
+                          setState(() => _agreedToTerms = value ?? false);
+                          _revalidate();
+                        },
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                     ),

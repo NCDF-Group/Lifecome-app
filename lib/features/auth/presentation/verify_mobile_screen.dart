@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
+import '../../../core/router/safe_back.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/utils/validators.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/buttons/tinted_button.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
@@ -14,6 +15,7 @@ import '../../../core/widgets/inputs/otp_input.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
 import '../application/auth_controller.dart';
 import '../domain/models/auth_session.dart';
+import 'widgets/auth_header.dart';
 import 'widgets/otp_timer.dart';
 
 /// What this screen needs to know: which account the code was sent for
@@ -26,9 +28,11 @@ class VerifyMobileArgs {
 }
 
 /// Masks all but the dial code and last 4 digits, e.g. "+447700900123" ->
-/// "+44 •••• ••0123".
+/// "+44 •••• ••0123". The service is UK-only, so the dial code is always +44
+/// (matching it by shape would swallow the first digits of the number).
 String _maskPhoneNumber(String phoneNumber) {
-  final dialCode = RegExp(r'^\+\d{1,4}').stringMatch(phoneNumber) ?? '';
+  const dialCode = '+44';
+  if (!phoneNumber.startsWith(dialCode)) return phoneNumber;
   final local = phoneNumber.substring(dialCode.length);
   if (local.length < 4) return phoneNumber;
   final last4 = local.substring(local.length - 4);
@@ -51,9 +55,20 @@ class _VerifyMobileScreenState extends ConsumerState<VerifyMobileScreen> {
   final _otpKey = GlobalKey<OtpInputState>();
   String _code = '';
 
+  /// What is wrong with the code as typed (too short...), before it is ever
+  /// sent. The backend's own answer ("not correct", "expired") comes through
+  /// the auth state instead.
+  String? _codeError;
+
   Future<void> _submit([String? completedCode]) async {
-    final code = completedCode ?? _code;
-    if (code.length != 6) return;
+    final code = (completedCode ?? _code).trim();
+
+    final invalid = Validators.otpCode(code);
+    if (invalid != null) {
+      setState(() => _codeError = invalid);
+      return;
+    }
+    setState(() => _codeError = null);
 
     final verified = await ref
         .read(authControllerProvider.notifier)
@@ -87,26 +102,7 @@ class _VerifyMobileScreenState extends ConsumerState<VerifyMobileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
-                  children: [
-                    IconButton(
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      onPressed: () => context.pop(),
-                      icon: Icon(
-                        Icons.arrow_back_ios_new,
-                        size: 18,
-                        color: context.palette.ink,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    SvgPicture.asset(
-                      context.palette.logoAsset,
-                      height: 24,
-                      semanticsLabel: 'LifeCome Live',
-                    ),
-                  ],
-                ),
+                const AuthHeader(fallback: RoutePaths.createAccount),
                 const SizedBox(height: AppSpacing.lg),
                 Text(
                   'Verify your mobile',
@@ -140,20 +136,24 @@ class _VerifyMobileScreenState extends ConsumerState<VerifyMobileScreen> {
                 OtpInput(
                   key: _otpKey,
                   onCompleted: (code) => _submit(code),
-                  onChanged: (value) => setState(() => _code = value),
-                  errorText: authState.errorMessage,
+                  onChanged: (value) => setState(() {
+                    _code = value;
+                    _codeError = null;
+                  }),
+                  errorText: _codeError ?? authState.errorMessage,
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 PrimaryButton(
                   label: 'Verify and continue',
                   icon: Icons.arrow_forward,
                   loading: verifying,
-                  onPressed: _code.length == 6 ? () => _submit() : null,
+                  onPressed: () => _submit(),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 TintedButton(
                   label: 'Change number',
-                  onPressed: () => context.pop(),
+                  onPressed: () =>
+                      context.goBack(fallback: RoutePaths.createAccount),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Center(

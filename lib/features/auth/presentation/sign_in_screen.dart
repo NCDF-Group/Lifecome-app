@@ -1,20 +1,21 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/animation/fade_in.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/utils/validators.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/buttons/secondary_button.dart';
+import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
 import '../application/auth_controller.dart';
 import '../domain/models/auth_session.dart';
-import '../../../core/widgets/feedback/app_popup.dart';
+import 'widgets/auth_header.dart';
 
 /// View 01 (Sign In). Email and password, matching a conventional login
 /// form. The single-page sign-up flow lives on [CreateAccountScreen] and
@@ -33,6 +34,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   String? _emailError;
   String? _passwordError;
 
+  /// Errors stay quiet until the first attempt to sign in; after that each
+  /// field re-checks as it is edited, so a message clears the moment it is
+  /// fixed.
+  bool _submitted = false;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -40,26 +46,29 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     super.dispose();
   }
 
-  bool _isValidEmail(String value) {
-    return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value.trim());
+  /// Checks both fields and shows what is wrong. Returns true when both pass.
+  bool _validate() {
+    setState(() {
+      _emailError = Validators.email(_emailController.text);
+      _passwordError = Validators.currentPassword(_passwordController.text);
+    });
+    return _emailError == null && _passwordError == null;
+  }
+
+  void _revalidate() {
+    if (_submitted) _validate();
   }
 
   Future<void> _login() async {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
-
-    setState(() {
-      _emailError = _isValidEmail(email)
-          ? null
-          : 'Enter a valid email address.';
-      _passwordError = password.isEmpty ? 'Enter your password.' : null;
-    });
-
-    if (_emailError != null || _passwordError != null) return;
+    setState(() => _submitted = true);
+    if (!_validate()) return;
 
     final success = await ref
         .read(authControllerProvider.notifier)
-        .signIn(email: email, password: password);
+        .signIn(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
 
     if (!mounted) return;
     if (success) {
@@ -87,7 +96,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.lg,
-            AppSpacing.md,
+            AppSpacing.sm,
             AppSpacing.lg,
             AppSpacing.lg,
           ),
@@ -95,16 +104,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FadeIn(
-                  child: SvgPicture.asset(
-                    context.palette.logoAsset,
-                    height: 28,
-                    semanticsLabel: 'LifeCome Live',
-                  ),
-                ),
+                const FadeIn(child: AuthHeader()),
                 const SizedBox(height: AppSpacing.lg),
                 FadeIn(
-                  delay: Duration(milliseconds: 80),
+                  delay: const Duration(milliseconds: 80),
                   child: Text(
                     'Welcome to LifeCome Live.',
                     style: TextStyle(
@@ -117,7 +120,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 ),
                 const SizedBox(height: AppSpacing.xxs),
                 FadeIn(
-                  delay: Duration(milliseconds: 120),
+                  delay: const Duration(milliseconds: 120),
                   child: Text(
                     'Your care, connected.',
                     style: TextStyle(
@@ -138,6 +141,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     autofillHints: const [AutofillHints.email],
                     prefixIcon: Icons.mail_outline,
                     errorText: _emailError,
+                    onChanged: (_) => _revalidate(),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.md),
@@ -152,7 +156,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     autofillHints: const [AutofillHints.password],
                     prefixIcon: Icons.lock_outline,
                     errorText: _passwordError,
+                    onChanged: (_) => _revalidate(),
                     suffixIcon: IconButton(
+                      tooltip: _obscurePassword
+                          ? 'Show password'
+                          : 'Hide password',
                       icon: Icon(
                         _obscurePassword
                             ? Icons.visibility_outlined

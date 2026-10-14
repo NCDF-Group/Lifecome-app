@@ -8,7 +8,8 @@ const _ukDialCode = '+44';
 
 /// A phone number field with a static UK (+44) prefix ahead of the local
 /// number, matching the app's single bordered field look. LifeCome Live
-/// serves the UK only, so there's no country selector here.
+/// serves the UK only, so there's no country selector here. What it reports
+/// is always `+44` followed by the number without its leading 0.
 class PhoneNumberField extends StatefulWidget {
   const PhoneNumberField({
     super.key,
@@ -37,9 +38,22 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
     super.dispose();
   }
 
+  /// The part after +44, however it was typed or pasted: a leading 0
+  /// (07700 900123) or a pasted +44/0044 prefix is dropped.
+  String _national(String digits) {
+    var national = digits;
+    if (national.startsWith('0044')) {
+      national = national.substring(4);
+    } else if (national.startsWith('44') && national.length > 10) {
+      national = national.substring(2);
+    }
+    if (national.startsWith('0')) national = national.substring(1);
+    return national;
+  }
+
   void _emit() {
-    final digits = _numberController.text.trim();
-    widget.onChanged(digits.isEmpty ? '' : '$_ukDialCode$digits');
+    final national = _national(_numberController.text.trim());
+    widget.onChanged(national.isEmpty ? '' : '$_ukDialCode$national');
   }
 
   @override
@@ -90,7 +104,10 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
                 child: TextField(
                   controller: _numberController,
                   keyboardType: TextInputType.phone,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(15),
+                  ],
                   onChanged: (_) => _emit(),
                   style: TextStyle(fontSize: 16, color: context.palette.ink),
                   decoration: const InputDecoration(

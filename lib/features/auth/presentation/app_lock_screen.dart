@@ -9,6 +9,7 @@ import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/utils/validators.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
 import '../../../core/widgets/layout/auth_form_card.dart';
@@ -87,10 +88,9 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
     if (email == null) return;
     final password = _passwordController.text;
 
-    setState(() {
-      _passwordError = password.isEmpty ? 'Enter your password.' : null;
-    });
-    if (_passwordError != null) return;
+    final invalid = Validators.currentPassword(password);
+    setState(() => _passwordError = invalid);
+    if (invalid != null) return;
 
     setState(() => _passwordSubmitting = true);
     final success = await ref
@@ -180,7 +180,15 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                     autofillHints: const [AutofillHints.password],
                     prefixIcon: Icons.lock_outline,
                     errorText: _passwordError,
+                    onChanged: (_) {
+                      if (_passwordError != null) {
+                        setState(() => _passwordError = null);
+                      }
+                    },
                     suffixIcon: IconButton(
+                      tooltip: _obscurePassword
+                          ? 'Show password'
+                          : 'Hide password',
                       icon: Icon(
                         _obscurePassword
                             ? Icons.visibility_outlined

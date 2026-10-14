@@ -8,8 +8,7 @@ import '../../theme/app_palette.dart';
 ///
 /// It goes back one screen, or to [fallback] when nothing is behind this one
 /// (see [SafeBack]), so it always does something. The arrow is drawn at the
-/// left edge but the tap area is a full 44 points, which is what a thumb
-/// needs.
+/// left edge but the tap area is 40 by 44 points, which is what a thumb needs.
 class AppBackButton extends StatelessWidget {
   const AppBackButton({
     super.key,
@@ -34,7 +33,7 @@ class AppBackButton extends StatelessWidget {
       onPressed: onPressed ?? () => context.goBack(fallback: fallback),
       padding: EdgeInsets.zero,
       alignment: Alignment.centerLeft,
-      constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+      constraints: const BoxConstraints(minWidth: 40, minHeight: 44),
       icon: Icon(
         Icons.arrow_back_ios_new,
         size: 18,

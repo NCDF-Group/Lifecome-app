@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/providers/core_providers.dart';
 import '../../../core/router/route_paths.dart';
+import '../../../core/router/safe_back.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/utils/validators.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/buttons/tinted_button.dart';
+import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
 import '../data/auth_repository.dart';
 import 'reset_password_screen.dart';
-import '../../../core/widgets/feedback/app_popup.dart';
+import 'widgets/auth_header.dart';
 
 /// Step 1 of the forgot-password flow: enter the account email.
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
@@ -35,18 +37,11 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  bool _isValidEmail(String value) {
-    return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value.trim());
-  }
-
   Future<void> _sendCode() async {
     final email = _emailController.text.trim();
-    setState(
-      () => _emailError = _isValidEmail(email)
-          ? null
-          : 'Enter a valid email address.',
-    );
-    if (_emailError != null) return;
+    final error = Validators.email(email);
+    setState(() => _emailError = error);
+    if (error != null) return;
 
     setState(() => _loading = true);
     try {
@@ -58,7 +53,14 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       );
     } on AuthException catch (error) {
       if (!mounted) return;
-      showErrorPopup(context, error.message);
+      if (error.fieldErrors.containsKey('email')) {
+        setState(() => _emailError = error.fieldErrors['email']);
+      } else {
+        showErrorPopup(context, error.message);
+      }
+    } catch (_) {
+      if (!mounted) return;
+      showErrorPopup(context, 'Something went wrong. Please try again.');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -80,26 +82,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
-                  children: [
-                    IconButton(
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      onPressed: () => context.pop(),
-                      icon: Icon(
-                        Icons.arrow_back_ios_new,
-                        size: 18,
-                        color: context.palette.ink,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    SvgPicture.asset(
-                      context.palette.logoAsset,
-                      height: 24,
-                      semanticsLabel: 'LifeCome Live',
-                    ),
-                  ],
-                ),
+                const AuthHeader(fallback: RoutePaths.signIn),
                 const SizedBox(height: AppSpacing.xxl),
                 Text(
                   'Reset your password',
@@ -111,7 +94,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 ),
                 const SizedBox(height: AppSpacing.xxs),
                 Text(
-                  'Enter your personal email to receive a reset link.',
+                  "Enter your personal email and we'll send you a 6-digit code to reset your password.",
                   style: TextStyle(
                     fontSize: 15,
                     color: context.palette.inkMuted,
@@ -127,11 +110,16 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   textInputAction: TextInputAction.done,
                   autofillHints: const [AutofillHints.email],
                   errorText: _emailError,
+                  onChanged: (_) {
+                    if (_emailError != null) {
+                      setState(() => _emailError = null);
+                    }
+                  },
                   onSubmitted: (_) => _sendCode(),
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 PrimaryButton(
-                  label: 'Send reset link',
+                  label: 'Send reset code',
                   icon: Icons.arrow_forward,
                   loading: _loading,
                   onPressed: _sendCode,
@@ -139,7 +127,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 const SizedBox(height: AppSpacing.sm),
                 TintedButton(
                   label: 'Back to sign in',
-                  onPressed: () => context.pop(),
+                  onPressed: () => context.goBack(fallback: RoutePaths.signIn),
                 ),
               ],
             ),
