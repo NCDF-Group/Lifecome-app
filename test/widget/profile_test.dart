@@ -6,9 +6,14 @@ import 'package:lifecome_mobile/core/providers/core_providers.dart';
 import 'package:lifecome_mobile/core/router/route_paths.dart';
 import 'package:lifecome_mobile/core/storage/secure_storage.dart';
 import 'package:lifecome_mobile/features/dashboard/presentation/dashboard_screen.dart';
+import 'package:lifecome_mobile/features/health_records/presentation/health_records_screen.dart';
+import 'package:lifecome_mobile/features/membership/presentation/membership_billing_screen.dart';
+import 'package:lifecome_mobile/features/membership/presentation/my_benefits_screen.dart';
 import 'package:lifecome_mobile/features/profile/application/profile_controller.dart';
 import 'package:lifecome_mobile/features/profile/presentation/edit_profile_screen.dart';
 import 'package:lifecome_mobile/features/profile/presentation/patient_profile_screen.dart';
+import 'package:lifecome_mobile/features/profile/presentation/privacy_sharing_screen.dart';
+import 'package:lifecome_mobile/features/support/presentation/help_centre_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/fake_auth_repository.dart';
@@ -49,6 +54,38 @@ void main() {
         find.textContaining('Finish setting up your profile'),
         findsNothing,
       );
+
+      await disposeApp(tester);
+    });
+
+    testWidgets('has a back arrow that goes Home', (tester) async {
+      await pumpAppAt(tester, RoutePaths.profile, overrides: overrides);
+      expect(find.byType(PatientProfileScreen), findsOneWidget);
+
+      await tapBack(tester);
+      expect(find.byType(PatientProfileScreen), findsNothing);
+      expect(find.byType(DashboardScreen), findsOneWidget);
+
+      await disposeApp(tester);
+    });
+
+    testWidgets('every screen under it has a back arrow too', (tester) async {
+      await pumpAppAt(tester, RoutePaths.profile, overrides: overrides);
+
+      for (final (label, screen) in [
+        ('Personal details', EditProfileScreen),
+        ('Access and benefits', MyBenefitsScreen),
+        ('Household membership', MembershipBillingScreen),
+        ('Health records', HealthRecordsScreen),
+        ('Privacy and sharing', PrivacySharingScreen),
+        ('Help and support', HelpCentreScreen),
+      ]) {
+        await tapText(tester, label);
+        expect(find.byType(screen), findsOneWidget, reason: label);
+        await tapBack(tester);
+        expect(find.byType(screen), findsNothing, reason: label);
+        expect(find.byType(PatientProfileScreen), findsOneWidget);
+      }
 
       await disposeApp(tester);
     });

@@ -12,6 +12,7 @@ import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/theme_mode_controller.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/widgets/layout/app_bar_back.dart';
 import '../../auth/application/auth_controller.dart';
 import '../application/profile_controller.dart';
 import 'widgets/my_avatar.dart';
@@ -79,10 +80,18 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            SvgPicture.asset(
-              context.palette.logoAsset,
-              height: 24,
-              semanticsLabel: 'LifeCome Live',
+            Row(
+              children: [
+                // The Profile tab is a tab root, so there is nothing behind
+                // it: back goes Home.
+                const AppBackButton(fallback: RoutePaths.home),
+                const SizedBox(width: 8),
+                SvgPicture.asset(
+                  context.palette.logoAsset,
+                  height: 24,
+                  semanticsLabel: 'LifeCome Live',
+                ),
+              ],
             ),
             const SizedBox(height: 20),
             Text(
