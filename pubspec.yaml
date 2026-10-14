@@ -37,6 +37,7 @@ flutter:
     - assets/images/logo/
     - assets/images/welcome/
     - assets/images/home/
+    - assets/images/wellbeing/
     - assets/icons/nav/
 
   # Manrope, bundled so every weight is a real font file and the app never

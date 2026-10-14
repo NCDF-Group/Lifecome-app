@@ -33,19 +33,22 @@ class WellbeingServiceScreen extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
                 children: [
-                  Container(
-                    height: 150,
-                    decoration: BoxDecoration(
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      height: 150,
+                      // Shows while the photo decodes.
                       color: context.palette
                           .adapt(service.heroColor)
                           .withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Center(
-                      child: Icon(
-                        service.heroIcon,
-                        size: 56,
-                        color: context.palette.adapt(service.heroColor),
+                      child: Image.asset(
+                        service.heroImage,
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                        alignment: service.heroImageAlignment,
+                        // Decorative: the title below says what the page is.
+                        excludeFromSemantics: true,
                       ),
                     ),
                   ),

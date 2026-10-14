@@ -28,6 +28,8 @@ class WellbeingService {
     required this.subtitle,
     required this.heroIcon,
     required this.heroColor,
+    required this.heroImage,
+    this.heroImageAlignment = Alignment.center,
     this.badge,
     this.highlightIcon = Icons.eco_outlined,
     this.highlightTitle,
@@ -48,6 +50,12 @@ class WellbeingService {
   final String subtitle;
   final IconData heroIcon;
   final Color heroColor;
+
+  /// The photo across the top of the detail page (a bundled asset path). The
+  /// banner crops it to fit, so [heroImageAlignment] says which part stays in
+  /// view. [heroIcon] still marks the service in the Services list.
+  final String heroImage;
+  final Alignment heroImageAlignment;
 
   /// Small pill under the subtitle, e.g. "Online sessions".
   final String? badge;
@@ -91,6 +99,7 @@ const wellbeingServices = [
     subtitle: 'Build healthy routines that fit your life.',
     heroIcon: Icons.directions_walk_outlined,
     heroColor: Color(0xFF49AA02),
+    heroImage: 'assets/images/wellbeing/lifestyle-coaching.webp',
     badge: 'Online coaching',
     exploreHeading: 'What we can help with',
     explorePanelColor: _green,
@@ -124,6 +133,9 @@ const wellbeingServices = [
     subtitle: 'Practical food choices for everyday life.',
     heroIcon: Icons.apple_outlined,
     heroColor: Color(0xFF2F7D00),
+    heroImage: 'assets/images/wellbeing/healthy-eating.webp',
+    // Her hair reaches the top of the photo, so crop from the bottom first.
+    heroImageAlignment: Alignment(0, -0.6),
     explorePanelColor: _blue,
     explorePanelIconColor: _blueIcon,
     exploreItems: [
@@ -142,6 +154,9 @@ const wellbeingServices = [
     subtitle: 'Make space for everyday calm.',
     heroIcon: Icons.self_improvement_outlined,
     heroColor: Color(0xFF2F7D00),
+    heroImage: 'assets/images/wellbeing/stress-management.webp',
+    // The photo is very wide and she sits right of centre.
+    heroImageAlignment: Alignment(0.5, 0),
     explorePanelColor: _green,
     explorePanelIconColor: _greenIcon,
     highlightTitle: 'A gentle guided session',
