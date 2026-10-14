@@ -233,10 +233,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                               fontWeight: FontWeight.w600,
                             ),
                             recognizer: TapGestureRecognizer()
-                              ..onTap = () => showComingSoonPopup(
-                                context,
-                                feature: 'The privacy notice',
-                              ),
+                              ..onTap = () =>
+                                  context.push(RoutePaths.privacyPolicy),
                           ),
                           const TextSpan(text: '.'),
                         ],

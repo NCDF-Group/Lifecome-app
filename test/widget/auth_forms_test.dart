@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +13,8 @@ import 'package:lifecome_mobile/features/auth/presentation/password_changed_scre
 import 'package:lifecome_mobile/features/auth/presentation/reset_password_screen.dart';
 import 'package:lifecome_mobile/features/auth/presentation/sign_in_screen.dart';
 import 'package:lifecome_mobile/features/auth/presentation/verify_mobile_screen.dart';
+import 'package:lifecome_mobile/features/legal/presentation/privacy_screen.dart';
+import 'package:lifecome_mobile/features/legal/presentation/terms_screen.dart';
 import 'package:lifecome_mobile/features/welcome/presentation/welcome_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -35,6 +38,21 @@ void main() {
   });
 
   Finder field(int index) => find.byType(TextField).at(index);
+
+  /// Taps a link inside a paragraph of text (a `TextSpan` with a recognizer).
+  Future<void> tapLink(WidgetTester tester, String text) async {
+    TextSpan? link;
+    for (final element in find.byType(RichText).evaluate()) {
+      (element.widget as RichText).text.visitChildren((span) {
+        if (span is TextSpan && span.text == text) link = span;
+        return link == null;
+      });
+      if (link != null) break;
+    }
+    expect(link, isNotNull, reason: 'no link says "$text"');
+    (link!.recognizer! as TapGestureRecognizer).onTap!();
+    await settle(tester);
+  }
 
   group('sign in', () {
     testWidgets('has a back button that returns to the welcome screen', (
@@ -355,6 +373,38 @@ void main() {
 
       expect(find.text('That code is not correct.'), findsOneWidget);
       expect(find.byType(ResetPasswordScreen), findsOneWidget);
+
+      await disposeApp(tester);
+    });
+  });
+
+  group('policies', () {
+    testWidgets('sign up opens the real terms and privacy notice', (
+      tester,
+    ) async {
+      await pumpAppAt(tester, RoutePaths.createAccount, overrides: overrides);
+
+      await tapLink(tester, 'Terms of use');
+      expect(find.byType(TermsScreen), findsOneWidget);
+      expect(find.text('Coming soon'), findsNothing);
+      await tapBack(tester);
+      expect(find.byType(CreateAccountScreen), findsOneWidget);
+
+      await tapLink(tester, 'Privacy notice');
+      expect(find.byType(PrivacyScreen), findsOneWidget);
+      await tapBack(tester);
+      expect(find.byType(CreateAccountScreen), findsOneWidget);
+
+      await disposeApp(tester);
+    });
+
+    testWidgets('sign in opens the real privacy notice', (tester) async {
+      await pumpAppAt(tester, RoutePaths.signIn, overrides: overrides);
+
+      await tapLink(tester, 'Privacy notice');
+      expect(find.byType(PrivacyScreen), findsOneWidget);
+      await tapBack(tester);
+      expect(find.byType(SignInScreen), findsOneWidget);
 
       await disposeApp(tester);
     });

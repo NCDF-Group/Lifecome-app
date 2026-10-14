@@ -152,11 +152,9 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
     }
   }
 
-  void _openTerms() =>
-      showComingSoonPopup(context, feature: 'The terms of use page');
+  void _openTerms() => context.push(RoutePaths.termsAndConditions);
 
-  void _openPrivacy() =>
-      showComingSoonPopup(context, feature: 'The privacy notice');
+  void _openPrivacy() => context.push(RoutePaths.privacyPolicy);
 
   @override
   Widget build(BuildContext context) {
