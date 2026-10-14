@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/network/api_exception.dart';
 import '../../../core/router/route_paths.dart';
+import '../../../core/router/safe_back.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
@@ -193,7 +194,7 @@ class _WaitingRoomScreenState extends ConsumerState<WaitingRoomScreen> {
             const SizedBox(height: AppSpacing.md),
             Center(
               child: TextButton(
-                onPressed: () => context.pop(),
+                onPressed: () => context.goBack(fallback: RoutePaths.visits),
                 child: Text(
                   'Leave waiting room',
                   style: TextStyle(

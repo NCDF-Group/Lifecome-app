@@ -54,24 +54,16 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
   }
 
   Future<void> _confirmDeleteAccount() async {
-    final confirmed = await showConfirmPopup(
+    final message = await showConfirmPopup(
       context,
       title: 'Delete your account?',
       message:
-          'This permanently removes your profile, visit history and care plan. '
-          'This cannot be undone.',
-      confirmLabel: 'Delete account',
-      destructive: true,
+          "Account deletion isn't available in the app yet. Message patient "
+          'support and they will delete your account and the information we '
+          'hold about you.',
+      confirmLabel: 'Message support',
     );
-    if (!confirmed || !mounted) return;
-    showAppPopup<void>(
-      context,
-      kind: AppPopupKind.info,
-      title: 'Contact patient support',
-      message:
-          "Account deletion isn't available in the app yet. Contact patient "
-          'support and they will delete your account for you.',
-    );
+    if (message && mounted) context.push(RoutePaths.newMessage);
   }
 
   @override

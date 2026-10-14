@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/route_paths.dart';
+import '../../../../core/router/safe_back.dart';
 import '../../../../core/theme/app_palette.dart';
 
 /// The header used across the sign-up flow (create account, verify email,
@@ -18,7 +19,10 @@ class AuthTopBar extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _CircleBackButton(onPressed: onBack ?? () => context.pop()),
+        _CircleBackButton(
+          onPressed:
+              onBack ?? () => context.goBack(fallback: RoutePaths.welcome),
+        ),
         trailing ?? const SizedBox.shrink(),
       ],
     );

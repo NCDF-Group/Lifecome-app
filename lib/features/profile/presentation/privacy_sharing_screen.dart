@@ -24,7 +24,10 @@ class PrivacySharingScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            AppHeaderBar(showBack: true, onBack: () => context.pop()),
+            const AppHeaderBar(
+              showBack: true,
+              backFallback: RoutePaths.profile,
+            ),
             const SizedBox(height: 20),
             Text(
               'Privacy and sharing',

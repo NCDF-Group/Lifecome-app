@@ -20,7 +20,8 @@ import '../../messaging/domain/models/message_thread.dart';
 import '../../profile/application/profile_controller.dart';
 import '../../profile/presentation/profile_required_prompt.dart';
 
-enum _AccessTab { membership, employer }
+/// Which kind of code is being sent.
+enum AccessKind { membership, employer }
 
 /// "Activate your access" — send an invitation or membership code so funding
 /// can be linked to the account.
@@ -29,7 +30,10 @@ enum _AccessTab { membership, employer }
 /// check one: the code goes to the care team as a message, and they reply in
 /// Messages once the access is on the account.
 class ActivateAccessScreen extends ConsumerStatefulWidget {
-  const ActivateAccessScreen({super.key});
+  const ActivateAccessScreen({super.key, this.initial = AccessKind.employer});
+
+  /// The tab to start on.
+  final AccessKind initial;
 
   @override
   ConsumerState<ActivateAccessScreen> createState() =>
@@ -37,7 +41,7 @@ class ActivateAccessScreen extends ConsumerStatefulWidget {
 }
 
 class _ActivateAccessScreenState extends ConsumerState<ActivateAccessScreen> {
-  _AccessTab _tab = _AccessTab.employer;
+  late AccessKind _tab = widget.initial;
   final _codeController = TextEditingController();
   final _emailController = TextEditingController();
   String? _codeError;
@@ -45,7 +49,7 @@ class _ActivateAccessScreenState extends ConsumerState<ActivateAccessScreen> {
   bool _submitted = false;
   bool _loading = false;
 
-  bool get _isEmployer => _tab == _AccessTab.employer;
+  bool get _isEmployer => _tab == AccessKind.employer;
 
   @override
   void initState() {
@@ -149,14 +153,14 @@ class _ActivateAccessScreenState extends ConsumerState<ActivateAccessScreen> {
                     child: _TabButton(
                       label: 'Membership',
                       selected: !_isEmployer,
-                      onTap: () => setState(() => _tab = _AccessTab.membership),
+                      onTap: () => setState(() => _tab = AccessKind.membership),
                     ),
                   ),
                   Expanded(
                     child: _TabButton(
                       label: 'Employer or sponsor',
                       selected: _isEmployer,
-                      onTap: () => setState(() => _tab = _AccessTab.employer),
+                      onTap: () => setState(() => _tab = AccessKind.employer),
                     ),
                   ),
                 ],
@@ -321,7 +325,7 @@ class _ActivateAccessScreenState extends ConsumerState<ActivateAccessScreen> {
                 borderRadius: BorderRadius.circular(AppRadius.card),
                 onTap: _isEmployer
                     ? () => context.push(RoutePaths.membershipPlans)
-                    : () => setState(() => _tab = _AccessTab.employer),
+                    : () => setState(() => _tab = AccessKind.employer),
                 child: Padding(
                   padding: const EdgeInsets.all(AppSpacing.md),
                   child: Row(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
@@ -6,270 +7,80 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/buttons/primary_button.dart';
+import '../../../core/widgets/feedback/empty_state.dart';
+import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/layout/screen_title.dart';
+import '../../booking/domain/models/booking_selection.dart';
+import '../../payer/application/payer_controller.dart';
+import '../../payer/domain/models/membership.dart';
 
-/// "My benefits" — what the patient's plan includes and how to use it.
-/// No membership backend exists yet, so the coverage rows describe
-/// LifeCome's standard plan shape rather than a verified, per-account
-/// benefit list.
-class MyBenefitsScreen extends StatelessWidget {
+/// "My benefits" — the health plans the person has linked, and what each one
+/// covers.
+///
+/// The backend cannot list a person's memberships yet, so this shows the plans
+/// verified since signing in; none is invented. With none, it says so and
+/// points to linking one.
+class MyBenefitsScreen extends ConsumerWidget {
   const MyBenefitsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final plans = ref.watch(linkedPlansProvider);
+
     return Scaffold(
       backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            AppHeaderBar(showBack: true, onBack: () => context.pop()),
+            const AppHeaderBar(
+              showBack: true,
+              backFallback: RoutePaths.profile,
+            ),
             const SizedBox(height: 20),
-            Text(
-              'My benefits',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: context.palette.ink,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'See what your plan includes and how to access care.',
-              style: TextStyle(
-                fontSize: 14,
-                color: context.palette.inkMuted,
-                height: 1.4,
-              ),
+            const ScreenTitle(
+              title: 'My benefits',
+              subtitle:
+                  'See what your health plan covers and book covered care.',
             ),
             const SizedBox(height: AppSpacing.md),
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                color: context.palette.tintGreen,
-                borderRadius: BorderRadius.circular(AppRadius.card),
+            if (plans.isEmpty) ...[
+              EmptyState(
+                icon: Icons.shield_outlined,
+                title: 'No health plan linked yet',
+                message:
+                    'Link your health plan to see what it covers and to book '
+                    'covered care. Plans you check while signed in show up '
+                    'here.',
+                actionLabel: 'Link a health plan',
+                onAction: () => context.push(RoutePaths.linkHealthPlan),
               ),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 22,
-                    backgroundColor: context.palette.elevated,
-                    child: Icon(
-                      Icons.shield_outlined,
-                      color: context.palette.positive,
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'LifeCome Benefits',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: context.palette.ink,
-                          ),
-                        ),
-                        SizedBox(height: 2),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.circle,
-                              size: 8,
-                              color: context.palette.positive,
-                            ),
-                            SizedBox(width: 6),
-                            Text(
-                              'Connected',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: context.palette.positive,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 2),
-                        Text(
-                          'Your plan is active and linked to this account.',
-                          style: TextStyle(
-                            fontSize: 12.5,
-                            color: context.palette.inkMuted,
-                            height: 1.4,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              const SizedBox(height: AppSpacing.sm),
+              _LinkRow(
+                icon: Icons.apartment_outlined,
+                title: 'Have an employer or membership code?',
+                subtitle: 'Send it to our care team to activate your access.',
+                onTap: () => context.push(RoutePaths.activateAccess),
               ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: context.palette.line),
-                borderRadius: BorderRadius.circular(AppRadius.card),
+            ] else ...[
+              for (final plan in plans) ...[
+                _PlanCard(plan: plan),
+                const SizedBox(height: AppSpacing.sm),
+              ],
+              _LinkRow(
+                icon: Icons.add_circle_outline,
+                title: 'Link another plan',
+                subtitle: 'Check a different health plan.',
+                onTap: () => context.push(RoutePaths.linkHealthPlan),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-              child: Column(
-                children: [
-                  _BenefitRow(
-                    icon: Icons.desktop_windows_outlined,
-                    background: context.palette.tintGreen,
-                    iconColor: context.palette.positive,
-                    title: 'Digital GP access',
-                    subtitle: 'Care wherever you are.',
-                    actionLabel: 'Check cover',
-                    onTap: () =>
-                        showComingSoonPopup(context, feature: 'Checking cover'),
-                  ),
-                  Divider(height: 1, color: context.palette.line),
-                  _BenefitRow(
-                    icon: Icons.apartment_outlined,
-                    background: context.palette.tintBlue,
-                    iconColor: context.palette.accent,
-                    title: 'Clinic consultations',
-                    subtitle: 'Care in person.',
-                    actionLabel: 'Check separately',
-                    onTap: () => context.push(RoutePaths.findSmartGpClinic),
-                  ),
-                  Divider(height: 1, color: context.palette.line),
-                  _BenefitRow(
-                    icon: Icons.groups_outlined,
-                    background: context.palette.tintGreen,
-                    iconColor: context.palette.positive,
-                    title: 'Follow-up care',
-                    subtitle: 'Coordinated when needed.',
-                    actionLabel: 'Subject to your plan',
-                    onTap: () => showComingSoonPopup(
-                      context,
-                      feature: 'Follow-up care details',
-                    ),
-                  ),
-                ],
+              const SizedBox(height: AppSpacing.sm),
+              const InfoBanner(
+                message: 'Medicines, tests and specialist care may cost extra.',
               ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Material(
-              color: AppColors.blue,
-              borderRadius: BorderRadius.circular(AppRadius.pill),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(AppRadius.pill),
-                onTap: () =>
-                    showComingSoonPopup(context, feature: 'Checking a service'),
-                child: Container(
-                  height: 52,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                  ),
-                  child: const Row(
-                    children: [
-                      Icon(
-                        Icons.event_note_outlined,
-                        color: AppColors.white,
-                        size: 20,
-                      ),
-                      SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: Text(
-                          'Check a service',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.white,
-                          ),
-                        ),
-                      ),
-                      Icon(
-                        Icons.chevron_right,
-                        color: AppColors.white,
-                        size: 20,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            Text(
-              'Plan details',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: context.palette.ink,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: context.palette.line),
-                borderRadius: BorderRadius.circular(AppRadius.card),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-              child: Column(
-                children: [
-                  _PlanDetailRow(
-                    icon: Icons.description_outlined,
-                    title: 'Allowance and validity',
-                    subtitle: 'View your allowance and plan dates.',
-                    onTap: () => showComingSoonPopup(
-                      context,
-                      feature: 'Allowance and validity',
-                    ),
-                  ),
-                  Divider(height: 1, color: context.palette.line),
-                  _PlanDetailRow(
-                    icon: Icons.apartment_outlined,
-                    title: 'Funding provider',
-                    subtitle: 'See who provides your plan.',
-                    onTap: () => showComingSoonPopup(
-                      context,
-                      feature: 'Funding provider',
-                    ),
-                  ),
-                  Divider(height: 1, color: context.palette.line),
-                  _PlanDetailRow(
-                    icon: Icons.description_outlined,
-                    title: 'Terms and exclusions',
-                    subtitle: "Read what's included and what's not.",
-                    onTap: () => showComingSoonPopup(
-                      context,
-                      feature: 'Terms and exclusions',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.sm),
-              decoration: BoxDecoration(
-                color: context.palette.tintBlue,
-                borderRadius: BorderRadius.circular(AppRadius.control),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.info_outline,
-                    size: 16,
-                    color: context.palette.accent,
-                  ),
-                  SizedBox(width: AppSpacing.xs),
-                  Expanded(
-                    child: Text(
-                      'Medicines, tests and specialist care may cost extra.',
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        color: context.palette.inkMuted,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            ],
           ],
         ),
       ),
@@ -277,39 +88,37 @@ class MyBenefitsScreen extends StatelessWidget {
   }
 }
 
-class _BenefitRow extends StatelessWidget {
-  const _BenefitRow({
-    required this.icon,
-    required this.background,
-    required this.iconColor,
-    required this.title,
-    required this.subtitle,
-    required this.actionLabel,
-    required this.onTap,
-  });
+class _PlanCard extends StatelessWidget {
+  const _PlanCard({required this.plan});
 
-  final IconData icon;
-  final Color background;
-  final Color iconColor;
-  final String title;
-  final String subtitle;
-  final String actionLabel;
-  final VoidCallback onTap;
+  final LinkedPlan plan;
+
+  /// `•••• 3456`: enough to recognise the card, not enough to read it out.
+  String _masked(String memberId) {
+    final id = memberId.trim();
+    return id.length <= 4 ? id : '•••• ${id.substring(id.length - 4)}';
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-          child: Row(
+    final palette = context.palette;
+    final verifiedAt = plan.membership.verifiedAt;
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: palette.tintGreen,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
               CircleAvatar(
-                radius: 20,
-                backgroundColor: background,
-                child: Icon(icon, color: iconColor, size: 20),
+                radius: 22,
+                backgroundColor: palette.elevated,
+                child: Icon(Icons.shield_outlined, color: palette.positive),
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
@@ -317,56 +126,77 @@ class _BenefitRow extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      plan.name,
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: context.palette.ink,
+                        color: palette.ink,
                       ),
                     ),
                     Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        color: context.palette.inkMuted,
-                      ),
+                      [
+                        'Membership ${_masked(plan.membership.memberId)}',
+                        if (plan.membership.planId != null)
+                          plan.membership.planId!,
+                      ].join(' · '),
+                      style: TextStyle(fontSize: 12.5, color: palette.inkMuted),
                     ),
+                    if (verifiedAt != null)
+                      Text(
+                        'Checked ${Formatters.date(verifiedAt)}',
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          color: palette.inkMuted,
+                        ),
+                      ),
                   ],
                 ),
               ),
-              Flexible(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        actionLabel,
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: context.palette.accent,
-                        ),
-                      ),
-                    ),
-                    Icon(
-                      Icons.chevron_right,
-                      size: 18,
-                      color: context.palette.accent,
-                    ),
-                  ],
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.xs,
+                  vertical: 2,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.greenStrong,
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+                child: const Text(
+                  'Verified',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.white,
+                  ),
                 ),
               ),
             ],
           ),
-        ),
+          const SizedBox(height: AppSpacing.md),
+          PrimaryButton(
+            label: 'Book covered care',
+            icon: Icons.arrow_forward,
+            onPressed: () => context.push(
+              RoutePaths.bookingChooseService,
+              extra: BookingStart.hmo(plan),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Center(
+            child: TextButton(
+              onPressed: () =>
+                  context.push(RoutePaths.payerCoverage, extra: plan),
+              child: const Text('See what it covers'),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _PlanDetailRow extends StatelessWidget {
-  const _PlanDetailRow({
+class _LinkRow extends StatelessWidget {
+  const _LinkRow({
     required this.icon,
     required this.title,
     required this.subtitle,
@@ -380,18 +210,21 @@ class _PlanDetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return Material(
-      color: Colors.transparent,
+      color: palette.tintBlue,
+      borderRadius: BorderRadius.circular(AppRadius.card),
       child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.card),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Row(
             children: [
               CircleAvatar(
-                radius: 20,
-                backgroundColor: context.palette.tintBlue,
-                child: Icon(icon, color: context.palette.accent, size: 20),
+                radius: 18,
+                backgroundColor: palette.elevated,
+                child: Icon(icon, size: 18, color: palette.accent),
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
@@ -401,22 +234,19 @@ class _PlanDetailRow extends StatelessWidget {
                     Text(
                       title,
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: context.palette.ink,
+                        color: palette.ink,
                       ),
                     ),
                     Text(
                       subtitle,
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        color: context.palette.inkMuted,
-                      ),
+                      style: TextStyle(fontSize: 12.5, color: palette.inkMuted),
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: context.palette.accent),
+              Icon(Icons.chevron_right, color: palette.accent),
             ],
           ),
         ),

@@ -140,7 +140,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: RoutePaths.activateAccess,
-        builder: (context, state) => const ActivateAccessScreen(),
+        builder: (context, state) => ActivateAccessScreen(
+          initial: state.extra is AccessKind
+              ? state.extra! as AccessKind
+              : AccessKind.employer,
+        ),
       ),
       GoRoute(
         path: RoutePaths.payerSelectHmo,

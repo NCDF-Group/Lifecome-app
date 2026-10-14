@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../payer/presentation/activate_access_screen.dart';
 
 /// "Membership" — choose a LifeCome Live plan, or activate one already
-/// bought elsewhere. No membership backend exists yet, so every action
-/// here opens a coming-soon popup rather than starting a real purchase.
+/// bought elsewhere. No membership backend exists yet, so choosing a plan
+/// opens a coming-soon popup rather than starting a real purchase; an
+/// existing member can send their code to the care team.
 class MembershipPlansScreen extends StatelessWidget {
   const MembershipPlansScreen({super.key});
 
@@ -22,7 +25,10 @@ class MembershipPlansScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            AppHeaderBar(showBack: true, onBack: () => context.pop()),
+            const AppHeaderBar(
+              showBack: true,
+              backFallback: RoutePaths.chooseAccess,
+            ),
             const SizedBox(height: 20),
             Text(
               'Membership',
@@ -88,9 +94,9 @@ class MembershipPlansScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppRadius.card),
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppRadius.card),
-                onTap: () => showComingSoonPopup(
-                  context,
-                  feature: 'Activating membership',
+                onTap: () => context.push(
+                  RoutePaths.activateAccess,
+                  extra: AccessKind.membership,
                 ),
                 child: Container(
                   decoration: BoxDecoration(

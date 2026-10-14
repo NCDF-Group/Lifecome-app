@@ -6,8 +6,9 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/layout/screen_title.dart';
+import '../../messaging/domain/models/message_thread.dart';
 
 class _Topic {
   const _Topic({
@@ -16,6 +17,7 @@ class _Topic {
     required this.subtitle,
     required this.background,
     required this.color,
+    this.messageTopic,
   });
 
   final IconData icon;
@@ -23,6 +25,9 @@ class _Topic {
   final String subtitle;
   final Color background;
   final Color color;
+
+  /// The conversation topic this opens; null lets the person choose.
+  final MessageTopic? messageTopic;
 }
 
 const _topics = [
@@ -32,6 +37,7 @@ const _topics = [
     subtitle: 'Booking, changing or cancelling appointments.',
     background: Color(0xFFEAF7E8),
     color: AppColors.greenStrong,
+    messageTopic: MessageTopic.bookingPayments,
   ),
   _Topic(
     icon: Icons.credit_card,
@@ -39,6 +45,7 @@ const _topics = [
     subtitle: 'Payments, refunds and billing questions.',
     background: Color(0xFFE3EEFB),
     color: AppColors.blue,
+    messageTopic: MessageTopic.bookingPayments,
   ),
   _Topic(
     icon: Icons.health_and_safety_outlined,
@@ -46,6 +53,7 @@ const _topics = [
     subtitle: 'Membership, eligibility and what’s included.',
     background: Color(0xFFEAF7E8),
     color: AppColors.greenStrong,
+    messageTopic: MessageTopic.bookingPayments,
   ),
   _Topic(
     icon: Icons.person_outline,
@@ -68,33 +76,15 @@ class HelpCentreScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            AppHeaderBar(showBack: true, onBack: () => context.pop()),
+            const AppHeaderBar(
+              showBack: true,
+              backFallback: RoutePaths.profile,
+            ),
             const SizedBox(height: 20),
-            Text(
-              'Help and support',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: context.palette.ink,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Find answers, or get in touch for more help.',
-              style: TextStyle(fontSize: 14, color: context.palette.inkMuted),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Search help articles',
-                prefixIcon: Icon(Icons.search, color: context.palette.inkMuted),
-                filled: true,
-                fillColor: context.palette.surface,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.pill),
-                  borderSide: BorderSide.none,
-                ),
-              ),
+            const ScreenTitle(
+              title: 'Help and support',
+              subtitle:
+                  'Choose what you need help with and message our care team.',
             ),
             const SizedBox(height: AppSpacing.md),
             for (final topic in _topics) ...[
@@ -106,7 +96,7 @@ class HelpCentreScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppRadius.card),
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppRadius.card),
-                onTap: () => context.go(RoutePaths.messages),
+                onTap: () => context.push(RoutePaths.newMessage),
                 child: Padding(
                   padding: const EdgeInsets.all(AppSpacing.md),
                   child: Row(
@@ -206,15 +196,12 @@ class HelpCentreScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: AppSpacing.xs),
                             InkWell(
-                              onTap: () => showComingSoonPopup(
-                                context,
-                                feature: 'Urgent-care options',
-                              ),
+                              onTap: () => context.push(RoutePaths.emergency),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    'View local urgent-care options',
+                                    'View emergency guidance',
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
@@ -267,7 +254,8 @@ class _TopicRow extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppRadius.card),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.card),
-        onTap: () => showComingSoonPopup(context, feature: topic.title),
+        onTap: () =>
+            context.push(RoutePaths.newMessage, extra: topic.messageTopic),
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.md),
           child: Row(

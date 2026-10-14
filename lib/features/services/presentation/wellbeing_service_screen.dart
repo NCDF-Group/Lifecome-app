@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
+import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
@@ -27,7 +27,10 @@ class WellbeingServiceScreen extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-              child: AppHeaderBar(showBack: true, onBack: () => context.pop()),
+              child: AppHeaderBar(
+                showBack: true,
+                backFallback: RoutePaths.services,
+              ),
             ),
             Expanded(
               child: ListView(
