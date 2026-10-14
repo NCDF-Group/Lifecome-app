@@ -12,6 +12,7 @@ import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/feedback/error_state.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/feedback/loading_indicator.dart';
+import '../../../core/widgets/layout/app_bar_back.dart';
 import '../application/messaging_controller.dart';
 import '../domain/models/message_thread.dart';
 
@@ -35,6 +36,9 @@ class MessageThreadsScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
               child: Row(
                 children: [
+                  // A tab root, so the arrow goes Home.
+                  const AppBackButton(fallback: RoutePaths.home),
+                  const SizedBox(width: 8),
                   SvgPicture.asset(
                     context.palette.logoAsset,
                     height: 24,

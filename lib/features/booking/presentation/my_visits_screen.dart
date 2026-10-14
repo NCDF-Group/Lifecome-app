@@ -11,6 +11,7 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/feedback/error_state.dart';
 import '../../../core/widgets/feedback/loading_indicator.dart';
+import '../../../core/widgets/layout/back_app_bar.dart';
 import '../application/booking_controller.dart';
 import '../domain/models/appointment.dart';
 import '../domain/models/booking_status.dart';
@@ -28,16 +29,8 @@ class MyVisitsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: context.palette.background,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(
-          'My visits',
-          style: TextStyle(
-            color: context.palette.ink,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
+      // A tab root, so the arrow goes Home.
+      appBar: const BackAppBar(title: 'My visits'),
       body: SafeArea(
         child: all.when(
           loading: () => const LoadingIndicator(),

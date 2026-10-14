@@ -23,7 +23,7 @@ class ServicesScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            const AppHeaderBar(),
+            const AppHeaderBar(showBack: true),
             const SizedBox(height: 20),
             Text(
               'Explore our services',
