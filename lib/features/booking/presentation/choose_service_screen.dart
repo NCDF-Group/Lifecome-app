@@ -14,6 +14,8 @@ import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/feedback/loading_indicator.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../../core/widgets/layout/screen_title.dart';
+import '../../payer/application/payer_controller.dart';
+import '../../payer/presentation/widgets/cover_badge.dart';
 import '../application/booking_controller.dart';
 import '../domain/models/booking_selection.dart';
 import '../domain/models/clinical_service.dart';
@@ -61,14 +63,15 @@ class _ChooseServiceScreenState extends ConsumerState<ChooseServiceScreen> {
     return services.first;
   }
 
-  void _continue(ClinicalService service) {
+  void _continue(ClinicalService service, ServiceCoverage? coverage) {
     final doctor = widget.start.doctor;
     final inPerson = _clinicianChosen || _format == _AppointmentFormat.clinic;
     context.push(
       RoutePaths.bookingLocation,
       extra: BookingSelection(
         accessType: widget.start.accessType,
-        hmoName: widget.start.hmoName,
+        plan: widget.start.plan,
+        eligibility: coverage?.check,
         service: service,
         doctor: doctor,
         mode: inPerson ? ConsultationMode.inPerson : ConsultationMode.video,
@@ -82,6 +85,28 @@ class _ChooseServiceScreenState extends ConsumerState<ChooseServiceScreen> {
     final selected = services.hasValue
         ? _selected(services.requireValue)
         : null;
+
+    // With a health plan paying, each service shows what the plan says.
+    final plan = widget.start.plan;
+    final coverage = plan == null
+        ? null
+        : ref.watch(serviceCoverageProvider(plan.membership.id));
+    ServiceCoverage? coverageOf(ClinicalService? service) {
+      if (service == null) return null;
+      for (final item in coverage?.value ?? const <ServiceCoverage>[]) {
+        if (item.service.id == service.id) return item;
+      }
+      return null;
+    }
+
+    final selectedCoverage = coverageOf(selected);
+    final coverageLoading = coverage?.isLoading ?? false;
+    // A plan that will not pay for a service cannot be used to book it.
+    final planWillNotPay =
+        plan != null &&
+        selected != null &&
+        !coverageLoading &&
+        !(selectedCoverage?.check?.status.isBookable ?? false);
 
     return Scaffold(
       backgroundColor: context.palette.background,
@@ -136,6 +161,12 @@ class _ChooseServiceScreenState extends ConsumerState<ChooseServiceScreen> {
                                   service: list[i],
                                   green: i.isEven,
                                   selected: list[i].id == selected?.id,
+                                  cover: plan == null
+                                      ? null
+                                      : CoverBadge(
+                                          loading: coverageLoading,
+                                          coverage: coverageOf(list[i]),
+                                        ),
                                   onTap: () =>
                                       setState(() => _selectedId = list[i].id),
                                 ),
@@ -144,6 +175,21 @@ class _ChooseServiceScreenState extends ConsumerState<ChooseServiceScreen> {
                             ],
                           ),
                   ),
+                  if (plan != null && planWillNotPay) ...[
+                    InfoBanner(
+                      tone: BannerTone.warning,
+                      title: "${plan.name} won't pay for this",
+                      message:
+                          selectedCoverage?.check?.status.label ??
+                          "We couldn't check your cover for this service.",
+                      actionLabel: 'Pay for it myself instead',
+                      onAction: () => context.push(
+                        RoutePaths.bookingChooseService,
+                        extra: const BookingStart.direct(),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
                   if (!_clinicianChosen && services.hasValue) ...[
                     const SizedBox(height: AppSpacing.xs),
                     Text(
@@ -205,7 +251,9 @@ class _ChooseServiceScreenState extends ConsumerState<ChooseServiceScreen> {
               child: PrimaryButton(
                 label: 'Continue',
                 icon: Icons.arrow_forward,
-                onPressed: selected == null ? null : () => _continue(selected),
+                onPressed: selected == null || planWillNotPay || coverageLoading
+                    ? null
+                    : () => _continue(selected, selectedCoverage),
               ),
             ),
           ],
@@ -221,12 +269,16 @@ class _ServiceTile extends StatelessWidget {
     required this.green,
     required this.selected,
     required this.onTap,
+    this.cover,
   });
 
   final ClinicalService service;
   final bool green;
   final bool selected;
   final VoidCallback onTap;
+
+  /// What the health plan says about covering it, when one is paying.
+  final Widget? cover;
 
   @override
   Widget build(BuildContext context) {
@@ -287,6 +339,7 @@ class _ServiceTile extends StatelessWidget {
                         color: context.palette.inkMuted,
                       ),
                     ),
+                    if (cover != null) ...[const SizedBox(height: 4), cover!],
                   ],
                 ),
               ),

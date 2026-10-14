@@ -11,6 +11,8 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../payer/domain/models/authorisation.dart';
+import '../../payer/domain/models/eligibility_status.dart';
 import '../../payment/domain/models/payment_status.dart';
 import '../application/booking_controller.dart';
 import '../domain/models/booking_status.dart';
@@ -39,14 +41,33 @@ class BookingConfirmationScreen extends ConsumerWidget {
     final uk = Formatters.ukTime(appointment.startsAt);
     final zone = Formatters.ukZoneLabel(appointment.startsAt);
 
-    final paymentLabel = switch (appointment.fundingRoute.apiValue) {
-      'pay_per_visit' when payment != null && payment.isPaid =>
-        'Paid ${Formatters.money(payment.amountMinor)}',
-      'pay_per_visit' when payment != null =>
-        '${Formatters.money(payment.amountMinor)} · '
-            '${payment.status == PaymentStatus.failed ? 'payment failed' : 'awaiting payment'}',
-      _ => appointment.fundingRoute.label,
-    };
+    final plan = outcome.planName;
+    final check = outcome.eligibility;
+    final authorisation = outcome.authorisation;
+
+    final String paymentLabel;
+    if (plan != null) {
+      paymentLabel = switch ((check?.status, authorisation?.status)) {
+        (_, AuthorisationStatus.approved) => 'Approved by $plan',
+        (_, AuthorisationStatus.pending) => 'Waiting for $plan to approve',
+        (_, AuthorisationStatus.moreInfoRequired) =>
+          '$plan needs more information',
+        (_, AuthorisationStatus.declined) => 'Declined by $plan',
+        (EligibilityStatus.coPay, _) when check?.coPayMinor != null =>
+          'Covered by $plan · co-pay ${Formatters.money(check!.coPayMinor!)}',
+        (EligibilityStatus.covered, _) => 'Covered by $plan',
+        _ => plan,
+      };
+    } else {
+      paymentLabel = switch (appointment.fundingRoute.apiValue) {
+        'pay_per_visit' when payment != null && payment.isPaid =>
+          'Paid ${Formatters.money(payment.amountMinor)}',
+        'pay_per_visit' when payment != null =>
+          '${Formatters.money(payment.amountMinor)} · '
+              '${payment.status == PaymentStatus.failed ? 'payment failed' : 'awaiting payment'}',
+        _ => appointment.fundingRoute.label,
+      };
+    }
 
     return Scaffold(
       backgroundColor: context.palette.background,
@@ -153,10 +174,13 @@ class BookingConfirmationScreen extends ConsumerWidget {
               InfoBanner(
                 tone: BannerTone.warning,
                 title: 'Your time is being held',
-                message:
-                    "We'll hold this time for 10 minutes. Your booking is "
-                    'confirmed as soon as payment comes through, and '
-                    "we'll send you a notification.",
+                message: plan == null
+                    ? "We'll hold this time for 10 minutes. Your booking is "
+                          'confirmed as soon as payment comes through, and '
+                          "we'll send you a notification."
+                    : "We'll hold this time while $plan approves your visit. "
+                          "You'll get a notification as soon as it is "
+                          'confirmed.',
                 actionLabel: 'Check status',
                 onAction: () =>
                     ref.read(appointmentsProvider.notifier).refresh(),

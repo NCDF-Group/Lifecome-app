@@ -1,110 +1,141 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/network/api_exception.dart';
+import '../../../core/network/idempotency_key_generator.dart';
 import '../../../core/router/route_paths.dart';
+import '../../../core/router/safe_back.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/utils/validators.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
+import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/layout/screen_title.dart';
+import '../application/payer_controller.dart';
+import '../../profile/presentation/profile_required_prompt.dart';
+import '../domain/models/payer.dart';
+import 'widgets/payer_errors.dart';
 
-/// Blueprint view 07 — Verify Your Eligibility (employer/sponsor access).
-/// No payer integration exists yet, so "Verify eligibility" always
-/// succeeds after a short delay rather than checking a real employer or
-/// HMO record.
-class VerifyHmoMembershipScreen extends StatefulWidget {
-  const VerifyHmoMembershipScreen({super.key, required this.hmoName});
+/// Blueprint view 07 — Verify Your Membership. The membership number is
+/// checked with the health plan itself; the plan's own answer decides.
+class VerifyHmoMembershipScreen extends ConsumerStatefulWidget {
+  const VerifyHmoMembershipScreen({super.key, required this.payer});
 
-  final String hmoName;
+  final Payer payer;
 
   @override
-  State<VerifyHmoMembershipScreen> createState() =>
+  ConsumerState<VerifyHmoMembershipScreen> createState() =>
       _VerifyHmoMembershipScreenState();
 }
 
-class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
-  final _nameController = TextEditingController();
-  final _dobController = TextEditingController();
-  final _emailController = TextEditingController();
+class _VerifyHmoMembershipScreenState
+    extends ConsumerState<VerifyHmoMembershipScreen> {
+  final _memberController = TextEditingController();
+  String? _memberError;
+  bool _submitted = false;
   bool _loading = false;
+
+  /// A retry of the same number reuses its key, so it can never add a second
+  /// membership; a different number gets a new one.
+  String _key = newIdempotencyKey();
+  String _keyFor = '';
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _dobController.dispose();
-    _emailController.dispose();
+    _memberController.dispose();
     super.dispose();
   }
 
-  Future<void> _pickDateOfBirth() async {
-    final now = DateTime.now();
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime(now.year - 30),
-      firstDate: DateTime(now.year - 120),
-      lastDate: now,
-      helpText: 'Date of birth',
-    );
-    if (picked == null) return;
-    setState(() {
-      _dobController.text =
-          '${picked.day.toString().padLeft(2, '0')} / '
-          '${picked.month.toString().padLeft(2, '0')} / ${picked.year}';
-    });
+  bool _validate() {
+    final error = Validators.memberId(_memberController.text);
+    setState(() => _memberError = error);
+    return error == null;
   }
 
   Future<void> _verify() async {
+    if (_loading) return;
+    setState(() => _submitted = true);
+    if (!_validate()) return;
+
+    final memberId = _memberController.text.trim();
+    if (memberId != _keyFor) {
+      _key = newIdempotencyKey();
+      _keyFor = memberId;
+    }
+
     setState(() => _loading = true);
-    await Future<void>.delayed(const Duration(milliseconds: 900));
-    if (!mounted) return;
-    setState(() => _loading = false);
-    context.push(RoutePaths.payerCoverage, extra: widget.hmoName);
+    try {
+      final plan = await ref
+          .read(payerControllerProvider)
+          .verify(
+            payer: widget.payer,
+            memberId: memberId,
+            idempotencyKey: _key,
+          );
+      if (!mounted) return;
+      context.push(RoutePaths.payerCoverage, extra: plan);
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      if (error.code == 'MEMBERSHIP_NOT_VERIFIED') {
+        setState(
+          () => _memberError = membershipErrorMessage(error, widget.payer.name),
+        );
+      } else if (error.code == 'PROFILE_REQUIRED') {
+        await promptCompleteProfile(context);
+      } else {
+        await showErrorPopup(context, error.message);
+      }
+    } catch (_) {
+      if (mounted) {
+        await showErrorPopup(
+          context,
+          'Something went wrong. Please try again.',
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final payer = widget.payer;
+
     return Scaffold(
-      backgroundColor: context.palette.background,
+      backgroundColor: palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            AppHeaderBar(showBack: true, onBack: () => context.pop()),
+            const AppHeaderBar(showBack: true),
             const SizedBox(height: 20),
-            Text(
-              'Verify your eligibility',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: context.palette.ink,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'We’ve recognised your invitation. Please check your '
-              'details so we can verify your access.',
-              style: TextStyle(
-                fontSize: 14,
-                color: context.palette.inkMuted,
-                height: 1.4,
-              ),
+            const ScreenTitle(
+              title: 'Verify your membership',
+              subtitle:
+                  'Enter the membership number from your card so we can '
+                  'check it with your plan.',
             ),
             const SizedBox(height: AppSpacing.md),
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: context.palette.tintGreen,
+                color: palette.tintGreen,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Row(
                 children: [
                   CircleAvatar(
                     radius: 22,
-                    backgroundColor: context.palette.elevated,
+                    backgroundColor: palette.elevated,
                     child: Icon(
-                      Icons.apartment_outlined,
-                      color: context.palette.positive,
+                      Icons.health_and_safety_outlined,
+                      color: palette.positive,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
@@ -113,28 +144,18 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Invitation recognised',
+                          'Your health plan',
                           style: TextStyle(
                             fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: context.palette.positive,
+                            color: palette.inkMuted,
                           ),
                         ),
                         Text(
-                          'Employer or sponsor access',
+                          payer.name,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: context.palette.ink,
-                          ),
-                        ),
-                        Text(
-                          'Your organisation provides access to LifeCome '
-                          'Live.',
-                          style: TextStyle(
-                            fontSize: 12.5,
-                            color: context.palette.inkMuted,
-                            height: 1.4,
+                            color: palette.ink,
                           ),
                         ),
                       ],
@@ -147,77 +168,33 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                border: Border.all(color: context.palette.line),
+                border: Border.all(color: palette.line),
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
-              child: Column(
-                children: [
-                  AppTextField(
-                    label: 'Full name',
-                    controller: _nameController,
-                    hintText: 'Enter your full name',
-                    textInputAction: TextInputAction.next,
-                    autofillHints: const [AutofillHints.name],
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  AppTextField(
-                    label: 'Date of birth',
-                    controller: _dobController,
-                    hintText: 'DD / MM / YYYY',
-                    readOnly: true,
-                    onTap: _pickDateOfBirth,
-                    suffixIcon: Icon(
-                      Icons.calendar_today_outlined,
-                      size: 18,
-                      color: context.palette.inkMuted,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  AppTextField(
-                    label: 'Personal email',
-                    controller: _emailController,
-                    hintText: 'Enter your email address',
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.done,
-                    autofillHints: const [AutofillHints.email],
-                  ),
-                ],
+              child: AppTextField(
+                label: 'Membership number',
+                controller: _memberController,
+                hintText: 'Enter your membership number',
+                textInputAction: TextInputAction.done,
+                textCapitalization: TextCapitalization.characters,
+                errorText: _memberError,
+                onChanged: (_) {
+                  if (_submitted) _validate();
+                },
+                onSubmitted: (_) => _verify(),
               ),
             ),
             const SizedBox(height: AppSpacing.md),
             PrimaryButton(
-              label: 'Verify eligibility',
+              label: 'Verify membership',
               icon: Icons.arrow_forward,
               loading: _loading,
               onPressed: _verify,
             ),
             const SizedBox(height: AppSpacing.sm),
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.sm),
-              decoration: BoxDecoration(
-                color: context.palette.surface,
-                borderRadius: BorderRadius.circular(AppRadius.control),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.info_outline,
-                    size: 16,
-                    color: context.palette.accent,
-                  ),
-                  SizedBox(width: AppSpacing.xs),
-                  Expanded(
-                    child: Text(
-                      'This checks your funding, not your clinical '
-                      'suitability.',
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        color: context.palette.inkMuted,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            const InfoBanner(
+              message:
+                  'This checks your funding, not your clinical suitability.',
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
@@ -225,7 +202,7 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: context.palette.ink,
+                color: palette.ink,
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -236,8 +213,8 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
                   Expanded(
                     child: _FallbackCard(
                       icon: Icons.headset_mic_outlined,
-                      background: context.palette.tintGreen,
-                      iconColor: context.palette.positive,
+                      background: palette.tintGreen,
+                      iconColor: palette.positive,
                       title: 'Get help',
                       subtitle: 'Speak to our team.',
                       onTap: () => context.go(RoutePaths.messages),
@@ -247,11 +224,12 @@ class _VerifyHmoMembershipScreenState extends State<VerifyHmoMembershipScreen> {
                   Expanded(
                     child: _FallbackCard(
                       icon: Icons.sync_alt,
-                      background: context.palette.tintBlue,
-                      iconColor: context.palette.accent,
+                      background: palette.tintBlue,
+                      iconColor: palette.accent,
                       title: 'Choose another way',
                       subtitle: 'Other ways to access.',
-                      onTap: () => context.pop(),
+                      onTap: () =>
+                          context.goBack(fallback: RoutePaths.chooseAccess),
                     ),
                   ),
                 ],

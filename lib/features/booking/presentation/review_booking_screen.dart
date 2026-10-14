@@ -14,7 +14,9 @@ import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/layout/back_app_bar.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
 import '../../../core/widgets/media/avatar.dart';
+import '../../payer/domain/models/eligibility_status.dart';
 import '../application/booking_controller.dart';
+import '../../profile/presentation/profile_required_prompt.dart';
 import '../domain/models/booking_selection.dart';
 import '../domain/models/consultation_mode.dart';
 
@@ -42,6 +44,7 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
     create: newIdempotencyKey(),
     payment: newIdempotencyKey(),
     confirm: newIdempotencyKey(),
+    authorisation: newIdempotencyKey(),
   );
 
   Future<void> _confirm() async {
@@ -82,8 +85,7 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
           extra: widget.selection.copyWith(clearSlot: true),
         );
       case 'PROFILE_REQUIRED':
-        await showErrorPopup(context, error.message);
-        if (mounted) context.push(RoutePaths.completeProfile);
+        await promptCompleteProfile(context);
       default:
         await showErrorPopup(context, error.message);
     }
@@ -203,10 +205,10 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
                               ? (selection.hmoName ?? 'Health plan')
                               : 'Pay per visit',
                           trailing: isHmo
-                              ? 'Subject to authorisation'
+                              ? _coverLabel(selection)
                               : service.priceLabel,
                           trailingColor: isHmo
-                              ? context.palette.warning
+                              ? _coverColor(context, selection)
                               : context.palette.ink,
                         ),
                         if (selection.concern != null &&
@@ -265,6 +267,28 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
       ),
     );
   }
+}
+
+/// What the plan said about covering the service, in a few words.
+String _coverLabel(BookingSelection selection) {
+  final check = selection.eligibility;
+  if (check == null) return 'Cover checked on confirming';
+  return switch (check.status) {
+    EligibilityStatus.covered => 'Covered',
+    EligibilityStatus.coPay =>
+      check.coPayMinor == null
+          ? 'Co-pay applies'
+          : 'Co-pay ${Formatters.money(check.coPayMinor!)}',
+    EligibilityStatus.preAuthorisationRequired => 'Needs authorisation',
+    final other => other.label,
+  };
+}
+
+Color _coverColor(BuildContext context, BookingSelection selection) {
+  final status = selection.eligibility?.status;
+  return status == EligibilityStatus.covered
+      ? context.palette.positive
+      : context.palette.warning;
 }
 
 class _ReviewRow extends StatelessWidget {

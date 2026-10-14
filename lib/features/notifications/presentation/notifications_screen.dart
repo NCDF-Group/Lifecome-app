@@ -28,6 +28,10 @@ class NotificationsScreen extends ConsumerWidget {
         context.push(RoutePaths.healthRecords);
       case NotificationTarget.messages:
         context.go(RoutePaths.messages);
+        final thread = item.actionRef;
+        if (thread != null) {
+          context.push('${RoutePaths.messageThread}/$thread');
+        }
       case null:
         break;
     }

@@ -71,6 +71,13 @@ abstract final class RoutePaths {
   /// Messages tab — the single LifeCome care team conversation.
   static const messages = '/messages';
 
+  /// One conversation with the care team; the thread's id follows it
+  /// (`/message-thread/<id>`).
+  static const messageThread = '/message-thread';
+
+  /// Start a conversation with the care team: pick a topic and write to them.
+  static const newMessage = '/message-new';
+
   /// Profile tab — account, health records, and support.
   static const profile = '/profile';
 

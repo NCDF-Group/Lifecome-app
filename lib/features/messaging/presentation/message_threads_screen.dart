@@ -1,62 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/buttons/primary_button.dart';
+import '../../../core/widgets/feedback/error_state.dart';
+import '../../../core/widgets/feedback/info_banner.dart';
+import '../../../core/widgets/feedback/loading_indicator.dart';
+import '../application/messaging_controller.dart';
+import '../domain/models/message_thread.dart';
 
-class _Message {
-  const _Message({
-    required this.text,
-    required this.fromPatient,
-    required this.time,
-  });
-
-  final String text;
-  final bool fromPatient;
-  final String time;
-}
-
-/// The Messages tab — blueprint view 22, Care Team Messages. There is only
-/// ever one thread (the patient's own care team), so this goes straight to
-/// the conversation rather than a thread list. No messaging backend exists
-/// yet: sent messages are appended locally only, for now.
-class MessageThreadsScreen extends StatefulWidget {
+/// The Messages tab — blueprint view 22, Care Team Messages: the person's
+/// real conversations with the care team, most recent first, and the way to
+/// start another.
+class MessageThreadsScreen extends ConsumerWidget {
   const MessageThreadsScreen({super.key});
 
   @override
-  State<MessageThreadsScreen> createState() => _MessageThreadsScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final threads = ref.watch(threadsProvider);
+    final notifier = ref.read(threadsProvider.notifier);
 
-class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
-  final _controller = TextEditingController();
-
-  /// No messaging backend exists yet, so this starts empty rather than
-  /// showing a fabricated conversation — a real exchange only appears here
-  /// once the patient sends one or the care team replies.
-  final _messages = <_Message>[];
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _send() {
-    final text = _controller.text.trim();
-    if (text.isEmpty) return;
-    setState(() {
-      _messages.add(_Message(text: text, fromPatient: true, time: 'Now'));
-      _controller.clear();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.palette.background,
       body: SafeArea(
@@ -122,123 +91,34 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  Container(
-                    padding: const EdgeInsets.all(AppSpacing.sm),
-                    decoration: BoxDecoration(
-                      color: context.palette.tintBlue,
-                      borderRadius: BorderRadius.circular(AppRadius.control),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.info_outline,
-                          size: 18,
-                          color: context.palette.accent,
-                        ),
-                        SizedBox(width: AppSpacing.xs),
-                        Expanded(
-                          child: Text(
-                            'Messages are reviewed during service hours, not continuously.',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: context.palette.ink,
-                              height: 1.4,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  const InfoBanner(
+                    message:
+                        'Messages are reviewed during service hours, not '
+                        'continuously.',
                   ),
                 ],
               ),
             ),
             Expanded(
-              child: _messages.isEmpty
-                  ? const _EmptyThread()
-                  : ListView(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.md,
-                        vertical: AppSpacing.sm,
-                      ),
-                      children: [
-                        Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: AppSpacing.xs,
-                            ),
-                            child: Text(
-                              'Today',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: context.palette.inkMuted,
-                              ),
-                            ),
-                          ),
-                        ),
-                        for (final message in _messages)
-                          _MessageBubble(message: message),
-                      ],
-                    ),
+              child: threads.when(
+                loading: () => const LoadingIndicator(),
+                error: (error, _) => threads.hasValue
+                    ? _list(context, threads.requireValue, notifier.refresh)
+                    : ErrorState(error: error, onRetry: notifier.refresh),
+                data: (data) => _list(context, data, notifier.refresh),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.md,
                 AppSpacing.xs,
                 AppSpacing.md,
-                AppSpacing.sm,
+                AppSpacing.xs,
               ),
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () =>
-                        showComingSoonPopup(context, feature: 'Attachments'),
-                    icon: Icon(
-                      Icons.attach_file,
-                      color: context.palette.inkMuted,
-                    ),
-                  ),
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      decoration: InputDecoration(
-                        hintText: 'Type a message...',
-                        filled: true,
-                        fillColor: context.palette.elevated,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.md,
-                          vertical: AppSpacing.sm,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(AppRadius.pill),
-                          borderSide: BorderSide(color: context.palette.line),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(AppRadius.pill),
-                          borderSide: BorderSide(color: context.palette.line),
-                        ),
-                      ),
-                      onSubmitted: (_) => _send(),
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.xs),
-                  Material(
-                    color: AppColors.blue,
-                    shape: const CircleBorder(),
-                    child: InkWell(
-                      customBorder: const CircleBorder(),
-                      onTap: _send,
-                      child: const SizedBox(
-                        width: 44,
-                        height: 44,
-                        child: Icon(
-                          Icons.arrow_upward_rounded,
-                          color: AppColors.white,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              child: PrimaryButton(
+                label: 'New message',
+                icon: Icons.edit_outlined,
+                onPressed: () => context.push(RoutePaths.newMessage),
               ),
             ),
             Padding(
@@ -253,15 +133,9 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
                 borderRadius: BorderRadius.circular(AppRadius.control),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(AppRadius.control),
-                  onTap: () => showComingSoonPopup(
-                    context,
-                    feature: 'Emergency guidance',
-                  ),
+                  onTap: () => context.push(RoutePaths.emergency),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.sm,
-                      vertical: AppSpacing.sm,
-                    ),
+                    padding: const EdgeInsets.all(AppSpacing.sm),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -311,10 +185,38 @@ class _MessageThreadsScreenState extends State<MessageThreadsScreen> {
       ),
     );
   }
+
+  Widget _list(
+    BuildContext context,
+    List<MessageThread> threads,
+    Future<void> Function() onRefresh,
+  ) {
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: threads.isEmpty
+          ? LayoutBuilder(
+              builder: (context, constraints) => SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: constraints.maxHeight,
+                  child: const _EmptyThreads(),
+                ),
+              ),
+            )
+          : ListView.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(AppSpacing.md),
+              itemCount: threads.length,
+              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.xs),
+              itemBuilder: (context, index) =>
+                  _ThreadCard(thread: threads[index]),
+            ),
+    );
+  }
 }
 
-class _EmptyThread extends StatelessWidget {
-  const _EmptyThread();
+class _EmptyThreads extends StatelessWidget {
+  const _EmptyThreads();
 
   @override
   Widget build(BuildContext context) {
@@ -363,104 +265,74 @@ class _EmptyThread extends StatelessWidget {
   }
 }
 
-class _MessageBubble extends StatelessWidget {
-  const _MessageBubble({required this.message});
+class _ThreadCard extends StatelessWidget {
+  const _ThreadCard({required this.thread});
 
-  final _Message message;
+  final MessageThread thread;
 
   @override
   Widget build(BuildContext context) {
-    if (message.fromPatient) {
-      return Padding(
-        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              message.time,
-              style: TextStyle(fontSize: 11, color: context.palette.inkMuted),
-            ),
-            const SizedBox(height: 2),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.72,
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm,
-                  vertical: AppSpacing.sm,
-                ),
-                decoration: BoxDecoration(
-                  color: context.palette.tintGreen,
-                  borderRadius: BorderRadius.circular(AppRadius.control),
-                ),
-                child: Text(
-                  message.text,
-                  style: TextStyle(fontSize: 14, color: context.palette.ink),
-                ),
+    final palette = context.palette;
+    return Material(
+      color: palette.tintBlue,
+      borderRadius: BorderRadius.circular(AppRadius.card),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        onTap: () => context.push('${RoutePaths.messageThread}/${thread.id}'),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: palette.elevated,
+                child: Icon(Icons.support_agent, color: palette.accent),
               ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            radius: 16,
-            backgroundColor: context.palette.tintBlue,
-            child: Icon(
-              Icons.support_agent,
-              size: 16,
-              color: context.palette.accent,
-            ),
-          ),
-          const SizedBox(width: AppSpacing.xs),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Care team',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: context.palette.ink,
-                      ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            thread.title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: palette.ink,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          Formatters.relative(thread.updatedAt),
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            color: palette.inkMuted,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: AppSpacing.xs),
-                    Text(
-                      message.time,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: context.palette.inkMuted,
+                    if (thread.lastMessage != null)
+                      Text(
+                        thread.lastMessage!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: palette.inkMuted,
+                          height: 1.3,
+                        ),
                       ),
-                    ),
                   ],
                 ),
-                const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.all(AppSpacing.sm),
-                  decoration: BoxDecoration(
-                    color: context.palette.tintBlue,
-                    borderRadius: BorderRadius.circular(AppRadius.control),
-                  ),
-                  child: Text(
-                    message.text,
-                    style: TextStyle(fontSize: 14, color: context.palette.ink),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

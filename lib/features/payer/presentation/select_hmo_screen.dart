@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
@@ -6,42 +7,48 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/utils/validators.dart';
+import '../../../core/widgets/feedback/empty_state.dart';
+import '../../../core/widgets/feedback/error_state.dart';
+import '../../../core/widgets/feedback/loading_indicator.dart';
+import '../../../core/widgets/layout/back_app_bar.dart';
+import '../../booking/domain/models/booking_selection.dart';
+import '../application/payer_controller.dart';
+import '../domain/models/payer.dart';
 
-class _Hmo {
-  const _Hmo({required this.name, required this.tagline});
-
-  final String name;
-  final String tagline;
-}
-
-const _hmos = [
-  _Hmo(name: 'LifeCome HMO', tagline: 'People. Health. Brighter Lives.'),
-  _Hmo(name: 'Bupa', tagline: 'A healthier world needs you.'),
-  _Hmo(name: 'AXA Health', tagline: 'Health for the real world.'),
-  _Hmo(name: 'Vitality', tagline: 'The more you engage, the more you get.'),
-  _Hmo(name: 'Aviva', tagline: 'Take control of your health.'),
-  _Hmo(name: 'WPA', tagline: "Britain's specialist health insurer."),
-];
-
-/// Blueprint view 06 — Select Your HMO. LifeCome HMO is always listed first
-/// (product decision, per the blueprint), not alphabetically.
-class SelectHmoScreen extends StatelessWidget {
+/// Blueprint view 06 — Select Your HMO. The plans come from the backend, in
+/// the order it lists them (the first is the one the business wants shown
+/// first, per the blueprint) — nothing is hard-coded here.
+class SelectHmoScreen extends ConsumerStatefulWidget {
   const SelectHmoScreen({super.key});
 
   @override
+  ConsumerState<SelectHmoScreen> createState() => _SelectHmoScreenState();
+}
+
+class _SelectHmoScreenState extends ConsumerState<SelectHmoScreen> {
+  final _searchController = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _payDirectly() => context.push(
+    RoutePaths.bookingChooseService,
+    extra: const BookingStart.direct(),
+  );
+
+  @override
   Widget build(BuildContext context) {
+    final payers = ref.watch(payersProvider);
+    final searchError = Validators.searchQuery(_query);
+
     return Scaffold(
       backgroundColor: context.palette.background,
-      appBar: AppBar(
-        title: Text(
-          'Select your HMO',
-          style: TextStyle(
-            color: context.palette.ink,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
+      appBar: const BackAppBar(title: 'Select your HMO'),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),
@@ -57,15 +64,13 @@ class SelectHmoScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             TextField(
+              controller: _searchController,
+              onChanged: (value) => setState(() => _query = value),
+              style: TextStyle(fontSize: 16, color: context.palette.ink),
               decoration: InputDecoration(
-                hintText: 'Search for your HMO (e.g. Bupa, AXA, Vitality)',
+                hintText: 'Search for your HMO',
+                errorText: searchError,
                 prefixIcon: const Icon(Icons.search),
-                filled: true,
-                fillColor: context.palette.surface,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.pill),
-                  borderSide: BorderSide.none,
-                ),
               ),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -78,10 +83,45 @@ class SelectHmoScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
-            for (var i = 0; i < _hmos.length; i++) ...[
-              _HmoTile(hmo: _hmos[i], isDefault: i == 0),
-              const SizedBox(height: AppSpacing.xs),
-            ],
+            payers.when(
+              loading: () => const LoadingIndicator(),
+              error: (error, _) => ErrorState(
+                error: error,
+                onRetry: () => ref.invalidate(payersProvider),
+              ),
+              data: (all) {
+                final query = _query.trim().toLowerCase();
+                final shown = [
+                  for (final payer in all)
+                    if (query.isEmpty ||
+                        payer.name.toLowerCase().contains(query))
+                      payer,
+                ];
+                if (shown.isEmpty) {
+                  return EmptyState(
+                    icon: Icons.health_and_safety_outlined,
+                    title: all.isEmpty
+                        ? 'No health plans yet'
+                        : 'No plans match your search',
+                    message: all.isEmpty
+                        ? 'No HMOs are connected yet. You can still pay '
+                              'directly for your consultation.'
+                        : 'Try a different name, or pay directly.',
+                  );
+                }
+                return Column(
+                  children: [
+                    for (var i = 0; i < shown.length; i++) ...[
+                      _HmoTile(
+                        payer: shown[i],
+                        isDefault: query.isEmpty && i == 0,
+                      ),
+                      const SizedBox(height: AppSpacing.xs),
+                    ],
+                  ],
+                );
+              },
+            ),
             const SizedBox(height: AppSpacing.xs),
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
@@ -103,10 +143,7 @@ class SelectHmoScreen extends StatelessWidget {
                     ),
                   ),
                   TextButton(
-                    onPressed: () => showComingSoonPopup(
-                      context,
-                      feature: 'Paying directly',
-                    ),
+                    onPressed: _payDirectly,
                     child: const Text('Pay directly'),
                   ),
                 ],
@@ -120,9 +157,9 @@ class SelectHmoScreen extends StatelessWidget {
 }
 
 class _HmoTile extends StatelessWidget {
-  const _HmoTile({required this.hmo, required this.isDefault});
+  const _HmoTile({required this.payer, required this.isDefault});
 
-  final _Hmo hmo;
+  final Payer payer;
   final bool isDefault;
 
   @override
@@ -133,7 +170,7 @@ class _HmoTile extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.control),
         onTap: () =>
-            context.push(RoutePaths.payerVerifyMembership, extra: hmo.name),
+            context.push(RoutePaths.payerVerifyMembership, extra: payer),
         child: Container(
           padding: const EdgeInsets.all(AppSpacing.sm),
           decoration: BoxDecoration(
@@ -149,7 +186,7 @@ class _HmoTile extends StatelessWidget {
               CircleAvatar(
                 backgroundColor: AppColors.blue.withValues(alpha: 0.1),
                 child: Text(
-                  hmo.name[0],
+                  payer.name.isEmpty ? '?' : payer.name[0].toUpperCase(),
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: context.palette.accent,
@@ -158,25 +195,13 @@ class _HmoTile extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      hmo.name,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: context.palette.ink,
-                      ),
-                    ),
-                    Text(
-                      hmo.tagline,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: context.palette.inkMuted,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  payer.name,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: context.palette.ink,
+                  ),
                 ),
               ),
               if (isDefault)

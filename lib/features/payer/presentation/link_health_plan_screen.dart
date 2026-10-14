@@ -1,334 +1,195 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/network/api_exception.dart';
+import '../../../core/network/idempotency_key_generator.dart';
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/utils/validators.dart';
+import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/widgets/feedback/empty_state.dart';
+import '../../../core/widgets/feedback/error_state.dart';
+import '../../../core/widgets/feedback/info_banner.dart';
+import '../../../core/widgets/feedback/loading_indicator.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/layout/screen_title.dart';
+import '../../booking/domain/models/booking_selection.dart';
+import '../../profile/presentation/profile_required_prompt.dart';
+import '../application/payer_controller.dart';
+import '../domain/models/payer.dart';
+import 'widgets/payer_errors.dart';
 
-const _providers = [
-  'LifeCome Benefits',
-  'LifeCome HMO',
-  'Bupa',
-  'AXA Health',
-  'Vitality',
-  'Aviva',
-  'WPA',
-];
+/// "Link your health plan" — check a membership with one of the plans taking
+/// part, then see what it covers. The plans and the answer come from the
+/// backend.
+class LinkHealthPlanScreen extends ConsumerStatefulWidget {
+  const LinkHealthPlanScreen({super.key, this.payer});
 
-/// "Link your health plan" — confirm cover with LifeCome Benefits or a
-/// participating HMO before booking. No eligibility backend exists yet,
-/// so "Check my cover" always succeeds after a short delay.
-class LinkHealthPlanScreen extends StatefulWidget {
-  const LinkHealthPlanScreen({super.key, this.provider});
-
-  final String? provider;
+  /// A plan to start on, when the person has already chosen one.
+  final Payer? payer;
 
   @override
-  State<LinkHealthPlanScreen> createState() => _LinkHealthPlanScreenState();
+  ConsumerState<LinkHealthPlanScreen> createState() =>
+      _LinkHealthPlanScreenState();
 }
 
-class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
-  late String _provider = widget.provider ?? _providers.first;
+class _LinkHealthPlanScreenState extends ConsumerState<LinkHealthPlanScreen> {
   final _policyController = TextEditingController();
-  final _dobController = TextEditingController();
+  String? _payerId;
+  String? _policyError;
+  bool _submitted = false;
   bool _loading = false;
+
+  String _key = newIdempotencyKey();
+  String _keyFor = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _payerId = widget.payer?.id;
+  }
 
   @override
   void dispose() {
     _policyController.dispose();
-    _dobController.dispose();
     super.dispose();
   }
 
-  Future<void> _pickDateOfBirth() async {
-    final now = DateTime.now();
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime(now.year - 30),
-      firstDate: DateTime(now.year - 120),
-      lastDate: now,
-      helpText: 'Date of birth',
-    );
-    if (picked == null) return;
-    setState(() {
-      _dobController.text =
-          '${picked.day.toString().padLeft(2, '0')} / '
-          '${picked.month.toString().padLeft(2, '0')} / ${picked.year}';
-    });
+  Payer? _selected(List<Payer> payers) {
+    if (payers.isEmpty) return null;
+    for (final payer in payers) {
+      if (payer.id == _payerId) return payer;
+    }
+    return payers.first;
   }
 
-  Future<void> _checkCover() async {
+  bool _validate() {
+    final error = Validators.memberId(_policyController.text);
+    setState(() => _policyError = error);
+    return error == null;
+  }
+
+  Future<void> _checkCover(Payer payer) async {
+    if (_loading) return;
+    setState(() => _submitted = true);
+    if (!_validate()) return;
+
+    final memberId = _policyController.text.trim();
+    final fingerprint = '${payer.code}:$memberId';
+    if (fingerprint != _keyFor) {
+      _key = newIdempotencyKey();
+      _keyFor = fingerprint;
+    }
+
     setState(() => _loading = true);
-    await Future<void>.delayed(const Duration(milliseconds: 900));
-    if (!mounted) return;
-    setState(() => _loading = false);
-    context.push(RoutePaths.payerCoverage, extra: _provider);
+    try {
+      final plan = await ref
+          .read(payerControllerProvider)
+          .verify(payer: payer, memberId: memberId, idempotencyKey: _key);
+      if (!mounted) return;
+      context.push(RoutePaths.payerCoverage, extra: plan);
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      if (error.code == 'MEMBERSHIP_NOT_VERIFIED') {
+        setState(
+          () => _policyError = membershipErrorMessage(error, payer.name),
+        );
+      } else if (error.code == 'PROFILE_REQUIRED') {
+        await promptCompleteProfile(context);
+      } else {
+        await showErrorPopup(context, error.message);
+      }
+    } catch (_) {
+      if (mounted) {
+        await showErrorPopup(
+          context,
+          'Something went wrong. Please try again.',
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final payers = ref.watch(payersProvider);
+
     return Scaffold(
-      backgroundColor: context.palette.background,
+      backgroundColor: palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            AppHeaderBar(showBack: true, onBack: () => context.pop()),
-            const SizedBox(height: 20),
-            Text(
-              'Link your health plan',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: context.palette.ink,
-              ),
+            const AppHeaderBar(
+              showBack: true,
+              backFallback: RoutePaths.chooseAccess,
             ),
-            const SizedBox(height: 4),
-            Text(
-              'Check your cover for our services and access any available '
-              'benefits.',
-              style: TextStyle(
-                fontSize: 14,
-                color: context.palette.inkMuted,
-                height: 1.4,
-              ),
+            const SizedBox(height: 20),
+            const ScreenTitle(
+              title: 'Link your health plan',
+              subtitle:
+                  'Check your cover for our services and access any '
+                  'available benefits.',
             ),
             const SizedBox(height: AppSpacing.md),
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                color: context.palette.tintGreen,
-                borderRadius: BorderRadius.circular(AppRadius.card),
+            payers.when(
+              loading: () => const LoadingIndicator(),
+              error: (error, _) => ErrorState(
+                error: error,
+                onRetry: () => ref.invalidate(payersProvider),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Plan provider',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: context.palette.ink,
+              data: (all) {
+                final payer = _selected(all);
+                if (payer == null) {
+                  return EmptyState(
+                    icon: Icons.health_and_safety_outlined,
+                    title: 'No health plans yet',
+                    message:
+                        'No plans are connected yet. You can still pay '
+                        'directly for your consultation.',
+                    actionLabel: 'Pay directly',
+                    onAction: () => context.push(
+                      RoutePaths.bookingChooseService,
+                      extra: const BookingStart.direct(),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: context.palette.elevated,
-                      borderRadius: BorderRadius.circular(AppRadius.control),
-                      border: Border.all(color: context.palette.line),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: _provider,
-                        isExpanded: true,
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: context.palette.inkMuted,
-                        ),
-                        items: [
-                          for (final provider in _providers)
-                            DropdownMenuItem(
-                              value: provider,
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.apartment_outlined,
-                                    size: 18,
-                                    color: context.palette.positive,
-                                  ),
-                                  const SizedBox(width: AppSpacing.xs),
-                                  Text(
-                                    provider,
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      color: context.palette.ink,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                        ],
-                        onChanged: (value) =>
-                            setState(() => _provider = value ?? _provider),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  AppTextField(
-                    label: 'Membership or policy number',
-                    controller: _policyController,
-                    hintText: 'Enter your membership or policy number',
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  AppTextField(
-                    label: 'Date of birth',
-                    controller: _dobController,
-                    hintText: 'DD / MM / YYYY',
-                    readOnly: true,
-                    onTap: _pickDateOfBirth,
-                    suffixIcon: Icon(
-                      Icons.calendar_today_outlined,
-                      size: 18,
-                      color: context.palette.inkMuted,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  Material(
-                    color: AppColors.blue,
-                    borderRadius: BorderRadius.circular(AppRadius.pill),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                      onTap: _loading ? null : _checkCover,
-                      child: Container(
-                        height: 52,
-                        alignment: Alignment.center,
-                        child: _loading
-                            ? const SizedBox(
-                                height: 22,
-                                width: 22,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.4,
-                                  color: AppColors.white,
-                                ),
-                              )
-                            : const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'Check my cover',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.white,
-                                    ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Icon(
-                                    Icons.chevron_right,
-                                    color: AppColors.white,
-                                    size: 20,
-                                  ),
-                                ],
-                              ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                  );
+                }
+                return _form(context, all, payer);
+              },
             ),
             const SizedBox(height: AppSpacing.sm),
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                color: context.palette.tintBlue,
-                borderRadius: BorderRadius.circular(AppRadius.card),
-              ),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 18,
-                    backgroundColor: context.palette.elevated,
-                    child: Icon(
-                      Icons.lock_open_outlined,
-                      size: 18,
-                      color: context.palette.accent,
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Your information stays private',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: context.palette.ink,
-                          ),
-                        ),
-                        Text(
-                          "We only check your cover. We don't share your "
-                          'records with your insurer.',
-                          style: TextStyle(
-                            fontSize: 12.5,
-                            color: context.palette.inkMuted,
-                            height: 1.4,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            Text(
-              "What's covered?",
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-                color: context.palette.ink,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              "We'll check your cover for these services.",
-              style: TextStyle(fontSize: 13, color: context.palette.inkMuted),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _CoverageRow(
-              background: context.palette.tintGreen,
-              icon: Icons.desktop_windows_outlined,
-              iconColor: context.palette.positive,
-              title: 'Online GP',
-              subtitle: 'Video or phone appointments',
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _CoverageRow(
-              background: context.palette.tintBlue,
-              icon: Icons.apartment_outlined,
-              iconColor: context.palette.accent,
-              title: 'Smart GP clinics',
-              subtitle: 'Care in person',
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _CoverageRow(
-              background: context.palette.tintGreen,
-              icon: Icons.description_outlined,
-              iconColor: context.palette.positive,
-              title: 'Health records',
-              subtitle: 'Access your records and care plans',
+            const InfoBanner(
+              icon: Icons.lock_open_outlined,
+              title: 'Your information stays private',
+              message:
+                  "We only check your cover. We don't share your records "
+                  'with your insurer.',
             ),
             const SizedBox(height: AppSpacing.sm),
             Material(
-              color: context.palette.tintBlue,
+              color: palette.tintBlue,
               borderRadius: BorderRadius.circular(AppRadius.card),
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppRadius.card),
-                onTap: () => showComingSoonPopup(
-                  context,
-                  feature: 'Contacting patient support',
-                ),
+                onTap: () => context.go(RoutePaths.messages),
                 child: Padding(
                   padding: const EdgeInsets.all(AppSpacing.md),
                   child: Row(
                     children: [
                       CircleAvatar(
                         radius: 18,
-                        backgroundColor: context.palette.elevated,
+                        backgroundColor: palette.elevated,
                         child: Icon(
                           Icons.help_outline,
                           size: 18,
-                          color: context.palette.accent,
+                          color: palette.accent,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.sm),
@@ -341,20 +202,20 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: context.palette.ink,
+                                color: palette.ink,
                               ),
                             ),
                             Text(
-                              "Contact support and we'll help you.",
+                              "Message the care team and we'll help you.",
                               style: TextStyle(
                                 fontSize: 12.5,
-                                color: context.palette.inkMuted,
+                                color: palette.inkMuted,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      Icon(Icons.chevron_right, color: context.palette.accent),
+                      Icon(Icons.chevron_right, color: palette.accent),
                     ],
                   ),
                 ),
@@ -365,62 +226,87 @@ class _LinkHealthPlanScreenState extends State<LinkHealthPlanScreen> {
       ),
     );
   }
-}
 
-class _CoverageRow extends StatelessWidget {
-  const _CoverageRow({
-    required this.background,
-    required this.icon,
-    required this.iconColor,
-    required this.title,
-    required this.subtitle,
-  });
-
-  final Color background;
-  final IconData icon;
-  final Color iconColor;
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _form(BuildContext context, List<Payer> all, Payer payer) {
+    final palette = context.palette;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: background,
+        color: palette.tintGreen,
         borderRadius: BorderRadius.circular(AppRadius.card),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: context.palette.elevated,
-            child: Icon(icon, size: 18, color: iconColor),
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: context.palette.ink,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    color: context.palette.inkMuted,
-                  ),
-                ),
-              ],
+          Text(
+            'Plan provider',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: palette.ink,
             ),
           ),
-          Icon(Icons.check_circle, color: context.palette.positive),
+          const SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              color: palette.elevated,
+              borderRadius: BorderRadius.circular(AppRadius.control),
+              border: Border.all(color: palette.line),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: payer.id,
+                isExpanded: true,
+                icon: Icon(Icons.keyboard_arrow_down, color: palette.inkMuted),
+                items: [
+                  for (final option in all)
+                    DropdownMenuItem(
+                      value: option.id,
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.apartment_outlined,
+                            size: 18,
+                            color: palette.positive,
+                          ),
+                          const SizedBox(width: AppSpacing.xs),
+                          Text(
+                            option.name,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: palette.ink,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+                onChanged: (value) => setState(() => _payerId = value),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          AppTextField(
+            label: 'Membership or policy number',
+            controller: _policyController,
+            hintText: 'Enter your membership or policy number',
+            textInputAction: TextInputAction.done,
+            textCapitalization: TextCapitalization.characters,
+            errorText: _policyError,
+            onChanged: (_) {
+              if (_submitted) _validate();
+            },
+            onSubmitted: (_) => _checkCover(payer),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          PrimaryButton(
+            label: 'Check my cover',
+            icon: Icons.chevron_right,
+            loading: _loading,
+            onPressed: () => _checkCover(payer),
+          ),
         ],
       ),
     );

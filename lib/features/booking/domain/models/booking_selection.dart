@@ -1,4 +1,6 @@
 import '../../../doctors/domain/models/doctor.dart';
+import '../../../payer/domain/models/eligibility_result.dart';
+import '../../../payer/domain/models/membership.dart';
 import 'appointment.dart';
 import 'availability_slot.dart';
 import 'booking_status.dart';
@@ -12,15 +14,19 @@ enum BookingAccessType { hmo, direct }
 class BookingStart {
   const BookingStart.direct({this.doctor})
     : accessType = BookingAccessType.direct,
-      hmoName = null;
+      plan = null;
 
-  const BookingStart.hmo(String this.hmoName)
+  const BookingStart.hmo(LinkedPlan this.plan)
     : accessType = BookingAccessType.hmo,
       doctor = null;
 
   final BookingAccessType accessType;
-  final String? hmoName;
+
+  /// The verified health plan that will pay, for an `hmo` booking.
+  final LinkedPlan? plan;
   final Doctor? doctor;
+
+  String? get hmoName => plan?.name;
 }
 
 /// Accumulates the patient's choices as they move through the booking journey
@@ -30,7 +36,8 @@ class BookingStart {
 class BookingSelection {
   const BookingSelection({
     required this.accessType,
-    this.hmoName,
+    this.plan,
+    this.eligibility,
     this.service,
     this.doctor,
     this.slot,
@@ -43,8 +50,11 @@ class BookingSelection {
 
   final BookingAccessType accessType;
 
-  /// The health plan paying for the visit, when [accessType] is `hmo`.
-  final String? hmoName;
+  /// The verified health plan paying for the visit, when [accessType] is `hmo`.
+  final LinkedPlan? plan;
+
+  /// What that plan said about covering [service], when it has been asked.
+  final EligibilityCheck? eligibility;
   final ClinicalService? service;
   final Doctor? doctor;
   final AvailabilitySlot? slot;
@@ -55,6 +65,8 @@ class BookingSelection {
   final String? postcode;
   final String? concern;
   final AppointmentIntake? intake;
+
+  String? get hmoName => plan?.name;
 
   FundingRoute get fundingRoute => accessType == BookingAccessType.hmo
       ? FundingRoute.lifecomeBenefits
@@ -79,6 +91,7 @@ class BookingSelection {
   }
 
   BookingSelection copyWith({
+    EligibilityCheck? eligibility,
     ClinicalService? service,
     Doctor? doctor,
     AvailabilitySlot? slot,
@@ -91,7 +104,8 @@ class BookingSelection {
   }) {
     return BookingSelection(
       accessType: accessType,
-      hmoName: hmoName,
+      plan: plan,
+      eligibility: eligibility ?? this.eligibility,
       service: service ?? this.service,
       doctor: doctor ?? this.doctor,
       slot: clearSlot ? null : (slot ?? this.slot),

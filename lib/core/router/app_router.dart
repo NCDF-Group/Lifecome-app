@@ -37,8 +37,13 @@ import '../../features/legal/presentation/terms_screen.dart';
 import '../../features/membership/presentation/membership_billing_screen.dart';
 import '../../features/membership/presentation/membership_plans_screen.dart';
 import '../../features/membership/presentation/my_benefits_screen.dart';
+import '../../features/messaging/domain/models/message_thread.dart';
 import '../../features/messaging/presentation/message_threads_screen.dart';
+import '../../features/messaging/presentation/new_message_screen.dart';
+import '../../features/messaging/presentation/thread_detail_screen.dart';
 import '../../features/notifications/presentation/notifications_screen.dart';
+import '../../features/payer/domain/models/membership.dart';
+import '../../features/payer/domain/models/payer.dart';
 import '../../features/payer/presentation/activate_access_screen.dart';
 import '../../features/payer/presentation/hmo_coverage_screen.dart';
 import '../../features/payer/presentation/link_health_plan_screen.dart';
@@ -120,6 +125,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const PasswordChangedScreen(),
       ),
       GoRoute(
+        path: '${RoutePaths.messageThread}/:id',
+        builder: (context, state) =>
+            ThreadDetailScreen(threadId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: RoutePaths.newMessage,
+        builder: (context, state) =>
+            NewMessageScreen(initialTopic: state.extra as MessageTopic?),
+      ),
+      GoRoute(
         path: RoutePaths.notifications,
         builder: (context, state) => const NotificationsScreen(),
       ),
@@ -133,18 +148,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: RoutePaths.payerVerifyMembership,
+        redirect: _requires<Payer>(RoutePaths.payerSelectHmo),
         builder: (context, state) =>
-            VerifyHmoMembershipScreen(hmoName: state.extra! as String),
+            VerifyHmoMembershipScreen(payer: state.extra! as Payer),
       ),
       GoRoute(
         path: RoutePaths.payerCoverage,
+        redirect: _requires<LinkedPlan>(RoutePaths.chooseAccess),
         builder: (context, state) =>
-            HmoCoverageScreen(hmoName: state.extra! as String),
+            HmoCoverageScreen(plan: state.extra! as LinkedPlan),
       ),
       GoRoute(
         path: RoutePaths.linkHealthPlan,
         builder: (context, state) =>
-            LinkHealthPlanScreen(provider: state.extra as String?),
+            LinkHealthPlanScreen(payer: state.extra as Payer?),
       ),
       GoRoute(
         path: RoutePaths.chooseAccess,
