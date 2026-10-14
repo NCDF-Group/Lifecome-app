@@ -1,37 +1,92 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/network/api_exception.dart';
+import '../../../core/network/idempotency_key_generator.dart';
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
-import '../domain/models/appointment.dart';
+import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/widgets/layout/back_app_bar.dart';
+import '../../../core/widgets/layout/max_content_width.dart';
+import '../../../core/widgets/media/avatar.dart';
+import '../application/booking_controller.dart';
+import '../domain/models/booking_selection.dart';
+import '../domain/models/consultation_mode.dart';
 
 /// Blueprint views 15-16 — Review Booking & Payment, then Payment / HMO
-/// Authorisation. The design merges both into one screen (see the
-/// screenshots): the review shows what will happen, and confirming it is
-/// itself the payment/authorisation step — there's no separate payment
-/// processor wired in, so paying always "succeeds" after a short delay.
-class ReviewBookingScreen extends StatefulWidget {
+/// Authorisation, merged into one screen: the review shows what will be
+/// booked, and confirming it creates the appointment on the backend.
+class ReviewBookingScreen extends ConsumerStatefulWidget {
   const ReviewBookingScreen({super.key, required this.selection});
 
   final BookingSelection selection;
 
   @override
-  State<ReviewBookingScreen> createState() => _ReviewBookingScreenState();
+  ConsumerState<ReviewBookingScreen> createState() =>
+      _ReviewBookingScreenState();
 }
 
-class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
-  bool _agreed = true;
+class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
+  bool _agreed = false;
+  bool _showAgreeError = false;
   bool _loading = false;
 
+  /// One set of keys for this screen: tapping "Confirm" again after a dropped
+  /// connection repeats the same request and can never book twice.
+  final _keys = BookingAttemptKeys(
+    create: newIdempotencyKey(),
+    payment: newIdempotencyKey(),
+    confirm: newIdempotencyKey(),
+  );
+
   Future<void> _confirm() async {
+    if (_loading) return;
+    if (!_agreed) {
+      setState(() => _showAgreeError = true);
+      return;
+    }
     setState(() => _loading = true);
-    await Future<void>.delayed(const Duration(milliseconds: 900));
-    if (!mounted) return;
-    context.push(RoutePaths.bookingConfirmation, extra: widget.selection);
+    try {
+      final outcome = await ref
+          .read(bookingControllerProvider)
+          .submit(widget.selection, _keys);
+      if (!mounted) return;
+      // Land on My Visits, with the confirmation on top of it, so back from
+      // the confirmation never returns to a booking that has been made.
+      context.go(RoutePaths.visits);
+      context.push(RoutePaths.bookingConfirmation, extra: outcome);
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      await _showFailure(error);
+    } catch (_) {
+      if (!mounted) return;
+      await showErrorPopup(context, 'Something went wrong. Please try again.');
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _showFailure(ApiException error) async {
+    switch (error.code) {
+      case 'SLOT_UNAVAILABLE' || 'SLOT_IN_PAST':
+        await showErrorPopup(context, error.message);
+        if (!mounted) return;
+        // That time has gone: back to the times, with it cleared.
+        context.pushReplacement(
+          RoutePaths.bookingAppointmentTime,
+          extra: widget.selection.copyWith(clearSlot: true),
+        );
+      case 'PROFILE_REQUIRED':
+        await showErrorPopup(context, error.message);
+        if (mounted) context.push(RoutePaths.completeProfile);
+      default:
+        await showErrorPopup(context, error.message);
+    }
   }
 
   @override
@@ -39,19 +94,13 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
     final selection = widget.selection;
     final doctor = selection.doctor!;
     final service = selection.service!;
-    final covered = selection.isCovered;
+    final slot = selection.slot!;
+    final isHmo = selection.accessType == BookingAccessType.hmo;
+    final uk = Formatters.ukTime(slot.startsAt);
 
     return Scaffold(
       backgroundColor: context.palette.background,
-      appBar: AppBar(
-        title: Text(
-          'Review and confirm',
-          style: TextStyle(
-            color: context.palette.ink,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
+      appBar: const BackAppBar(title: 'Review and confirm'),
       body: SafeArea(
         child: Column(
           children: [
@@ -59,125 +108,142 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
               child: ListView(
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 children: [
-                  Text(
-                    'Please check your appointment details before confirming.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: context.palette.inkMuted,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  Container(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: context.palette.line),
-                      borderRadius: BorderRadius.circular(AppRadius.card),
-                    ),
-                    child: Row(
+                  MaxContentWidth(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        CircleAvatar(
-                          backgroundColor: AppColors.blue.withValues(
-                            alpha: 0.1,
-                          ),
-                          child: Icon(
-                            Icons.person,
-                            color: context.palette.accent,
+                        Text(
+                          'Please check your appointment details before '
+                          'confirming.',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: context.palette.inkMuted,
                           ),
                         ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        const SizedBox(height: AppSpacing.md),
+                        Container(
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: context.palette.line),
+                            borderRadius: BorderRadius.circular(AppRadius.card),
+                          ),
+                          child: Row(
                             children: [
-                              Text(
-                                doctor.name,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  color: context.palette.ink,
+                              UserAvatar(name: doctor.name, radius: 22),
+                              const SizedBox(width: AppSpacing.sm),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      doctor.name,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
+                                        color: context.palette.ink,
+                                      ),
+                                    ),
+                                    Text(
+                                      doctor.specialty,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: context.palette.inkMuted,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              Text(
-                                doctor.specialty,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: context.palette.inkMuted,
-                                ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    Formatters.date(uk),
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: context.palette.ink,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${Formatters.time(uk)} '
+                                    '${Formatters.ukZoneLabel(slot.startsAt)}',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: context.palette.inkMuted,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              '${selection.date!.day}/${selection.date!.month}/${selection.date!.year}',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: context.palette.ink,
-                              ),
-                            ),
-                            Text(
-                              selection.time ?? '',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: context.palette.inkMuted,
-                              ),
-                            ),
-                          ],
+                        const SizedBox(height: AppSpacing.sm),
+                        _ReviewRow(
+                          icon: Icons.description_outlined,
+                          label: 'Service',
+                          value: service.title,
+                          trailing: '${service.durationMinutes} min',
                         ),
+                        _ReviewRow(
+                          icon: selection.mode == ConsultationMode.inPerson
+                              ? Icons.apartment_outlined
+                              : (selection.mode == ConsultationMode.audio
+                                    ? Icons.call_outlined
+                                    : Icons.videocam_outlined),
+                          label: 'Appointment type',
+                          value: selection.mode.consultationLabel,
+                          trailing: selection.mode == ConsultationMode.inPerson
+                              ? selection.city
+                              : null,
+                        ),
+                        _ReviewRow(
+                          icon: Icons.credit_card,
+                          label: isHmo ? 'Funding' : 'Payment',
+                          value: isHmo
+                              ? (selection.hmoName ?? 'Health plan')
+                              : 'Pay per visit',
+                          trailing: isHmo
+                              ? 'Subject to authorisation'
+                              : service.priceLabel,
+                          trailingColor: isHmo
+                              ? context.palette.warning
+                              : context.palette.ink,
+                        ),
+                        if (selection.concern != null &&
+                            selection.concern!.isNotEmpty)
+                          _ReviewRow(
+                            icon: Icons.notes_outlined,
+                            label: 'Concern',
+                            value: selection.concern!,
+                          ),
+                        const SizedBox(height: AppSpacing.md),
+                        CheckboxListTile(
+                          value: _agreed,
+                          onChanged: (value) => setState(() {
+                            _agreed = value ?? false;
+                            if (_agreed) _showAgreeError = false;
+                          }),
+                          controlAffinity: ListTileControlAffinity.leading,
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            'I confirm that the information provided is '
+                            'correct and I agree to the Terms of Service and '
+                            'Privacy Policy.',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: context.palette.ink,
+                            ),
+                          ),
+                        ),
+                        if (_showAgreeError)
+                          Text(
+                            'Please confirm to continue.',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: context.palette.danger,
+                            ),
+                          ),
                       ],
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  _ReviewRow(
-                    icon: Icons.description_outlined,
-                    label: 'Service',
-                    value: service.title,
-                    trailing: covered
-                        ? 'Covered by ${selection.hmoName}'
-                        : (selection.accessType == BookingAccessType.hmo
-                              ? 'Requires authorisation'
-                              : null),
-                    trailingColor: covered
-                        ? context.palette.positive
-                        : context.palette.warning,
-                  ),
-                  _ReviewRow(
-                    icon: Icons.credit_card,
-                    label: 'Payment method',
-                    value: covered
-                        ? (selection.hmoName ?? 'HMO')
-                        : 'Card or bank transfer',
-                    trailing: covered
-                        ? 'No payment required'
-                        : '£${service.fee}',
-                    trailingColor: covered
-                        ? context.palette.positive
-                        : context.palette.ink,
-                  ),
-                  if (selection.concern != null &&
-                      selection.concern!.isNotEmpty)
-                    _ReviewRow(
-                      icon: Icons.notes_outlined,
-                      label: 'Concern',
-                      value: selection.concern!,
-                    ),
-                  const SizedBox(height: AppSpacing.md),
-                  CheckboxListTile(
-                    value: _agreed,
-                    onChanged: (value) =>
-                        setState(() => _agreed = value ?? false),
-                    controlAffinity: ListTileControlAffinity.leading,
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      'I confirm that the information provided is correct and I agree to the '
-                      'Terms of Service and Privacy Policy.',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: context.palette.ink,
-                      ),
                     ),
                   ),
                 ],
@@ -185,11 +251,13 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
             ),
             Padding(
               padding: const EdgeInsets.all(AppSpacing.lg),
-              child: PrimaryButton(
-                label: covered ? 'Confirm appointment' : 'Pay and confirm',
-                icon: Icons.arrow_forward,
-                loading: _loading,
-                onPressed: _agreed ? _confirm : null,
+              child: MaxContentWidth(
+                child: PrimaryButton(
+                  label: 'Confirm booking',
+                  icon: Icons.arrow_forward,
+                  loading: _loading,
+                  onPressed: _confirm,
+                ),
               ),
             ),
           ],
@@ -245,7 +313,8 @@ class _ReviewRow extends StatelessWidget {
               ],
             ),
           ),
-          if (trailing != null)
+          if (trailing != null) ...[
+            const SizedBox(width: AppSpacing.xs),
             Text(
               trailing!,
               style: TextStyle(
@@ -254,6 +323,7 @@ class _ReviewRow extends StatelessWidget {
                 color: trailingColor ?? context.palette.ink,
               ),
             ),
+          ],
         ],
       ),
     );

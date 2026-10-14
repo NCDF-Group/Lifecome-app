@@ -6,10 +6,14 @@ import '../../../core/providers/core_providers.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/services/session_store.dart';
 import '../../../core/theme/app_palette.dart';
+import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
-import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../booking/application/booking_controller.dart';
 import '../../booking/domain/models/appointment.dart';
+import '../../booking/domain/models/booking_selection.dart';
+import '../../profile/application/profile_controller.dart';
 import '../../services/domain/models/wellbeing_service.dart';
 
 /// The Home tab — "How can we help today?", matching the redesigned
@@ -37,8 +41,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     });
   }
 
+  /// The first name from the profile, or the one saved at sign-in while the
+  /// profile is still loading (or if the account has none yet).
   String get _firstName {
-    final name = _session?.displayName;
+    final profileName = ref.watch(meProvider).value?.profile?.firstName;
+    final name = (profileName != null && profileName.isNotEmpty)
+        ? profileName
+        : _session?.displayName;
     if (name == null || name.isEmpty) return 'there';
     return name.split(' ').first;
   }
@@ -53,13 +62,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   void _openDirectBooking() {
     context.push(
       RoutePaths.bookingChooseService,
-      extra: (BookingAccessType.direct, null),
+      extra: const BookingStart.direct(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     const countryName = 'England';
+    final needsProfile = ref.watch(meProvider).value?.needsProfile ?? false;
+    final next = ref.watch(upcomingAppointmentsProvider).value?.firstOrNull;
 
     return Scaffold(
       backgroundColor: context.palette.background,
@@ -87,6 +98,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
             ),
             const SizedBox(height: 18),
+            if (needsProfile) ...[
+              InfoBanner(
+                tone: BannerTone.warning,
+                title: 'Finish setting up your profile',
+                message: 'We need a few details before you can book care.',
+                actionLabel: 'Complete profile',
+                onAction: () => context.push(RoutePaths.completeProfile),
+              ),
+              const SizedBox(height: 12),
+            ],
+            if (next != null) ...[
+              _NextVisitCard(appointment: next),
+              const SizedBox(height: 12),
+            ],
             PrimaryButton(
               label: 'Book a GP appointment',
               icon: Icons.arrow_forward,
@@ -230,10 +255,66 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               title: 'Need urgent help?',
               titleColor: context.palette.danger,
               background: context.palette.tintRed,
-              onTap: () =>
-                  showComingSoonPopup(context, feature: 'Emergency guidance'),
+              onTap: () => context.push(RoutePaths.emergency),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The next booked appointment, at the top of Home.
+class _NextVisitCard extends StatelessWidget {
+  const _NextVisitCard({required this.appointment});
+
+  final Appointment appointment;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final uk = Formatters.ukTime(appointment.startsAt);
+    final day = Formatters.dayLabel(DateTime(uk.year, uk.month, uk.day));
+
+    return Material(
+      color: palette.tintBlue,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () =>
+            context.push(RoutePaths.manageAppointment, extra: appointment),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              Icon(Icons.event_available_outlined, color: palette.accent),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Your next visit',
+                      style: TextStyle(fontSize: 12, color: palette.inkMuted),
+                    ),
+                    Text(
+                      '${appointment.serviceName} · $day, ${Formatters.time(uk)}',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: palette.ink,
+                      ),
+                    ),
+                    Text(
+                      'with ${appointment.providerName}',
+                      style: TextStyle(fontSize: 12.5, color: palette.inkMuted),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right, color: palette.accent),
+            ],
+          ),
         ),
       ),
     );

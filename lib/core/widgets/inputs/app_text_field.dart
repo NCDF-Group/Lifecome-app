@@ -14,6 +14,7 @@ class AppTextField extends StatelessWidget {
     this.hintText,
     this.keyboardType,
     this.textInputAction,
+    this.textCapitalization = TextCapitalization.none,
     this.autofillHints,
     this.errorText,
     this.enabled = true,
@@ -32,6 +33,7 @@ class AppTextField extends StatelessWidget {
   final String? hintText;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
+  final TextCapitalization textCapitalization;
   final Iterable<String>? autofillHints;
   final String? errorText;
   final bool enabled;
@@ -65,6 +67,7 @@ class AppTextField extends StatelessWidget {
           controller: controller,
           keyboardType: keyboardType,
           textInputAction: textInputAction,
+          textCapitalization: textCapitalization,
           autofillHints: autofillHints,
           enabled: enabled,
           readOnly: readOnly,

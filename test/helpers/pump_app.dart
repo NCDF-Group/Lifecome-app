@@ -39,8 +39,11 @@ Future<GoRouter> pumpAppAt(
 /// Lets page transitions and fade-ins finish. `pumpAndSettle` is not used
 /// because the splash hold timer and the OTP countdown keep scheduling frames.
 Future<void> settle(WidgetTester tester) async {
-  await tester.pump(const Duration(milliseconds: 400));
-  await tester.pump(const Duration(milliseconds: 400));
+  // Three frames: the page builds, a provider's future resolves, the screen
+  // rebuilds with its data.
+  for (var i = 0; i < 3; i++) {
+    await tester.pump(const Duration(milliseconds: 400));
+  }
 }
 
 /// Tears the app down and lets the splash screen's hold timer run out, so no

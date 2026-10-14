@@ -1,69 +1,62 @@
-/// A doctor available for consultation. Static sample data for now — no
-/// provider-directory backend exists yet (blueprint §11, Clinical Records
-/// and Provider-Network Model).
+import '../../../booking/domain/models/consultation_mode.dart';
+
+/// A clinician from the backend's provider directory (`/providers`).
+///
+/// The directory holds only what is listed here. A photo, biography,
+/// qualifications, years of experience and ratings are not stored, so none
+/// are shown: a person's avatar is their initials.
 class Doctor {
   const Doctor({
     required this.id,
     required this.name,
     required this.specialty,
-    required this.credentials,
-    required this.yearsExperience,
-    required this.rating,
-    required this.reviewCount,
     required this.languages,
-    required this.about,
+    required this.modes,
+    this.city,
+    this.state,
   });
+
+  factory Doctor.fromJson(Map<String, dynamic> json) {
+    String? optional(Object? value) {
+      final text = (value as String?)?.trim();
+      return text == null || text.isEmpty ? null : text;
+    }
+
+    return Doctor(
+      id: json['id'] as String,
+      name: (json['displayName'] as String? ?? '').trim(),
+      specialty: (json['specialty'] as String? ?? '').trim(),
+      languages: [
+        for (final item in (json['languages'] as List<dynamic>? ?? const []))
+          if (item is String && item.trim().isNotEmpty) item.trim(),
+      ],
+      modes: {
+        for (final item
+            in (json['consultationModes'] as List<dynamic>? ?? const []))
+          ?ConsultationMode.parse(item),
+      },
+      city: optional(json['city']),
+      state: optional(json['state']),
+    );
+  }
 
   final String id;
   final String name;
   final String specialty;
-  final String credentials;
-  final int yearsExperience;
-  final double rating;
-  final int reviewCount;
   final List<String> languages;
-  final String about;
-}
 
-const sampleDoctors = [
-  Doctor(
-    id: 'dr-adaeze-okafor',
-    name: 'Dr Adaeze Okafor',
-    specialty: 'General Practitioner',
-    credentials: 'MBBS, MRCGP',
-    yearsExperience: 10,
-    rating: 4.9,
-    reviewCount: 328,
-    languages: ['English', 'French'],
-    about:
-        'A compassionate and experienced General Practitioner with a special interest in '
-        'preventive care, chronic disease management and family health. Provides '
-        'high-quality virtual consultations to patients across the UK.',
-  ),
-  Doctor(
-    id: 'dr-musa-bello',
-    name: 'Dr Musa Bello',
-    specialty: 'General Practitioner',
-    credentials: 'MBBS, MRCGP',
-    yearsExperience: 7,
-    rating: 4.8,
-    reviewCount: 201,
-    languages: ['English', 'Urdu'],
-    about:
-        'Focuses on general health concerns, follow-up care and results review, with '
-        'particular experience supporting patients managing hypertension and diabetes.',
-  ),
-  Doctor(
-    id: 'dr-ngozi-eze',
-    name: 'Dr Ngozi Eze',
-    specialty: "Women's Health",
-    credentials: 'MBBS, MRCOG',
-    yearsExperience: 12,
-    rating: 4.9,
-    reviewCount: 412,
-    languages: ['English', 'Polish'],
-    about:
-        "Specialises in women's health and family planning, with a warm, unhurried "
-        'approach to virtual consultations.',
-  ),
-];
+  /// The kinds of appointment this clinician offers.
+  final Set<ConsultationMode> modes;
+
+  /// Where their clinic is, if they have one.
+  final String? city;
+  final String? state;
+
+  bool offers(ConsultationMode mode) => modes.contains(mode);
+
+  /// `Leeds, West Yorkshire`, or null for a clinician with no clinic.
+  String? get locationLabel {
+    final parts = [?city, ?state];
+    return parts.isEmpty ? null : parts.join(', ');
+  }
+}

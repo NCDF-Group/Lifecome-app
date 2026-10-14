@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
@@ -7,44 +8,81 @@ import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
+import '../../../core/widgets/feedback/empty_state.dart';
+import '../../../core/widgets/feedback/error_state.dart';
+import '../../../core/widgets/feedback/info_banner.dart';
+import '../../../core/widgets/feedback/loading_indicator.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
-import '../domain/models/appointment.dart';
+import '../../../core/widgets/layout/screen_title.dart';
+import '../application/booking_controller.dart';
+import '../domain/models/booking_selection.dart';
 import '../domain/models/clinical_service.dart';
-
-const _serviceIcons = {
-  'gp-consultation': Icons.workspace_premium_outlined,
-  'follow-up': Icons.calendar_month_outlined,
-  'results-review': Icons.description_outlined,
-  'referral-advice': Icons.person_outline,
-};
+import '../domain/models/consultation_mode.dart';
 
 enum _AppointmentFormat { online, clinic }
 
-/// Blueprint views 09 (Check Service Eligibility, HMO path) and 10 (Choose a
-/// Service, direct-pay path) — the same underlying choice, so one screen
-/// serves both, showing coverage badges only when booking through an HMO.
-class ChooseServiceScreen extends StatefulWidget {
-  const ChooseServiceScreen({
-    super.key,
-    required this.accessType,
-    this.hmoName,
-  });
-
-  final BookingAccessType accessType;
-  final String? hmoName;
-
-  @override
-  State<ChooseServiceScreen> createState() => _ChooseServiceScreenState();
+IconData _iconFor(ClinicalService service) {
+  final text = '${service.code} ${service.name}'.toLowerCase();
+  if (text.contains('follow')) return Icons.calendar_month_outlined;
+  if (text.contains('result')) return Icons.description_outlined;
+  if (text.contains('referral')) return Icons.person_outline;
+  if (text.contains('consult')) return Icons.workspace_premium_outlined;
+  return Icons.medical_services_outlined;
 }
 
-class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
-  ClinicalService _selected = clinicalServices.first;
+/// Blueprint views 09 (Check Service Eligibility, HMO path) and 10 (Choose a
+/// Service, direct-pay path) — the same underlying choice, so one screen
+/// serves both. The services and their prices come from the backend.
+class ChooseServiceScreen extends ConsumerStatefulWidget {
+  const ChooseServiceScreen({super.key, required this.start});
+
+  final BookingStart start;
+
+  @override
+  ConsumerState<ChooseServiceScreen> createState() =>
+      _ChooseServiceScreenState();
+}
+
+class _ChooseServiceScreenState extends ConsumerState<ChooseServiceScreen> {
+  String? _selectedId;
   _AppointmentFormat _format = _AppointmentFormat.online;
 
-  bool get _isHmo => widget.accessType == BookingAccessType.hmo;
+  bool get _isHmo => widget.start.accessType == BookingAccessType.hmo;
+
+  /// Started from the clinic finder: the clinician and the visit type are
+  /// already decided.
+  bool get _clinicianChosen => widget.start.doctor != null;
+
+  ClinicalService? _selected(List<ClinicalService> services) {
+    if (services.isEmpty) return null;
+    for (final service in services) {
+      if (service.id == _selectedId) return service;
+    }
+    return services.first;
+  }
+
+  void _continue(ClinicalService service) {
+    final doctor = widget.start.doctor;
+    final inPerson = _clinicianChosen || _format == _AppointmentFormat.clinic;
+    context.push(
+      RoutePaths.bookingLocation,
+      extra: BookingSelection(
+        accessType: widget.start.accessType,
+        hmoName: widget.start.hmoName,
+        service: service,
+        doctor: doctor,
+        mode: inPerson ? ConsultationMode.inPerson : ConsultationMode.video,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final services = ref.watch(clinicalServicesProvider);
+    final selected = services.hasValue
+        ? _selected(services.requireValue)
+        : null;
+
     return Scaffold(
       backgroundColor: context.palette.background,
       body: SafeArea(
@@ -54,116 +92,111 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
                 children: [
-                  AppHeaderBar(showBack: true, onBack: () => context.pop()),
+                  const AppHeaderBar(showBack: true),
                   const SizedBox(height: 20),
-                  Text(
-                    'What care do you need?',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
-                      color: context.palette.ink,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Choose a service to get started. Services depend on '
-                    'your location and availability.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: context.palette.inkMuted,
-                      height: 1.4,
-                    ),
+                  const ScreenTitle(
+                    title: 'What care do you need?',
+                    subtitle:
+                        'Choose a service to get started. Services depend on '
+                        'your location and availability.',
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  if (_isHmo && widget.hmoName != null)
-                    Container(
-                      padding: const EdgeInsets.all(AppSpacing.sm),
-                      margin: const EdgeInsets.only(bottom: AppSpacing.md),
-                      decoration: BoxDecoration(
-                        color: context.palette.tintGreen,
-                        borderRadius: BorderRadius.circular(AppRadius.control),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.health_and_safety_outlined,
-                            color: context.palette.positive,
-                            size: 18,
+                  if (_isHmo && widget.start.hmoName != null) ...[
+                    InfoBanner(
+                      tone: BannerTone.success,
+                      icon: Icons.health_and_safety_outlined,
+                      message: 'Access: ${widget.start.hmoName}',
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
+                  if (_clinicianChosen) ...[
+                    InfoBanner(
+                      icon: Icons.apartment_outlined,
+                      message:
+                          'In-person appointment with ${widget.start.doctor!.name}.',
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
+                  services.when(
+                    loading: () => const LoadingIndicator(),
+                    error: (error, _) => ErrorState(
+                      error: error,
+                      onRetry: () => ref.invalidate(clinicalServicesProvider),
+                    ),
+                    data: (list) => list.isEmpty
+                        ? const EmptyState(
+                            icon: Icons.medical_services_outlined,
+                            title: 'No services are available right now',
+                            message: 'Please check back soon.',
+                          )
+                        : Column(
+                            children: [
+                              for (var i = 0; i < list.length; i++) ...[
+                                _ServiceTile(
+                                  service: list[i],
+                                  green: i.isEven,
+                                  selected: list[i].id == selected?.id,
+                                  onTap: () =>
+                                      setState(() => _selectedId = list[i].id),
+                                ),
+                                const SizedBox(height: AppSpacing.sm),
+                              ],
+                            ],
                           ),
-                          const SizedBox(width: AppSpacing.xs),
-                          Text(
-                            'Access: ${widget.hmoName}',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: context.palette.ink,
+                  ),
+                  if (!_clinicianChosen && services.hasValue) ...[
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      'How would you like to have your appointment?',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: context.palette.ink,
+                      ),
+                    ),
+                    Text(
+                      'Choose one option.',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: context.palette.inkMuted,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: _FormatCard(
+                              background: context.palette.tintGreen,
+                              iconColor: context.palette.positive,
+                              icon: Icons.desktop_windows_outlined,
+                              title: 'Online GP',
+                              subtitle: 'Video or telephone\nappointment.',
+                              selected: _format == _AppointmentFormat.online,
+                              onTap: () => setState(
+                                () => _format = _AppointmentFormat.online,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Expanded(
+                            child: _FormatCard(
+                              background: context.palette.tintBlue,
+                              iconColor: context.palette.accent,
+                              icon: Icons.apartment_outlined,
+                              title: 'Smart GP clinic',
+                              subtitle: 'In person\nat a local clinic.',
+                              selected: _format == _AppointmentFormat.clinic,
+                              onTap: () => setState(
+                                () => _format = _AppointmentFormat.clinic,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                  for (var i = 0; i < clinicalServices.length; i++) ...[
-                    _ServiceTile(
-                      service: clinicalServices[i],
-                      green: i.isEven,
-                      selected: clinicalServices[i].id == _selected.id,
-                      isHmo: _isHmo,
-                      onTap: () =>
-                          setState(() => _selected = clinicalServices[i]),
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
                   ],
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    'How would you like to have your appointment?',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: context.palette.ink,
-                    ),
-                  ),
-                  Text(
-                    'Choose one option.',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: context.palette.inkMuted,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  IntrinsicHeight(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: _FormatCard(
-                            background: context.palette.tintGreen,
-                            iconColor: context.palette.positive,
-                            icon: Icons.desktop_windows_outlined,
-                            title: 'Online GP',
-                            subtitle: 'Video or telephone\nappointment.',
-                            selected: _format == _AppointmentFormat.online,
-                            onTap: () => setState(
-                              () => _format = _AppointmentFormat.online,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: _FormatCard(
-                            background: context.palette.tintBlue,
-                            iconColor: context.palette.accent,
-                            icon: Icons.apartment_outlined,
-                            title: 'Smart GP clinic',
-                            subtitle: 'In person\nat a local clinic.',
-                            selected: _format == _AppointmentFormat.clinic,
-                            onTap: () => setState(
-                              () => _format = _AppointmentFormat.clinic,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -172,17 +205,7 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
               child: PrimaryButton(
                 label: 'Continue',
                 icon: Icons.arrow_forward,
-                onPressed: () => context.push(
-                  RoutePaths.bookingLocation,
-                  extra: BookingSelection(
-                    accessType: widget.accessType,
-                    hmoName: widget.hmoName,
-                    service: _selected,
-                    consultationType: _format == _AppointmentFormat.online
-                        ? 'Video consultation'
-                        : 'In-person consultation',
-                  ),
-                ),
+                onPressed: selected == null ? null : () => _continue(selected),
               ),
             ),
           ],
@@ -197,14 +220,12 @@ class _ServiceTile extends StatelessWidget {
     required this.service,
     required this.green,
     required this.selected,
-    required this.isHmo,
     required this.onTap,
   });
 
   final ClinicalService service;
   final bool green;
   final bool selected;
-  final bool isHmo;
   final VoidCallback onTap;
 
   @override
@@ -234,10 +255,7 @@ class _ServiceTile extends StatelessWidget {
               CircleAvatar(
                 radius: 20,
                 backgroundColor: context.palette.elevated,
-                child: Icon(
-                  _serviceIcons[service.id] ?? Icons.medical_services_outlined,
-                  color: tint,
-                ),
+                child: Icon(_iconFor(service), color: tint),
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
@@ -252,42 +270,23 @@ class _ServiceTile extends StatelessWidget {
                         color: context.palette.ink,
                       ),
                     ),
+                    if (service.description != null)
+                      Text(
+                        service.description!,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: context.palette.inkMuted,
+                        ),
+                      ),
+                    const SizedBox(height: 2),
                     Text(
-                      service.description,
+                      '${service.durationMinutes} min · ${service.priceLabel}',
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
                         color: context.palette.inkMuted,
                       ),
                     ),
-                    if (isHmo) ...[
-                      const SizedBox(height: 4),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.xs,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color:
-                              (service.requiresAuthorisation
-                                      ? AppColors.gold
-                                      : AppColors.greenStrong)
-                                  .withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(AppRadius.pill),
-                        ),
-                        child: Text(
-                          service.requiresAuthorisation
-                              ? 'Requires authorisation'
-                              : 'Covered',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: service.requiresAuthorisation
-                                ? context.palette.warning
-                                : context.palette.positive,
-                          ),
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),

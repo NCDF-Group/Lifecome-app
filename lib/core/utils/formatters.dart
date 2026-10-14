@@ -139,4 +139,52 @@ abstract final class Formatters {
     if (difference.inHours < 48) return 'Yesterday';
     return Formatters.date(time);
   }
+
+  /// `+447700900123` → `07700 900123`: a UK number the way people write it.
+  /// Anything that is not a `+44` number comes back unchanged.
+  static String ukPhone(String number) {
+    final match = RegExp(r'^\+44(\d{10})$').firstMatch(number.trim());
+    if (match == null) return number;
+    final digits = match.group(1)!;
+    // 02x numbers are written 020 7946 0958; the rest 01xxx xxxxxx / 07xxx xxxxxx.
+    if (digits.startsWith('2')) {
+      return '0${digits.substring(0, 2)} ${digits.substring(2, 6)} ${digits.substring(6)}';
+    }
+    return '0${digits.substring(0, 4)} ${digits.substring(4)}';
+  }
+
+  // ---- UK time ------------------------------------------------------------
+
+  /// Whether the UK is on British Summer Time at [instant]: from 01:00 UTC on
+  /// the last Sunday of March to 01:00 UTC on the last Sunday of October.
+  static bool isUkSummerTime(DateTime instant) {
+    final utc = instant.toUtc();
+    DateTime lastSunday(int year, int month) {
+      final lastDay = DateTime.utc(year, month + 1, 0);
+      return lastDay.subtract(Duration(days: lastDay.weekday % 7));
+    }
+
+    final starts = lastSunday(utc.year, 3).add(const Duration(hours: 1));
+    final ends = lastSunday(utc.year, 10).add(const Duration(hours: 1));
+    return !utc.isBefore(starts) && utc.isBefore(ends);
+  }
+
+  /// The wall-clock time in the UK for [instant]. Appointments are always shown
+  /// in UK time, wherever the phone happens to be. The result's date and time
+  /// fields are the UK ones (read them with [time], [date]...); do not compare
+  /// it with other instants.
+  static DateTime ukTime(DateTime instant) {
+    final utc = instant.toUtc();
+    return utc.add(Duration(hours: isUkSummerTime(utc) ? 1 : 0));
+  }
+
+  /// `BST` or `GMT`, whichever applies in the UK at [instant].
+  static String ukZoneLabel(DateTime instant) =>
+      isUkSummerTime(instant) ? 'BST' : 'GMT';
+
+  /// `Wednesday 14 October 2026 at 10:30` in UK time.
+  static String appointmentWhen(DateTime instant) {
+    final uk = ukTime(instant);
+    return '${longDate(uk)} at ${time(uk)}';
+  }
 }

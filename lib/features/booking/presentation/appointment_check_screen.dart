@@ -2,149 +2,117 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/layout/screen_title.dart';
 import '../domain/models/appointment.dart';
+import '../domain/models/booking_status.dart';
+import '../domain/models/consultation_mode.dart';
 
-/// "Check your appointment" — the checklist shown right after booking,
-/// before the visit itself: confirm the clinical suitability questions
-/// and the funding/cover check. Reached from Booking confirmation's
-/// "Prepare for your visit" row.
+/// "Prepare for your visit" — what the booking is, what the care team has been
+/// told, and what to have ready. Reached from the booking confirmation.
 class AppointmentCheckScreen extends StatelessWidget {
-  const AppointmentCheckScreen({super.key, required this.selection});
+  const AppointmentCheckScreen({super.key, required this.appointment});
 
-  final BookingSelection selection;
+  final Appointment appointment;
+
+  List<String> get _tips => switch (appointment.mode) {
+    ConsultationMode.video => const [
+      'Find a quiet, private place with a stable internet connection.',
+      'Have any medicines you take to hand.',
+    ],
+    ConsultationMode.audio => [
+      appointment.intake?.callbackNumber == null
+          ? 'Keep your phone nearby and switched on.'
+          : 'Keep your phone nearby: your clinician will ring '
+                '${appointment.intake!.callbackNumber}.',
+      'Have any medicines you take to hand.',
+    ],
+    ConsultationMode.inPerson => const [
+      'Bring any medicines you take.',
+      'Tell the clinic if you need any support when you arrive.',
+    ],
+  };
 
   @override
   Widget build(BuildContext context) {
-    final doctor = selection.doctor;
-    final date = selection.date;
-    const city = 'London';
+    final palette = context.palette;
+    final uk = Formatters.ukTime(appointment.startsAt);
+    final intake = appointment.intake;
+    final details = <(String, String)>[
+      if (intake?.reason != null) ('What you want to discuss', intake!.reason!),
+      if (intake?.medicinesAndAllergies != null)
+        ('Medicines and allergies', intake!.medicinesAndAllergies!),
+      if (intake?.accessibilitySupport != null)
+        ('Support you need', intake!.accessibilitySupport!),
+      if (intake?.patientLocation != null)
+        ('Where you will be', intake!.patientLocation!),
+    ];
 
     return Scaffold(
-      backgroundColor: context.palette.background,
+      backgroundColor: palette.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            AppHeaderBar(showBack: true, onBack: () => context.pop()),
+            const AppHeaderBar(showBack: true, backFallback: RoutePaths.visits),
             const SizedBox(height: 20),
-            Text(
-              'Check your appointment',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: context.palette.ink,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Complete the steps below before your visit.',
-              style: TextStyle(fontSize: 14, color: context.palette.inkMuted),
+            const ScreenTitle(
+              title: 'Prepare for your visit',
+              subtitle: 'A few things to know before your appointment.',
             ),
             const SizedBox(height: AppSpacing.md),
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: context.palette.tintBlue,
+                color: palette.tintBlue,
                 borderRadius: BorderRadius.circular(AppRadius.card),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 22,
-                        backgroundColor: context.palette.elevated,
-                        child: Icon(
-                          Icons.videocam_outlined,
-                          color: context.palette.accent,
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              selection.service?.title ?? 'GP consultation',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                                color: context.palette.ink,
-                              ),
-                            ),
-                            Text(
-                              'Online video',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: context.palette.inkMuted,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.location_on_outlined,
-                                  size: 15,
-                                  color: context.palette.inkMuted,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  city,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: context.palette.inkMuted,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  Text(
+                    appointment.serviceName,
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                      color: palette.ink,
+                    ),
                   ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: context.palette.tintGreen,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.check_circle,
-                          size: 14,
-                          color: context.palette.positive,
-                        ),
-                        SizedBox(width: 4),
-                        Text(
-                          'Location confirmed',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: context.palette.positive,
+                  Text(
+                    appointment.mode.consultationLabel,
+                    style: TextStyle(fontSize: 13, color: palette.inkMuted),
+                  ),
+                  if (appointment.locationCity != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.location_on_outlined,
+                            size: 15,
+                            color: palette.inkMuted,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 4),
+                          Text(
+                            appointment.locationCity!,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: palette.inkMuted,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                    child: Divider(
-                      height: 1,
-                      color: context.palette.tintBlueLine,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.sm,
                     ),
+                    child: Divider(height: 1, color: palette.tintBlueLine),
                   ),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,16 +121,17 @@ class AppointmentCheckScreen extends StatelessWidget {
                         child: _SummaryField(
                           icon: Icons.calendar_today_outlined,
                           label: 'DATE',
-                          value: date == null ? '' : _formatDate(date),
-                          valueSecondLine: selection.time,
+                          value: Formatters.date(uk),
+                          second:
+                              '${Formatters.time(uk)} '
+                              '${Formatters.ukZoneLabel(appointment.startsAt)}',
                         ),
                       ),
                       Expanded(
                         child: _SummaryField(
                           icon: Icons.person_outline,
                           label: 'WITH',
-                          value: doctor?.name ?? 'Your GP',
-                          valueSecondLine: 'GP',
+                          value: appointment.providerName,
                         ),
                       ),
                     ],
@@ -170,53 +139,102 @@ class AppointmentCheckScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: AppSpacing.md),
-            _CheckCard(
-              background: context.palette.tintGreen,
-              icon: Icons.assignment_outlined,
-              iconColor: context.palette.positive,
-              title: 'Clinical suitability',
-              status: 'Complete questions',
-              body:
-                  'Help us check the selected service is appropriate for '
-                  'your needs.',
-              buttonLabel: 'Start check',
-              onPressed: () => context.push(
-                RoutePaths.bookingBeforeYourVisit,
-                extra: selection,
+            if (appointment.status == BookingStatus.slotHeld) ...[
+              const SizedBox(height: AppSpacing.md),
+              const InfoBanner(
+                tone: BannerTone.warning,
+                message:
+                    'This booking is not confirmed yet. It is confirmed as '
+                    'soon as payment comes through.',
               ),
+            ],
+            const SizedBox(height: AppSpacing.md),
+            _Section(
+              background: palette.tintGreen,
+              icon: Icons.checklist_outlined,
+              iconColor: palette.positive,
+              title: 'Before you join',
+              children: [
+                for (final tip in _tips)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.check_circle_outline,
+                          size: 16,
+                          color: palette.positive,
+                        ),
+                        const SizedBox(width: AppSpacing.xs),
+                        Expanded(
+                          child: Text(
+                            tip,
+                            style: TextStyle(
+                              fontSize: 13.5,
+                              color: palette.ink,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(height: AppSpacing.md),
-            _CheckCard(
-              background: context.palette.tintBlue,
-              icon: Icons.credit_card_outlined,
-              iconColor: context.palette.accent,
-              title: 'Funding',
-              status: 'Check selected service',
-              body:
-                  'Confirm your cover for this appointment. Funding '
-                  'approval does not confirm clinical suitability.',
-              buttonLabel: 'Check cover',
-              onPressed: () => context.push(
-                RoutePaths.linkHealthPlan,
-                extra: selection.hmoName,
-              ),
+            _Section(
+              background: palette.surface,
+              icon: Icons.assignment_outlined,
+              iconColor: palette.accent,
+              title: 'What your clinician has been told',
+              children: [
+                if (details.isEmpty)
+                  Text(
+                    'No details were added to this booking.',
+                    style: TextStyle(fontSize: 13.5, color: palette.inkMuted),
+                  )
+                else
+                  for (final (label, value) in details)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            label,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: palette.inkMuted,
+                            ),
+                          ),
+                          Text(
+                            value,
+                            style: TextStyle(
+                              fontSize: 13.5,
+                              color: palette.ink,
+                              height: 1.4,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+              ],
             ),
             const SizedBox(height: AppSpacing.md),
             Material(
-              color: context.palette.tintRed,
+              color: palette.tintRed,
               borderRadius: BorderRadius.circular(AppRadius.card),
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppRadius.card),
-                onTap: () =>
-                    showComingSoonPopup(context, feature: 'Emergency guidance'),
+                onTap: () => context.push(RoutePaths.emergency),
                 child: Padding(
                   padding: const EdgeInsets.all(AppSpacing.md),
                   child: Row(
                     children: [
                       Icon(
                         Icons.warning_amber_rounded,
-                        color: context.palette.danger,
+                        color: palette.danger,
                         size: 20,
                       ),
                       const SizedBox(width: AppSpacing.sm),
@@ -229,22 +247,20 @@ class AppointmentCheckScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: context.palette.danger,
+                                color: palette.danger,
                               ),
                             ),
                             Text(
                               'View emergency guidance.',
                               style: TextStyle(
                                 fontSize: 12.5,
-                                color: context.palette.ink.withValues(
-                                  alpha: 0.7,
-                                ),
+                                color: palette.inkMuted,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      Icon(Icons.chevron_right, color: context.palette.danger),
+                      Icon(Icons.chevron_right, color: palette.danger),
                     ],
                   ),
                 ),
@@ -255,25 +271,6 @@ class AppointmentCheckScreen extends StatelessWidget {
       ),
     );
   }
-
-  static String _formatDate(DateTime date) {
-    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return '${weekdays[date.weekday - 1]} ${date.day} ${months[date.month - 1]} ${date.year}';
-  }
 }
 
 class _SummaryField extends StatelessWidget {
@@ -281,13 +278,13 @@ class _SummaryField extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.value,
-    this.valueSecondLine,
+    this.second,
   });
 
   final IconData icon;
   final String label;
   final String value;
-  final String? valueSecondLine;
+  final String? second;
 
   @override
   Widget build(BuildContext context) {
@@ -317,9 +314,9 @@ class _SummaryField extends StatelessWidget {
                   color: context.palette.ink,
                 ),
               ),
-              if (valueSecondLine != null && valueSecondLine!.isNotEmpty)
+              if (second != null)
                 Text(
-                  valueSecondLine!,
+                  second!,
                   style: TextStyle(
                     fontSize: 12.5,
                     color: context.palette.inkMuted,
@@ -333,26 +330,20 @@ class _SummaryField extends StatelessWidget {
   }
 }
 
-class _CheckCard extends StatelessWidget {
-  const _CheckCard({
+class _Section extends StatelessWidget {
+  const _Section({
     required this.background,
     required this.icon,
     required this.iconColor,
     required this.title,
-    required this.status,
-    required this.body,
-    required this.buttonLabel,
-    required this.onPressed,
+    required this.children,
   });
 
   final Color background;
   final IconData icon;
   final Color iconColor;
   final String title;
-  final String status;
-  final String body;
-  final String buttonLabel;
-  final VoidCallback onPressed;
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
@@ -368,77 +359,25 @@ class _CheckCard extends StatelessWidget {
           Row(
             children: [
               CircleAvatar(
-                radius: 22,
+                radius: 18,
                 backgroundColor: context.palette.elevated,
-                child: Icon(icon, color: iconColor),
+                child: Icon(icon, color: iconColor, size: 18),
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                        color: context.palette.ink,
-                      ),
-                    ),
-                    Text(
-                      status,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: context.palette.ink,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: context.palette.ink,
+                  ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
-          Text(
-            body,
-            style: TextStyle(
-              fontSize: 13.5,
-              color: context.palette.inkMuted,
-              height: 1.4,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Material(
-            color: AppColors.blue,
-            borderRadius: BorderRadius.circular(AppRadius.pill),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(AppRadius.pill),
-              onTap: onPressed,
-              child: Container(
-                height: 52,
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      buttonLabel,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.white,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(
-                      Icons.chevron_right,
-                      color: AppColors.white,
-                      size: 20,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          ...children,
         ],
       ),
     );

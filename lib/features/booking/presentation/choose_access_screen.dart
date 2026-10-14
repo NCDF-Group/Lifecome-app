@@ -6,7 +6,7 @@ import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
-import '../domain/models/appointment.dart';
+import '../domain/models/booking_selection.dart';
 
 /// "Choose your access" — how the patient wants to pay for or access care.
 /// Reached from My Visits' "Book a consultation", replacing the old
@@ -22,7 +22,7 @@ class ChooseAccessScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            AppHeaderBar(showBack: true, onBack: () => context.pop()),
+            const AppHeaderBar(showBack: true, backFallback: RoutePaths.visits),
             const SizedBox(height: 20),
             Text(
               'Choose your access',
@@ -51,7 +51,7 @@ class ChooseAccessScreen extends StatelessWidget {
               subtitle: 'Pay for the care you need.',
               onTap: () => context.push(
                 RoutePaths.bookingChooseService,
-                extra: (BookingAccessType.direct, null),
+                extra: const BookingStart.direct(),
               ),
             ),
             const SizedBox(height: AppSpacing.sm),

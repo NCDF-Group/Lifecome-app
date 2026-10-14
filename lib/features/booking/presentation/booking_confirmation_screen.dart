@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
@@ -6,28 +7,46 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
-import '../domain/models/appointment.dart';
-import '../domain/models/clinical_service.dart';
+import '../../payment/domain/models/payment_status.dart';
+import '../application/booking_controller.dart';
+import '../domain/models/booking_status.dart';
+import '../domain/models/consultation_mode.dart';
 
-/// Blueprint view 17 — Booking Confirmation.
-class BookingConfirmationScreen extends StatelessWidget {
-  const BookingConfirmationScreen({super.key, required this.selection});
+/// Blueprint view 17 — Booking Confirmation. Tells the truth about where the
+/// booking is: confirmed, or still waiting for payment to come through.
+class BookingConfirmationScreen extends ConsumerWidget {
+  const BookingConfirmationScreen({super.key, required this.outcome});
 
-  final BookingSelection selection;
+  final BookingOutcome outcome;
 
   @override
-  Widget build(BuildContext context) {
-    final doctor = selection.doctor!;
-    final service = selection.service!;
-    final date = selection.date!;
-    final covered = selection.isCovered;
-    final reference =
-        'LCL-${date.year}${date.month.toString().padLeft(2, '0')}${date.day.toString().padLeft(2, '0')}-${1000 + doctor.name.length}';
-    final payment = covered
-        ? 'Covered by ${selection.hmoName}'
-        : 'Payment received £${service.fee}';
+  Widget build(BuildContext context, WidgetRef ref) {
+    // The list is refreshed from the backend (by "Check status"); prefer its
+    // copy of this appointment over the one from the moment of booking.
+    final latest = ref
+        .watch(appointmentsProvider)
+        .value
+        ?.where((item) => item.id == outcome.appointment.id)
+        .firstOrNull;
+    final appointment = latest ?? outcome.appointment;
+    final confirmed = appointment.status == BookingStatus.confirmed;
+    final held = appointment.status == BookingStatus.slotHeld;
+    final payment = outcome.payment;
+    final uk = Formatters.ukTime(appointment.startsAt);
+    final zone = Formatters.ukZoneLabel(appointment.startsAt);
+
+    final paymentLabel = switch (appointment.fundingRoute.apiValue) {
+      'pay_per_visit' when payment != null && payment.isPaid =>
+        'Paid ${Formatters.money(payment.amountMinor)}',
+      'pay_per_visit' when payment != null =>
+        '${Formatters.money(payment.amountMinor)} · '
+            '${payment.status == PaymentStatus.failed ? 'payment failed' : 'awaiting payment'}',
+      _ => appointment.fundingRoute.label,
+    };
 
     return Scaffold(
       backgroundColor: context.palette.background,
@@ -35,55 +54,9 @@ class BookingConfirmationScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            const AppHeaderBar(),
+            const AppHeaderBar(showBack: true, backFallback: RoutePaths.visits),
             const SizedBox(height: AppSpacing.md),
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                color: context.palette.tintGreen,
-                borderRadius: BorderRadius.circular(AppRadius.card),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: const BoxDecoration(
-                      color: AppColors.greenStrong,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.check,
-                      color: AppColors.white,
-                      size: 22,
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Appointment confirmed',
-                          style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600,
-                            color: context.palette.ink,
-                          ),
-                        ),
-                        Text(
-                          'Your online GP video consultation is booked.',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: context.palette.inkMuted,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _StatusBanner(status: appointment.status, mode: appointment.mode),
             const SizedBox(height: AppSpacing.md),
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
@@ -104,7 +77,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          Icons.videocam_outlined,
+                          _modeIcon(appointment.mode),
                           color: context.palette.accent,
                           size: 20,
                         ),
@@ -115,7 +88,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Online GP video consultation',
+                              appointment.serviceName,
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
@@ -123,7 +96,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              'Consultation from home',
+                              appointment.mode.consultationLabel,
                               style: TextStyle(
                                 fontSize: 12.5,
                                 color: context.palette.inkMuted,
@@ -135,45 +108,67 @@ class BookingConfirmationScreen extends StatelessWidget {
                     ],
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.sm,
+                    ),
                     child: Divider(height: 1, color: context.palette.line),
                   ),
                   _DetailRow(
                     icon: Icons.calendar_today_outlined,
                     label: 'Date',
-                    value: _formatDate(date),
+                    value: Formatters.longDate(uk),
                   ),
                   _DetailRow(
                     icon: Icons.schedule_outlined,
                     label: 'Time',
-                    value: selection.time ?? '',
+                    value: '${Formatters.time(uk)} $zone',
                   ),
                   _DetailRow(
                     icon: Icons.person_outline,
-                    label: 'GP',
-                    value: doctor.name,
+                    label: 'With',
+                    value: appointment.providerName,
                   ),
+                  if (appointment.locationCity != null)
+                    _DetailRow(
+                      icon: Icons.location_on_outlined,
+                      label: 'Where',
+                      value: appointment.locationCity!,
+                    ),
                   _DetailRow(
                     icon: Icons.badge_outlined,
                     label: 'Reference',
-                    value: reference,
+                    value: appointment.reference,
                   ),
                   _DetailRow(
                     icon: Icons.credit_card_outlined,
                     label: 'Payment',
-                    value: payment,
+                    value: paymentLabel,
                     isLast: true,
                   ),
                 ],
               ),
             ),
+            if (held) ...[
+              const SizedBox(height: AppSpacing.md),
+              InfoBanner(
+                tone: BannerTone.warning,
+                title: 'Your time is being held',
+                message:
+                    "We'll hold this time for 10 minutes. Your booking is "
+                    'confirmed as soon as payment comes through, and '
+                    "we'll send you a notification.",
+                actionLabel: 'Check status',
+                onAction: () =>
+                    ref.read(appointmentsProvider.notifier).refresh(),
+              ),
+            ],
             const SizedBox(height: AppSpacing.md),
             _ActionRow(
-              icon: Icons.videocam_outlined,
+              icon: Icons.fact_check_outlined,
               label: 'Prepare for your visit',
               filled: true,
               onTap: () =>
-                  context.push(RoutePaths.appointmentCheck, extra: selection),
+                  context.push(RoutePaths.appointmentCheck, extra: appointment),
             ),
             const SizedBox(height: AppSpacing.sm),
             _ActionRow(
@@ -196,90 +191,111 @@ class BookingConfirmationScreen extends StatelessWidget {
               icon: Icons.settings_outlined,
               iconColor: context.palette.positive,
               label: 'Manage booking',
-              onTap: () =>
-                  context.push(RoutePaths.manageAppointment, extra: selection),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                color: context.palette.tintBlue,
-                borderRadius: BorderRadius.circular(AppRadius.control),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CircleAvatar(
-                    radius: 16,
-                    backgroundColor: context.palette.elevated,
-                    child: Icon(
-                      Icons.verified_user_outlined,
-                      size: 16,
-                      color: context.palette.accent,
-                    ),
-                  ),
-                  SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Join from a private place',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: context.palette.ink,
-                          ),
-                        ),
-                        SizedBox(height: 2),
-                        Text(
-                          'Choose a quiet, private location with a stable '
-                          'internet connection.',
-                          style: TextStyle(
-                            fontSize: 12.5,
-                            color: context.palette.inkMuted,
-                            height: 1.4,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              onTap: () => context.push(
+                RoutePaths.manageAppointment,
+                extra: appointment,
               ),
             ),
-            const SizedBox(height: AppSpacing.sm),
-            _BookingDetailsExpander(service: service, selection: selection),
+            if (confirmed && appointment.mode.isOnline) ...[
+              const SizedBox(height: AppSpacing.md),
+              const InfoBanner(
+                icon: Icons.verified_user_outlined,
+                title: 'Join from a private place',
+                message:
+                    'Choose a quiet, private location with a stable '
+                    'internet connection.',
+              ),
+            ],
           ],
         ),
       ),
     );
   }
+}
 
-  static String _formatDate(DateTime date) {
-    const weekdays = [
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-      'Sunday',
-    ];
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    return '${weekdays[date.weekday - 1]} ${date.day} ${months[date.month - 1]} ${date.year}';
+IconData _modeIcon(ConsultationMode mode) => switch (mode) {
+  ConsultationMode.video => Icons.videocam_outlined,
+  ConsultationMode.audio => Icons.call_outlined,
+  ConsultationMode.inPerson => Icons.apartment_outlined,
+};
+
+class _StatusBanner extends StatelessWidget {
+  const _StatusBanner({required this.status, required this.mode});
+
+  final BookingStatus status;
+  final ConsultationMode mode;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final (background, color, icon, title, subtitle) = switch (status) {
+      BookingStatus.confirmed => (
+        palette.tintGreen,
+        AppColors.greenStrong,
+        Icons.check,
+        'Appointment confirmed',
+        'Your ${mode.consultationLabel.toLowerCase()} is booked.',
+      ),
+      BookingStatus.slotHeld => (
+        palette.tintAmber,
+        AppColors.gold,
+        Icons.hourglass_top,
+        'Waiting for confirmation',
+        'Your ${mode.consultationLabel.toLowerCase()} is not booked yet.',
+      ),
+      BookingStatus.cancelled => (
+        palette.tintRed,
+        AppColors.error,
+        Icons.close,
+        'Appointment cancelled',
+        'This booking was cancelled.',
+      ),
+      _ => (
+        palette.tintBlue,
+        AppColors.blue,
+        Icons.info_outline,
+        status.label,
+        'Contact support if you need help with this booking.',
+      ),
+    };
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            child: Icon(icon, color: AppColors.white, size: 22),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                    color: palette.ink,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: TextStyle(fontSize: 13, color: palette.inkMuted),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -304,18 +320,20 @@ class _DetailRow extends StatelessWidget {
         children: [
           Icon(icon, size: 18, color: context.palette.inkMuted),
           const SizedBox(width: AppSpacing.xs),
+          Text(
+            label,
+            style: TextStyle(fontSize: 14, color: context.palette.inkMuted),
+          ),
+          const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
-              label,
-              style: TextStyle(fontSize: 14, color: context.palette.inkMuted),
-            ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: context.palette.ink,
+              value,
+              textAlign: TextAlign.end,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: context.palette.ink,
+              ),
             ),
           ),
         ],
@@ -374,108 +392,6 @@ class _ActionRow extends StatelessWidget {
                 ),
               ),
               Icon(Icons.chevron_right, size: 20, color: fg),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _BookingDetailsExpander extends StatefulWidget {
-  const _BookingDetailsExpander({
-    required this.service,
-    required this.selection,
-  });
-
-  final ClinicalService service;
-  final BookingSelection selection;
-
-  @override
-  State<_BookingDetailsExpander> createState() =>
-      _BookingDetailsExpanderState();
-}
-
-class _BookingDetailsExpanderState extends State<_BookingDetailsExpander> {
-  bool _expanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: context.palette.elevated,
-      borderRadius: BorderRadius.circular(AppRadius.card),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.card),
-        onTap: () => setState(() => _expanded = !_expanded),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: context.palette.line),
-            borderRadius: BorderRadius.circular(AppRadius.card),
-          ),
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: context.palette.surface,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.description_outlined,
-                      size: 18,
-                      color: context.palette.inkMuted,
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Booking details',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: context.palette.ink,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    _expanded ? Icons.expand_less : Icons.expand_more,
-                    color: context.palette.inkMuted,
-                  ),
-                ],
-              ),
-              if (_expanded) ...[
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  widget.service.description,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: context.palette.inkMuted,
-                    height: 1.4,
-                  ),
-                ),
-                if (widget.selection.concern != null &&
-                    widget.selection.concern!.isNotEmpty) ...[
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    'Concern: ${widget.selection.concern}',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: context.palette.inkMuted,
-                      height: 1.4,
-                    ),
-                  ),
-                ],
-              ],
             ],
           ),
         ),

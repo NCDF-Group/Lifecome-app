@@ -123,6 +123,42 @@ abstract final class Validators {
     return null;
   }
 
+  /// The number as the backend wants it (`+442079460958`) for any UK number
+  /// someone could be rung on — a mobile or a landline — or null when it is
+  /// not one.
+  static String? normalizeUkPhone(String? value) {
+    var digits = (value ?? '').replaceAll(RegExp(r'[\s\-().]'), '');
+    if (digits.isEmpty) return null;
+    if (digits.startsWith('+')) {
+      digits = digits.substring(1);
+    } else if (digits.startsWith('00')) {
+      digits = digits.substring(2);
+    }
+    if (!RegExp(r'^\d+$').hasMatch(digits)) return null;
+    if (digits.startsWith('44')) {
+      digits = digits.substring(2);
+      if (digits.startsWith('0')) digits = digits.substring(1);
+    } else if (digits.startsWith('0')) {
+      digits = digits.substring(1);
+    }
+    // Geographic (01, 02), non-geographic (03) or mobile (07): ten digits
+    // after the leading zero.
+    if (!RegExp(r'^[1237]\d{9}$').hasMatch(digits)) return null;
+    return '+44$digits';
+  }
+
+  /// A UK phone number (mobile or landline). Optional unless [required].
+  static String? ukPhone(String? value, {bool required = false}) {
+    if ((value ?? '').trim().isEmpty) {
+      return required ? 'Enter a phone number we can reach you on.' : null;
+    }
+    if (normalizeUkPhone(value) == null) {
+      return 'Enter a valid UK phone number, like 020 7946 0958 or '
+          '07700 900123.';
+    }
+    return null;
+  }
+
   // ---- Codes --------------------------------------------------------------
 
   static String? otpCode(String? value, {int length = 6}) {

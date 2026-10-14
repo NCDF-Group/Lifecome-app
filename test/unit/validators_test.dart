@@ -167,6 +167,33 @@ void main() {
     });
   });
 
+  group('UK phone numbers (mobile or landline)', () {
+    test('accepts mobiles and landlines however they are written', () {
+      expect(Validators.normalizeUkPhone('07700 900123'), '+447700900123');
+      expect(Validators.normalizeUkPhone('020 7946 0958'), '+442079460958');
+      expect(
+        Validators.normalizeUkPhone('+44 (0)113 496 0000'),
+        '+441134960000',
+      );
+      expect(Validators.ukPhone(''), isNull);
+      expect(
+        Validators.ukPhone('', required: true),
+        'Enter a phone number we can reach you on.',
+      );
+    });
+
+    test('rejects numbers that cannot be reached', () {
+      for (final bad in ['12345', '0800 123 4567', '+1 415 555 0132', 'abc']) {
+        expect(Validators.normalizeUkPhone(bad), isNull, reason: bad);
+        expect(
+          Validators.ukPhone(bad),
+          startsWith('Enter a valid UK phone number'),
+          reason: bad,
+        );
+      }
+    });
+  });
+
   group('otpCode', () {
     test('needs exactly the right number of digits', () {
       expect(Validators.otpCode(''), 'Enter the 6-digit code.');

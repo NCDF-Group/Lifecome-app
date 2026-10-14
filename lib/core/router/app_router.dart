@@ -10,7 +10,9 @@ import '../../features/auth/presentation/reset_password_screen.dart';
 import '../../features/auth/presentation/sign_in_screen.dart';
 import '../../features/auth/presentation/sign_up_success_screen.dart';
 import '../../features/auth/presentation/verify_mobile_screen.dart';
+import '../../features/booking/application/booking_controller.dart';
 import '../../features/booking/domain/models/appointment.dart';
+import '../../features/booking/domain/models/booking_selection.dart';
 import '../../features/booking/presentation/appointment_check_screen.dart';
 import '../../features/booking/presentation/before_your_visit_screen.dart';
 import '../../features/booking/presentation/booking_confirmation_screen.dart';
@@ -26,6 +28,7 @@ import '../../features/care_plan/presentation/care_plan_screen.dart';
 import '../../features/consultation/presentation/consultation_call_screen.dart';
 import '../../features/consultation/presentation/waiting_room_screen.dart';
 import '../../features/dashboard/presentation/dashboard_screen.dart';
+import '../../features/emergency/presentation/emergency_guidance_screen.dart';
 import '../../features/doctors/presentation/doctor_profile_screen.dart';
 import '../../features/doctors/presentation/find_a_doctor_screen.dart';
 import '../../features/health_records/presentation/health_records_screen.dart';
@@ -52,6 +55,14 @@ import '../../features/support/presentation/help_centre_screen.dart';
 import '../../features/welcome/presentation/welcome_screen.dart';
 import 'app_shell.dart';
 import 'route_paths.dart';
+
+/// A redirect for a screen that is opened with an object passed as `extra`
+/// (a booking in progress, an appointment): if it arrives without one —
+/// restored after the app was closed, or opened from a link — send the person
+/// to [fallback] instead of crashing on the missing object.
+GoRouterRedirect _requires<T extends Object>(String fallback) {
+  return (context, state) => state.extra is T ? null : fallback;
+}
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -141,13 +152,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: RoutePaths.bookingChooseService,
-        builder: (context, state) {
-          final args = state.extra! as (BookingAccessType, String?);
-          return ChooseServiceScreen(accessType: args.$1, hmoName: args.$2);
-        },
+        redirect: _requires<BookingStart>(RoutePaths.chooseAccess),
+        builder: (context, state) =>
+            ChooseServiceScreen(start: state.extra! as BookingStart),
       ),
       GoRoute(
         path: RoutePaths.bookingLocation,
+        redirect: _requires<BookingSelection>(RoutePaths.chooseAccess),
         builder: (context, state) =>
             BookingLocationScreen(selection: state.extra! as BookingSelection),
       ),
@@ -158,46 +169,52 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: RoutePaths.doctorsFindADoctor,
+        redirect: _requires<BookingSelection>(RoutePaths.chooseAccess),
         builder: (context, state) =>
             FindADoctorScreen(selection: state.extra! as BookingSelection),
       ),
       GoRoute(
         path: RoutePaths.doctorsProfile,
+        redirect: _requires<BookingSelection>(RoutePaths.chooseAccess),
         builder: (context, state) =>
             DoctorProfileScreen(selection: state.extra! as BookingSelection),
       ),
       GoRoute(
         path: RoutePaths.bookingAppointmentTime,
+        redirect: _requires<BookingSelection>(RoutePaths.chooseAccess),
         builder: (context, state) => ChooseAppointmentTimeScreen(
           selection: state.extra! as BookingSelection,
         ),
       ),
       GoRoute(
         path: RoutePaths.appointmentCheck,
+        redirect: _requires<Appointment>(RoutePaths.visits),
         builder: (context, state) =>
-            AppointmentCheckScreen(selection: state.extra! as BookingSelection),
+            AppointmentCheckScreen(appointment: state.extra! as Appointment),
       ),
       GoRoute(
         path: RoutePaths.bookingBeforeYourVisit,
+        redirect: _requires<BookingSelection>(RoutePaths.chooseAccess),
         builder: (context, state) =>
             BeforeYourVisitScreen(selection: state.extra! as BookingSelection),
       ),
       GoRoute(
         path: RoutePaths.bookingReview,
+        redirect: _requires<BookingSelection>(RoutePaths.chooseAccess),
         builder: (context, state) =>
             ReviewBookingScreen(selection: state.extra! as BookingSelection),
       ),
       GoRoute(
         path: RoutePaths.bookingConfirmation,
-        builder: (context, state) => BookingConfirmationScreen(
-          selection: state.extra! as BookingSelection,
-        ),
+        redirect: _requires<BookingOutcome>(RoutePaths.visits),
+        builder: (context, state) =>
+            BookingConfirmationScreen(outcome: state.extra! as BookingOutcome),
       ),
       GoRoute(
         path: RoutePaths.manageAppointment,
-        builder: (context, state) => ManageAppointmentScreen(
-          selection: state.extra! as BookingSelection,
-        ),
+        redirect: _requires<Appointment>(RoutePaths.visits),
+        builder: (context, state) =>
+            ManageAppointmentScreen(appointment: state.extra! as Appointment),
       ),
       GoRoute(
         path: RoutePaths.findSmartGpClinic,
@@ -205,18 +222,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: RoutePaths.consultationWaitingRoom,
+        redirect: _requires<Appointment>(RoutePaths.visits),
         builder: (context, state) =>
-            WaitingRoomScreen(selection: state.extra! as BookingSelection),
+            WaitingRoomScreen(appointment: state.extra! as Appointment),
       ),
       GoRoute(
         path: RoutePaths.consultationCall,
+        redirect: _requires<Appointment>(RoutePaths.visits),
         builder: (context, state) =>
-            ConsultationCallScreen(selection: state.extra! as BookingSelection),
+            ConsultationCallScreen(appointment: state.extra! as Appointment),
       ),
       GoRoute(
         path: RoutePaths.careplan,
         builder: (context, state) =>
-            CarePlanScreen(selection: state.extra as BookingSelection?),
+            CarePlanScreen(appointment: state.extra as Appointment?),
+      ),
+      GoRoute(
+        path: RoutePaths.emergency,
+        builder: (context, state) => const EmergencyGuidanceScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>

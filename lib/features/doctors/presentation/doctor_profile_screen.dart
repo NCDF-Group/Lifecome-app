@@ -7,9 +7,12 @@ import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
-import '../../booking/domain/models/appointment.dart';
+import '../../../core/widgets/layout/screen_title.dart';
+import '../../../core/widgets/media/avatar.dart';
+import '../../booking/domain/models/booking_selection.dart';
 
-/// Blueprint view 12 — Doctor Profile ("Your clinician").
+/// Blueprint view 12 — Doctor Profile ("Your clinician"). Shows only what the
+/// directory holds: no photo, rating or biography is invented.
 class DoctorProfileScreen extends StatelessWidget {
   const DoctorProfileScreen({super.key, required this.selection});
 
@@ -18,6 +21,7 @@ class DoctorProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final doctor = selection.doctor!;
+    final formats = [for (final mode in doctor.modes) mode.label].join(', ');
 
     return Scaffold(
       backgroundColor: context.palette.background,
@@ -25,16 +29,9 @@ class DoctorProfileScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            AppHeaderBar(showBack: true, onBack: () => context.pop()),
+            const AppHeaderBar(showBack: true),
             const SizedBox(height: 20),
-            Text(
-              'Your clinician',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: context.palette.ink,
-              ),
-            ),
+            const ScreenTitle(title: 'Your clinician'),
             const SizedBox(height: AppSpacing.md),
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
@@ -44,15 +41,7 @@ class DoctorProfileScreen extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 32,
-                    backgroundColor: context.palette.elevated,
-                    child: Icon(
-                      Icons.person,
-                      color: context.palette.positive,
-                      size: 32,
-                    ),
-                  ),
+                  UserAvatar(name: doctor.name, radius: 32),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Column(
@@ -79,30 +68,36 @@ class DoctorProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: AppSpacing.sm),
-            _InfoRow(
-              icon: Icons.assignment_outlined,
-              iconColor: context.palette.positive,
-              background: context.palette.tintGreen,
-              title: 'Professional registration',
-              subtitle: doctor.credentials,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _InfoRow(
-              icon: Icons.videocam_outlined,
-              iconColor: context.palette.accent,
-              background: context.palette.tintBlue,
-              title: 'Consultation formats',
-              subtitle: 'Video and telephone.',
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _InfoRow(
-              icon: Icons.public,
-              iconColor: context.palette.positive,
-              background: context.palette.tintGreen,
-              title: 'Languages',
-              subtitle: doctor.languages.join(', '),
-            ),
+            if (formats.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.sm),
+              _InfoRow(
+                icon: Icons.videocam_outlined,
+                iconColor: context.palette.accent,
+                background: context.palette.tintBlue,
+                title: 'Consultation formats',
+                subtitle: formats,
+              ),
+            ],
+            if (doctor.languages.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.sm),
+              _InfoRow(
+                icon: Icons.public,
+                iconColor: context.palette.positive,
+                background: context.palette.tintGreen,
+                title: 'Languages',
+                subtitle: doctor.languages.join(', '),
+              ),
+            ],
+            if (doctor.locationLabel != null) ...[
+              const SizedBox(height: AppSpacing.sm),
+              _InfoRow(
+                icon: Icons.location_on_outlined,
+                iconColor: context.palette.accent,
+                background: context.palette.tintBlue,
+                title: 'Clinic location',
+                subtitle: doctor.locationLabel!,
+              ),
+            ],
             const SizedBox(height: AppSpacing.sm),
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
@@ -197,7 +192,6 @@ class _InfoRow extends StatelessWidget {
               ],
             ),
           ),
-          Icon(Icons.chevron_right, color: context.palette.accent),
         ],
       ),
     );

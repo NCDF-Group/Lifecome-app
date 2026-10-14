@@ -54,6 +54,9 @@ abstract final class RoutePaths {
   /// The notification centre, opened from the bell in the top bar.
   static const notifications = '/notifications';
 
+  /// What to do in an emergency (999, NHS 111).
+  static const emergency = '/emergency';
+
   /// Services tab — Explore our services (GP care + everyday wellbeing).
   static const services = '/services';
 

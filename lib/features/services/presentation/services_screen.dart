@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
-import '../../booking/domain/models/appointment.dart';
+import '../../booking/domain/models/booking_selection.dart';
 import '../domain/models/wellbeing_service.dart';
 
 /// The Services tab — "Explore our services". GP care (medical, direct-pay
@@ -115,7 +115,7 @@ class ServicesScreen extends StatelessWidget {
   void _openDirectBooking(BuildContext context) {
     context.push(
       RoutePaths.bookingChooseService,
-      extra: (BookingAccessType.direct, null),
+      extra: const BookingStart.direct(),
     );
   }
 }

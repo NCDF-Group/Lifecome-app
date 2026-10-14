@@ -1,47 +1,45 @@
-/// A bookable service (blueprint view 10, Choose a Service). `coveredByHmo`
-/// only applies when booking through an HMO — see `CheckEligibilityScreen`;
-/// for a direct-pay booking, `fee` (in GBP) is what the patient is shown
-/// instead.
+import '../../../../core/utils/formatters.dart';
+
+/// A bookable service from the backend's catalogue (`/clinical-services`):
+/// a GP consultation, a follow-up, a results review...
 class ClinicalService {
   const ClinicalService({
     required this.id,
-    required this.title,
-    required this.description,
-    required this.fee,
-    this.requiresAuthorisation = false,
+    required this.code,
+    required this.name,
+    required this.durationMinutes,
+    required this.priceMinor,
+    this.description,
   });
 
-  final String id;
-  final String title;
-  final String description;
-  final int fee;
-  final bool requiresAuthorisation;
-}
+  factory ClinicalService.fromJson(Map<String, dynamic> json) {
+    final description = (json['description'] as String?)?.trim();
+    return ClinicalService(
+      id: json['id'] as String,
+      code: json['code'] as String? ?? '',
+      name: (json['name'] as String? ?? '').trim(),
+      description: description == null || description.isEmpty
+          ? null
+          : description,
+      durationMinutes: (json['defaultDurationMinutes'] as num?)?.toInt() ?? 30,
+      // The backend names the column after Nigeria's currency (`basePriceKobo`)
+      // but the amount is in the smallest unit of whatever currency the
+      // service is sold in; LifeCome Live UK sells in pounds.
+      priceMinor: (json['basePriceKobo'] as num?)?.toInt() ?? 0,
+    );
+  }
 
-const clinicalServices = [
-  ClinicalService(
-    id: 'gp-consultation',
-    title: 'GP Consultation',
-    description: 'Talk through a new health concern.',
-    fee: 60,
-  ),
-  ClinicalService(
-    id: 'follow-up',
-    title: 'Follow-up Visit',
-    description: 'Review progress with your doctor.',
-    fee: 45,
-  ),
-  ClinicalService(
-    id: 'results-review',
-    title: 'Results Review',
-    description: 'Discuss your test results.',
-    fee: 45,
-  ),
-  ClinicalService(
-    id: 'referral-advice',
-    title: 'Referral Advice',
-    description: 'Plan your next step in care.',
-    fee: 55,
-    requiresAuthorisation: true,
-  ),
-];
+  final String id;
+
+  /// The backend's stable code for the service, used for eligibility checks.
+  final String code;
+  final String name;
+  final String? description;
+  final int durationMinutes;
+
+  /// The price in pence.
+  final int priceMinor;
+
+  String get title => name;
+  String get priceLabel => Formatters.money(priceMinor);
+}

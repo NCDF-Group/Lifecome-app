@@ -7,7 +7,7 @@ import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
-import '../../booking/domain/models/appointment.dart';
+import '../../booking/domain/models/booking_selection.dart';
 
 class _CoveredService {
   const _CoveredService({
@@ -193,7 +193,7 @@ class HmoCoverageScreen extends StatelessWidget {
               label: 'Book covered care',
               onPressed: () => context.push(
                 RoutePaths.bookingChooseService,
-                extra: (BookingAccessType.hmo, hmoName),
+                extra: BookingStart.hmo(hmoName),
               ),
             ),
           ],
