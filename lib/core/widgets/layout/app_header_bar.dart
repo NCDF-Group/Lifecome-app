@@ -1,37 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 
+import '../../../features/notifications/presentation/widgets/notifications_bell.dart';
 import '../../country/app_country.dart';
-import '../../theme/app_colors.dart';
+import '../../router/route_paths.dart';
 import '../../theme/app_palette.dart';
-import '../feedback/app_popup.dart';
+import 'app_bar_back.dart';
 
-/// The header shared by the welcome screen, Home, Services and the
-/// wellbeing detail screens: an optional back arrow, the logo, a static
-/// "UK" chip, and the notification bell. Matches the consistent top bar
-/// across those design screenshots.
+/// The header shared by Home, Services and the screens reached from them: an
+/// optional back arrow, the logo, a static "UK" chip, and the notification
+/// bell (see [NotificationsBell]).
+///
+/// The back arrow goes to the previous screen, or to [backFallback] when
+/// nothing is behind this one, so it always does something. Pass [onBack] only
+/// when a screen has to do something else first.
 class AppHeaderBar extends StatelessWidget {
-  const AppHeaderBar({super.key, this.showBack = false, this.onBack});
+  const AppHeaderBar({
+    super.key,
+    this.showBack = false,
+    this.onBack,
+    this.backFallback = RoutePaths.home,
+    this.showBell = true,
+  });
 
   final bool showBack;
   final VoidCallback? onBack;
+  final String backFallback;
+
+  /// False before sign-in (the welcome screen), where there is nothing to
+  /// be notified about.
+  final bool showBell;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         if (showBack) ...[
-          IconButton(
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-            onPressed: onBack ?? () => context.pop(),
-            icon: Icon(
-              Icons.arrow_back_ios_new,
-              size: 18,
-              color: context.palette.ink,
-            ),
-          ),
+          AppBackButton(fallback: backFallback, onPressed: onBack),
           const SizedBox(width: 8),
         ],
         SvgPicture.asset(
@@ -41,8 +46,7 @@ class AppHeaderBar extends StatelessWidget {
         ),
         const Spacer(),
         const _CountryChip(),
-        const SizedBox(width: 8),
-        _BellButton(onTap: () => showNotificationsPopup(context)),
+        if (showBell) ...[const SizedBox(width: 8), const NotificationsBell()],
       ],
     );
   }
@@ -76,55 +80,6 @@ class _CountryChip extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _BellButton extends StatelessWidget {
-  const _BellButton({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: context.palette.surface,
-      shape: const CircleBorder(),
-      child: InkWell(
-        customBorder: const CircleBorder(),
-        onTap: onTap,
-        child: SizedBox(
-          width: 38,
-          height: 38,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Icon(
-                Icons.notifications_outlined,
-                size: 20,
-                color: context.palette.ink,
-              ),
-              Positioned(top: 8, right: 9, child: _Dot()),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _Dot extends StatelessWidget {
-  const _Dot();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 8,
-      height: 8,
-      decoration: const BoxDecoration(
-        color: AppColors.blue,
-        shape: BoxShape.circle,
       ),
     );
   }

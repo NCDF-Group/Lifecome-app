@@ -51,6 +51,9 @@ abstract final class RoutePaths {
   /// bottom-nav shell (see `AppShell`).
   static const home = '/home';
 
+  /// The notification centre, opened from the bell in the top bar.
+  static const notifications = '/notifications';
+
   /// Services tab — Explore our services (GP care + everyday wellbeing).
   static const services = '/services';
 

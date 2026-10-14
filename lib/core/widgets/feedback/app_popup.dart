@@ -11,7 +11,7 @@ import '../../theme/app_typography.dart';
 /// popup card. Used in place of SnackBars everywhere, so every message —
 /// coming soon, success, an error, no network, notifications, photo upload,
 /// a destructive confirmation — looks and behaves the same.
-enum AppPopupKind { info, success, error, offline, notifications }
+enum AppPopupKind { info, success, error, offline }
 
 class _KindStyle {
   const _KindStyle(this.icon, this.color);
@@ -27,10 +27,6 @@ const _styles = {
   ),
   AppPopupKind.error: _KindStyle(Icons.error_rounded, AppColors.error),
   AppPopupKind.offline: _KindStyle(Icons.wifi_off_rounded, AppColors.gold),
-  AppPopupKind.notifications: _KindStyle(
-    Icons.notifications_rounded,
-    AppColors.blue,
-  ),
 };
 
 /// Shows a popup and resolves to the value the tapped action popped with
@@ -122,19 +118,6 @@ Future<void> showErrorPopup(BuildContext context, String message) {
     title: 'Something went wrong',
     message: message,
     primaryLabel: 'Try again',
-  );
-}
-
-/// The notification centre. Empty until a notifications backend exists.
-Future<void> showNotificationsPopup(BuildContext context) {
-  return showAppPopup<void>(
-    context,
-    kind: AppPopupKind.notifications,
-    title: 'Notifications',
-    message:
-        "You're all caught up. Visit reminders, test results and messages "
-        'from your care team will show up here.',
-    primaryLabel: 'Close',
   );
 }
 

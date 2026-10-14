@@ -7,6 +7,12 @@ import '../services/session_manager.dart';
 import '../services/session_store.dart';
 import '../storage/secure_storage.dart';
 
+/// Riverpod retries a provider that throws on its own, with growing delays,
+/// and the screen sits on its spinner in the meantime. Every load in this app
+/// has a visible error state with a "Try again" button instead, so automatic
+/// retries are switched off (see `ProviderScope.retry` in `main.dart`).
+Duration? noAutomaticRetry(int retryCount, Object error) => null;
+
 /// Counts how many times the saved sign-in has been rejected by the backend.
 /// The app root watches it and sends the person to the sign-in screen.
 class SessionExpiredNotifier extends Notifier<int> {

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lifecome_mobile/app.dart';
+import 'package:lifecome_mobile/core/providers/core_providers.dart';
 import 'package:lifecome_mobile/core/router/app_router.dart';
 
 /// Pumps the real app (real router, real screens) at phone size, sends it to
@@ -20,7 +21,11 @@ Future<GoRouter> pumpAppAt(
   addTearDown(tester.view.reset);
 
   await tester.pumpWidget(
-    ProviderScope(overrides: overrides, child: const LifeComeLiveApp()),
+    ProviderScope(
+      retry: noAutomaticRetry,
+      overrides: overrides,
+      child: const LifeComeLiveApp(),
+    ),
   );
   await tester.pump();
   final router = ProviderScope.containerOf(

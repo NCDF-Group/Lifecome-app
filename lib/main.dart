@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app.dart';
+import 'core/providers/core_providers.dart';
 import 'core/theme/theme_mode_controller.dart';
 
 Future<void> main() async {
@@ -12,6 +13,7 @@ Future<void> main() async {
 
   runApp(
     ProviderScope(
+      retry: noAutomaticRetry,
       overrides: [initialThemeModeProvider.overrideWithValue(themeMode)],
       child: const LifeComeLiveApp(),
     ),

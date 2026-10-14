@@ -26,7 +26,7 @@ class WelcomeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const AppHeaderBar(),
+                const AppHeaderBar(showBell: false),
                 const SizedBox(height: 20),
                 const FadeIn(child: _HeroPhotos()),
                 const SizedBox(height: 24),
