@@ -12,9 +12,9 @@ class SignUpSuccessScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return AuthSuccessView(
       title: 'Your account is ready!',
-      message: 'Continue to start booking care and managing your health with LifeCome Live.',
+      message: 'One last step: tell us a little about you, then you can start booking care with LifeCome Live.',
       buttonLabel: 'Continue',
-      onContinue: () => context.go(RoutePaths.home),
+      onContinue: () => context.go(RoutePaths.completeProfile),
     );
   }
 }

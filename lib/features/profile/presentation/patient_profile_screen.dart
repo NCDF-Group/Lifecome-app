@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/network/api_exception.dart';
 import '../../../core/providers/core_providers.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/services/session_store.dart';
@@ -12,6 +13,8 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/theme_mode_controller.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
 import '../../auth/application/auth_controller.dart';
+import '../application/profile_controller.dart';
+import 'widgets/my_avatar.dart';
 
 /// The Profile tab landing screen — account summary plus links into health
 /// records, support and account management.
@@ -73,9 +76,9 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final firstName = (_session?.displayName ?? 'Your account')
-        .split(' ')
-        .first;
+    final me = ref.watch(meProvider);
+    final name = me.value?.displayName ?? _session?.displayName;
+    final email = me.value?.account.email ?? _session?.email;
     final themeMode = ref.watch(themeModeProvider);
 
     return Scaffold(
@@ -104,13 +107,23 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
               style: TextStyle(fontSize: 14, color: context.palette.inkMuted),
             ),
             const SizedBox(height: AppSpacing.md),
-            _ProfileRow(
-              green: false,
-              icon: Icons.person,
-              title: firstName,
-              subtitle: 'Personal account',
+            _AccountCard(
+              name: name,
+              email: email,
               onTap: () => context.push(RoutePaths.editProfile),
             ),
+            if (me.value?.needsProfile ?? false) ...[
+              const SizedBox(height: AppSpacing.sm),
+              _ProfileNudge(
+                onTap: () => context.push(RoutePaths.completeProfile),
+              ),
+            ] else if (me.hasError && !me.hasValue) ...[
+              const SizedBox(height: AppSpacing.sm),
+              _LoadFailed(
+                error: me.error!,
+                onRetry: () => ref.read(meProvider.notifier).refresh(),
+              ),
+            ],
             const SizedBox(height: AppSpacing.sm),
             _ProfileRow(
               green: true,
@@ -226,6 +239,142 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Who is signed in: their photo (or real initials), name and email.
+class _AccountCard extends StatelessWidget {
+  const _AccountCard({
+    required this.name,
+    required this.email,
+    required this.onTap,
+  });
+
+  final String? name;
+  final String? email;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: context.palette.tintBlue,
+      borderRadius: BorderRadius.circular(AppRadius.card),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Row(
+            children: [
+              MyAvatar(radius: 26, fallbackName: name),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name ?? 'Your account',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                        color: context.palette.ink,
+                      ),
+                    ),
+                    if (email != null)
+                      Text(
+                        email!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          color: context.palette.inkMuted,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right, color: context.palette.accent),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Shown when the account has no profile yet: booking needs one.
+class _ProfileNudge extends StatelessWidget {
+  const _ProfileNudge({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: context.palette.tintAmber,
+      borderRadius: BorderRadius.circular(AppRadius.card),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Row(
+            children: [
+              Icon(Icons.info_outline, color: context.palette.amber),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Text(
+                  'Finish setting up your profile to book care.',
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w600,
+                    color: context.palette.ink,
+                  ),
+                ),
+              ),
+              Icon(Icons.chevron_right, color: context.palette.inkMuted),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The profile could not be loaded; the rest of the tab still works.
+class _LoadFailed extends StatelessWidget {
+  const _LoadFailed({required this.error, required this.onRetry});
+
+  final Object error;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final message = error is ApiException
+        ? (error as ApiException).message
+        : "We couldn't load your details.";
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: context.palette.tintRed,
+        borderRadius: BorderRadius.circular(AppRadius.control),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.error_outline, size: 18, color: context.palette.danger),
+          const SizedBox(width: AppSpacing.xs),
+          Expanded(
+            child: Text(
+              message,
+              style: TextStyle(fontSize: 12.5, color: context.palette.ink),
+            ),
+          ),
+          TextButton(onPressed: onRetry, child: const Text('Try again')),
+        ],
       ),
     );
   }

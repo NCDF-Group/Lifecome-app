@@ -28,6 +28,10 @@ abstract final class RoutePaths {
   /// as `extra`.
   static const signUpSuccess = '/sign-up-success';
 
+  /// The step after sign-up where the person fills in their date of birth and
+  /// the rest of their profile (the backend has none until they do).
+  static const completeProfile = '/complete-profile';
+
   /// Step 1 of the forgot-password flow: enter the account email.
   static const forgotPassword = '/forgot-password';
 

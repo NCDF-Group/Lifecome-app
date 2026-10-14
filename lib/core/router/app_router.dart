@@ -86,6 +86,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SignUpSuccessScreen(),
       ),
       GoRoute(
+        path: RoutePaths.completeProfile,
+        builder: (context, state) => const EditProfileScreen(onboarding: true),
+      ),
+      GoRoute(
         path: RoutePaths.forgotPassword,
         builder: (context, state) => const ForgotPasswordScreen(),
       ),
