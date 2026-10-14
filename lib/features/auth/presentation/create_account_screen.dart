@@ -122,6 +122,17 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
     }
   }
 
+  /// Back goes to wherever the person came from. If nothing is behind this
+  /// screen (it was opened with `go`, or restored on its own), `pop` has
+  /// nowhere to go, so fall back to the welcome screen.
+  void _goBack() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go(RoutePaths.welcome);
+    }
+  }
+
   void _openTerms() =>
       showComingSoonPopup(context, feature: 'The terms of use page');
 
@@ -153,7 +164,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                       IconButton(
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
-                        onPressed: () => context.pop(),
+                        onPressed: _goBack,
                         icon: Icon(
                           Icons.arrow_back_ios_new,
                           size: 18,

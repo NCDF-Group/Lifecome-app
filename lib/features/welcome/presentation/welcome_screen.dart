@@ -105,7 +105,7 @@ class WelcomeScreen extends StatelessWidget {
                   child: PrimaryButton(
                     label: 'Create an account',
                     icon: Icons.arrow_forward,
-                    onPressed: () => context.go(RoutePaths.createAccount),
+                    onPressed: () => context.push(RoutePaths.createAccount),
                   ),
                 ),
                 const SizedBox(height: 10),
