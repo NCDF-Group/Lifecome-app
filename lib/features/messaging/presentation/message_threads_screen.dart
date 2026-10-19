@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
@@ -39,10 +38,10 @@ class MessageThreadsScreen extends ConsumerWidget {
                   // A tab root, so the arrow goes Home.
                   const AppBackButton(fallback: RoutePaths.home),
                   const SizedBox(width: 8),
-                  SvgPicture.asset(
+                  Image.asset(
                     context.palette.logoAsset,
                     height: 24,
-                    semanticsLabel: 'LifeCome Live',
+                    semanticLabel: 'LifeCome Health',
                   ),
                   const Spacer(),
                   Material(

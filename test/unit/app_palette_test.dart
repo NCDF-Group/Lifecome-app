@@ -36,7 +36,7 @@ void main() {
     test('uses the full-colour logo', () {
       expect(
         AppPalette.light.logoAsset,
-        'assets/images/logo/lifecome-live-logo.svg',
+        'assets/images/logo/lifecome-health-logo.png',
       );
     });
   });
@@ -46,7 +46,7 @@ void main() {
 
     test('uses the white logo, which stays legible on a dark page', () {
       expect(p.isDark, isTrue);
-      expect(p.logoAsset, 'assets/images/logo/lifecome-live-logo-white.svg');
+      expect(p.logoAsset, 'assets/images/logo/lifecome-health-logo-white.png');
     });
 
     test(

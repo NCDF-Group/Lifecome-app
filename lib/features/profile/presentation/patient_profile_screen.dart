@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/network/api_exception.dart';
@@ -86,10 +85,10 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
                 // it: back goes Home.
                 const AppBackButton(fallback: RoutePaths.home),
                 const SizedBox(width: 8),
-                SvgPicture.asset(
+                Image.asset(
                   context.palette.logoAsset,
                   height: 24,
-                  semanticsLabel: 'LifeCome Live',
+                  semanticLabel: 'LifeCome Health',
                 ),
               ],
             ),

@@ -97,8 +97,9 @@ class AppPalette extends ThemeExtension<AppPalette> {
   final Color tintRedLine;
   final Color tintAmber;
 
-  /// The full-colour logo suits a light page; on a dark page the wordmark's
-  /// brand blue loses contrast, so dark mode uses the white version.
+  /// The full-colour logo suits a light page; on a dark page the "Health"
+  /// wordmark's brand blue loses contrast, so dark mode uses the version
+  /// with "Health" in white.
   final String logoAsset;
 
   static const light = AppPalette(
@@ -126,7 +127,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     tintRedStrong: Color(0xFFF7D7D4),
     tintRedLine: Color(0xFFF2CFCB),
     tintAmber: Color(0xFFFBEBD4),
-    logoAsset: 'assets/images/logo/lifecome-live-logo.svg',
+    logoAsset: 'assets/images/logo/lifecome-health-logo.png',
   );
 
   static const dark = AppPalette(
@@ -154,7 +155,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     tintRedStrong: Color(0xFF4A282D),
     tintRedLine: Color(0xFF5E3439),
     tintAmber: Color(0xFF3A2D15),
-    logoAsset: 'assets/images/logo/lifecome-live-logo-white.svg',
+    logoAsset: 'assets/images/logo/lifecome-health-logo-white.png',
   );
 
   /// Maps a colour written for light mode — the values screens and const data

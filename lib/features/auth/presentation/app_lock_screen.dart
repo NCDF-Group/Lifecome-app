@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/animation/fade_in.dart';
@@ -128,10 +127,10 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
               children: [
                 FadeIn(
                   child: Center(
-                    child: SvgPicture.asset(
+                    child: Image.asset(
                       context.palette.logoAsset,
                       height: 32,
-                      semanticsLabel: 'LifeCome Live',
+                      semanticLabel: 'LifeCome Health',
                     ),
                   ),
                 ),

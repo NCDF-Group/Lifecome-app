@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="../brand/logo/lifecome-live-logo.svg" alt="LifeCome Live" width="360" />
+  <img src="assets/images/logo/lifecome-health-logo.png" alt="LifeCome Health" width="360" />
 </p>
 
 # LifeCome Live — Mobile App (Flutter)

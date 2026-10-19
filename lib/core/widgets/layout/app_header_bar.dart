@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../features/notifications/presentation/widgets/notifications_bell.dart';
 import '../../country/app_country.dart';
@@ -39,10 +38,10 @@ class AppHeaderBar extends StatelessWidget {
           AppBackButton(fallback: backFallback, onPressed: onBack),
           const SizedBox(width: 8),
         ],
-        SvgPicture.asset(
+        Image.asset(
           context.palette.logoAsset,
           height: 24,
-          semanticsLabel: 'LifeCome Live',
+          semanticLabel: 'LifeCome Health',
         ),
         const Spacer(),
         const _CountryChip(),
