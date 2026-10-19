@@ -23,7 +23,7 @@ class ChooseAccessScreen extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             const AppHeaderBar(showBack: true, backFallback: RoutePaths.visits),
-            const SizedBox(height: 20),
+            const SizedBox(height: 4),
             Text(
               'Choose your access',
               style: TextStyle(

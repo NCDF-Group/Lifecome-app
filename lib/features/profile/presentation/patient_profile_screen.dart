@@ -11,7 +11,11 @@ import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/theme_mode_controller.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
-import '../../../core/widgets/layout/app_bar_back.dart';
+import '../../../core/widgets/buttons/ghost_button.dart';
+import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/layout/screen_title.dart';
+import '../../../core/widgets/lists/row_card.dart';
+import '../../../core/widgets/media/lc_icons.dart';
 import '../../auth/application/auth_controller.dart';
 import '../application/profile_controller.dart';
 import 'widgets/my_avatar.dart';
@@ -76,168 +80,145 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
     return Scaffold(
       backgroundColor: context.palette.background,
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-          children: [
-            Row(
-              children: [
-                // The Profile tab is a tab root, so there is nothing behind
-                // it: back goes Home.
-                const AppBackButton(fallback: RoutePaths.home),
-                const SizedBox(width: 8),
-                Image.asset(
-                  context.palette.logoAsset,
-                  height: 24,
-                  semanticLabel: 'LifeCome Health',
+        // Not a lazy ListView: the list is short, and everything on it (sign
+        // out, the footer links) should always be there.
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 25),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // The Profile tab is a tab root, so there is nothing behind it:
+              // back goes Home.
+              const AppHeaderBar(showBack: true),
+              const SizedBox(height: 4),
+              const ScreenTitle(
+                title: 'Your profile',
+                subtitle: 'Your details and preferences.',
+              ),
+              const SizedBox(height: 16),
+              _AccountCard(
+                name: name,
+                email: email,
+                onTap: () => context.push(RoutePaths.editProfile),
+              ),
+              if (me.value?.needsProfile ?? false) ...[
+                const SizedBox(height: 10),
+                _ProfileNudge(
+                  onTap: () => context.push(RoutePaths.completeProfile),
+                ),
+              ] else if (me.hasError && !me.hasValue) ...[
+                const SizedBox(height: 10),
+                _LoadFailed(
+                  error: me.error!,
+                  onRetry: () => ref.read(meProvider.notifier).refresh(),
                 ),
               ],
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Your profile',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: context.palette.ink,
+              const SizedBox(height: 8),
+              RowCard(
+                icon: LcIcons.user,
+                title: 'Personal details',
+                subtitle: 'Your name, date of birth and town',
+                onTap: () => context.push(RoutePaths.editProfile),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Manage your account and preferences.',
-              style: TextStyle(fontSize: 14, color: context.palette.inkMuted),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            _AccountCard(
-              name: name,
-              email: email,
-              onTap: () => context.push(RoutePaths.editProfile),
-            ),
-            if (me.value?.needsProfile ?? false) ...[
-              const SizedBox(height: AppSpacing.sm),
-              _ProfileNudge(
-                onTap: () => context.push(RoutePaths.completeProfile),
+              RowCard(
+                icon: LcIcons.care,
+                title: 'Health profile',
+                subtitle: 'Conditions, medicines and allergies',
+                onTap: () => context.push(RoutePaths.healthProfile),
               ),
-            ] else if (me.hasError && !me.hasValue) ...[
-              const SizedBox(height: AppSpacing.sm),
-              _LoadFailed(
-                error: me.error!,
-                onRetry: () => ref.read(meProvider.notifier).refresh(),
+              RowCard(
+                icon: LcIcons.file,
+                title: 'Health records',
+                subtitle: 'Notes, prescriptions, referrals and results',
+                onTap: () => context.push(RoutePaths.healthRecords),
+              ),
+              RowCard(
+                icon: LcIcons.shield,
+                title: 'Membership & benefits',
+                subtitle: 'Membership, employer access and cover',
+                tone: RowCardTone.mint,
+                onTap: () => context.push(RoutePaths.myBenefits),
+              ),
+              RowCard(
+                icon: LcIcons.people,
+                title: 'Household membership',
+                subtitle: 'Household members and their access',
+                tone: RowCardTone.mint,
+                onTap: () => context.push(RoutePaths.membershipBilling),
+              ),
+              RowCard(
+                icon: LcIcons.card,
+                title: 'Payment methods',
+                subtitle: 'How you pay for care',
+                onTap: () => context.push(RoutePaths.paymentMethods),
+              ),
+              RowCard(
+                icon: LcIcons.lock,
+                title: 'Privacy & permissions',
+                subtitle: 'Control sharing and preferences',
+                onTap: () => context.push(RoutePaths.privacyAndSharing),
+              ),
+              RowCard(
+                icon: LcIcons.bell,
+                title: 'Notifications',
+                subtitle: 'How you hear from us',
+                onTap: () => context.push(RoutePaths.notificationSettings),
+              ),
+              RowCard(
+                icon: LcIcons.settings,
+                title: 'Accessibility',
+                subtitle: 'Text size and motion',
+                onTap: () => context.push(RoutePaths.accessibility),
+              ),
+              RowCard(
+                icon: LcIcons.star,
+                title: 'Appearance',
+                subtitle: switch (themeMode) {
+                  ThemeMode.system =>
+                    "Matches your phone's light or dark setting",
+                  ThemeMode.light => 'Always light',
+                  ThemeMode.dark => 'Always dark',
+                },
+                onTap: _chooseAppearance,
+              ),
+              RowCard(
+                icon: LcIcons.info,
+                title: 'Help & support',
+                subtitle: 'Get assistance or share feedback',
+                onTap: () => context.push(RoutePaths.helpAndSupport),
+              ),
+              const SizedBox(height: 6),
+              GhostButton(
+                label: 'Sign out',
+                color: context.palette.danger,
+                onPressed: _signOut,
+              ),
+              const SizedBox(height: 10),
+              Center(
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    _FooterLink(
+                      label: 'Privacy notice',
+                      onTap: () => context.push(RoutePaths.privacyPolicy),
+                    ),
+                    const _FooterDot(),
+                    _FooterLink(
+                      label: 'Terms of use',
+                      onTap: () => context.push(RoutePaths.termsAndConditions),
+                    ),
+                    const _FooterDot(),
+                    _FooterLink(
+                      label: 'Delete my account',
+                      color: context.palette.danger,
+                      onTap: _confirmDeleteAccount,
+                    ),
+                  ],
+                ),
               ),
             ],
-            const SizedBox(height: AppSpacing.sm),
-            _ProfileRow(
-              green: true,
-              icon: Icons.person_outline,
-              title: 'Personal details',
-              subtitle: 'View and update your personal information.',
-              onTap: () => context.push(RoutePaths.editProfile),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _ProfileRow(
-              green: false,
-              icon: Icons.monitor_heart_outlined,
-              title: 'Medical history',
-              subtitle: 'Add and manage your medical history.',
-              onTap: () =>
-                  showComingSoonPopup(context, feature: 'Medical history'),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _ProfileRow(
-              green: true,
-              icon: Icons.workspace_premium_outlined,
-              title: 'Access and benefits',
-              subtitle: 'View your access and available benefits.',
-              onTap: () => context.push(RoutePaths.myBenefits),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _ProfileRow(
-              green: false,
-              icon: Icons.groups_outlined,
-              title: 'Household membership',
-              subtitle: 'Manage household members and their access.',
-              onTap: () => context.push(RoutePaths.membershipBilling),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _ProfileRow(
-              green: true,
-              icon: Icons.description_outlined,
-              title: 'Health records',
-              subtitle: 'View and manage your records and care plans.',
-              onTap: () => context.push(RoutePaths.healthRecords),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _ProfileRow(
-              green: false,
-              icon: Icons.verified_user_outlined,
-              title: 'Privacy and sharing',
-              subtitle: 'Manage your data, privacy and sharing preferences.',
-              onTap: () => context.push(RoutePaths.privacyAndSharing),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _ProfileRow(
-              green: true,
-              icon: Icons.notifications_outlined,
-              title: 'Notifications',
-              subtitle: 'Choose what you want to be notified about.',
-              onTap: () => showComingSoonPopup(
-                context,
-                feature: 'Notification settings',
-              ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _ProfileRow(
-              green: false,
-              icon: Icons.brightness_6_outlined,
-              title: 'Appearance',
-              subtitle: switch (themeMode) {
-                ThemeMode.system =>
-                  "Matches your phone's light or dark setting.",
-                ThemeMode.light => 'Always light.',
-                ThemeMode.dark => 'Always dark.',
-              },
-              onTap: _chooseAppearance,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _ProfileRow(
-              green: true,
-              icon: Icons.help_outline,
-              title: 'Help and support',
-              subtitle: 'Get help, view FAQs or contact support.',
-              onTap: () => context.push(RoutePaths.helpAndSupport),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _ProfileRow(
-              destructive: true,
-              icon: Icons.logout,
-              title: 'Sign out',
-              subtitle: 'Sign out of your account on this device.',
-              onTap: _signOut,
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            Center(
-              child: Wrap(
-                alignment: WrapAlignment.center,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  _FooterLink(
-                    label: 'Privacy Policy',
-                    onTap: () => context.push(RoutePaths.privacyPolicy),
-                  ),
-                  const _FooterDot(),
-                  _FooterLink(
-                    label: 'Terms and Conditions',
-                    onTap: () => context.push(RoutePaths.termsAndConditions),
-                  ),
-                  const _FooterDot(),
-                  _FooterLink(
-                    label: 'Delete my account',
-                    color: context.palette.danger,
-                    onTap: _confirmDeleteAccount,
-                  ),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -258,46 +239,38 @@ class _AccountCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return Material(
-      color: context.palette.tintBlue,
-      borderRadius: BorderRadius.circular(AppRadius.card),
+      color: palette.tintBlue,
+      borderRadius: BorderRadius.circular(19),
       child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.card),
+        borderRadius: BorderRadius.circular(19),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Row(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          child: Column(
             children: [
-              MyAvatar(radius: 26, fallbackName: name),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name ?? 'Your account',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                        color: context.palette.ink,
-                      ),
-                    ),
-                    if (email != null)
-                      Text(
-                        email!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 12.5,
-                          color: context.palette.inkMuted,
-                        ),
-                      ),
-                  ],
+              MyAvatar(radius: 39, fallbackName: name),
+              const SizedBox(height: 12),
+              Text(
+                name ?? 'Your account',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: palette.ink,
                 ),
               ),
-              Icon(Icons.chevron_right, color: context.palette.accent),
+              if (email != null) ...[
+                const SizedBox(height: 3),
+                Text(
+                  email!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 13, color: palette.inkMuted),
+                ),
+              ],
             ],
           ),
         ),
@@ -375,83 +348,6 @@ class _LoadFailed extends StatelessWidget {
           ),
           TextButton(onPressed: onRetry, child: const Text('Try again')),
         ],
-      ),
-    );
-  }
-}
-
-class _ProfileRow extends StatelessWidget {
-  const _ProfileRow({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-    this.green = false,
-    this.destructive = false,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-  final bool green;
-  final bool destructive;
-
-  @override
-  Widget build(BuildContext context) {
-    final background = destructive
-        ? context.palette.tintRed
-        : (green ? context.palette.tintGreen : context.palette.tintBlue);
-    final tint = destructive
-        ? context.palette.danger
-        : (green ? context.palette.positive : context.palette.accent);
-    final titleColor = destructive
-        ? context.palette.danger
-        : context.palette.ink;
-
-    return Material(
-      color: background,
-      borderRadius: BorderRadius.circular(AppRadius.card),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.card),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 22,
-                backgroundColor: context.palette.elevated,
-                child: Icon(icon, color: tint),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: titleColor,
-                      ),
-                    ),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        color: context.palette.inkMuted,
-                        height: 1.3,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(Icons.chevron_right, color: tint),
-            ],
-          ),
-        ),
       ),
     );
   }

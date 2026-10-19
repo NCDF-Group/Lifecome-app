@@ -3,16 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
-import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/feedback/empty_state.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/feedback/status_chip.dart';
 import '../../../core/widgets/layout/screen_title.dart';
+import '../../../core/widgets/layout/section_header.dart';
+import '../../../core/widgets/lists/row_card.dart';
+import '../../../core/widgets/media/lc_icons.dart';
 import '../../booking/domain/models/booking_selection.dart';
 import '../../payer/application/payer_controller.dart';
 import '../../payer/domain/models/membership.dart';
@@ -34,20 +36,33 @@ class MyBenefitsScreen extends ConsumerWidget {
       backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 25),
           children: [
             const AppHeaderBar(
               showBack: true,
               backFallback: RoutePaths.profile,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 4),
             const ScreenTitle(
-              title: 'My benefits',
-              subtitle:
-                  'See what your health plan covers and book covered care.',
+              title: 'Your access & benefits',
+              subtitle: 'Understand how you can access each service.',
             ),
-            const SizedBox(height: AppSpacing.md),
-            if (plans.isEmpty) ...[
+            const SizedBox(height: 14),
+            RowCard(
+              icon: LcIcons.star,
+              title: 'LifeCome membership',
+              subtitle: 'Explore membership options',
+              onTap: () => context.push(RoutePaths.membershipPlans),
+            ),
+            RowCard(
+              icon: LcIcons.people,
+              title: 'Employer access',
+              subtitle: 'Activate a benefit from your employer',
+              onTap: () => context.push(RoutePaths.activateAccess),
+            ),
+            const SectionHeader(title: 'Health plans'),
+            const SizedBox(height: 6),
+            if (plans.isEmpty)
               EmptyState(
                 icon: Icons.shield_outlined,
                 title: 'No health plan linked yet',
@@ -57,30 +72,25 @@ class MyBenefitsScreen extends ConsumerWidget {
                     'here.',
                 actionLabel: 'Link a health plan',
                 onAction: () => context.push(RoutePaths.linkHealthPlan),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              _LinkRow(
-                icon: Icons.apartment_outlined,
-                title: 'Have an employer or membership code?',
-                subtitle: 'Send it to our care team to activate your access.',
-                onTap: () => context.push(RoutePaths.activateAccess),
-              ),
-            ] else ...[
-              for (final plan in plans) ...[
-                _PlanCard(plan: plan),
-                const SizedBox(height: AppSpacing.sm),
-              ],
-              _LinkRow(
-                icon: Icons.add_circle_outline,
+              )
+            else ...[
+              for (final plan in plans) _PlanCard(plan: plan),
+              RowCard(
+                icon: LcIcons.plus,
                 title: 'Link another plan',
-                subtitle: 'Check a different health plan.',
+                subtitle: 'Check a different health plan',
+                tone: RowCardTone.white,
                 onTap: () => context.push(RoutePaths.linkHealthPlan),
               ),
-              const SizedBox(height: AppSpacing.sm),
-              const InfoBanner(
-                message: 'Medicines, tests and specialist care may cost extra.',
-              ),
             ],
+            const SizedBox(height: 10),
+            const InfoBanner(
+              message:
+                  'Membership benefits and health plan cover are managed '
+                  'separately. Eligibility is checked for the service you '
+                  'choose. Medicines, tests and specialist care may cost '
+                  'extra.',
+            ),
           ],
         ),
       ),
@@ -105,10 +115,12 @@ class _PlanCard extends StatelessWidget {
     final verifiedAt = plan.membership.verifiedAt;
 
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: palette.tintGreen,
-        borderRadius: BorderRadius.circular(AppRadius.card),
+        color: palette.elevated,
+        border: Border.all(color: palette.line),
+        borderRadius: BorderRadius.circular(17),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,8 +129,8 @@ class _PlanCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 22,
-                backgroundColor: palette.elevated,
-                child: Icon(Icons.shield_outlined, color: palette.positive),
+                backgroundColor: palette.tintGreenStrong,
+                child: LcIcon(LcIcons.shield, color: palette.positive),
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
@@ -129,7 +141,7 @@ class _PlanCard extends StatelessWidget {
                       plan.name,
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                         color: palette.ink,
                       ),
                     ),
@@ -152,30 +164,12 @@ class _PlanCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.xs,
-                  vertical: 2,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.greenStrong,
-                  borderRadius: BorderRadius.circular(AppRadius.pill),
-                ),
-                child: const Text(
-                  'Verified',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.white,
-                  ),
-                ),
-              ),
+              const StatusBadge('Verified'),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
           PrimaryButton(
             label: 'Book covered care',
-            icon: Icons.arrow_forward,
             onPressed: () => context.push(
               RoutePaths.bookingChooseService,
               extra: BookingStart.hmo(plan),
@@ -190,66 +184,6 @@ class _PlanCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _LinkRow extends StatelessWidget {
-  const _LinkRow({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = context.palette;
-    return Material(
-      color: palette.tintBlue,
-      borderRadius: BorderRadius.circular(AppRadius.card),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.card),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 18,
-                backgroundColor: palette.elevated,
-                child: Icon(icon, size: 18, color: palette.accent),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: palette.ink,
-                      ),
-                    ),
-                    Text(
-                      subtitle,
-                      style: TextStyle(fontSize: 12.5, color: palette.inkMuted),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(Icons.chevron_right, color: palette.accent),
-            ],
-          ),
-        ),
       ),
     );
   }

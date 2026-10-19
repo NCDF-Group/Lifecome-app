@@ -135,7 +135,7 @@ class _ActivateAccessScreenState extends ConsumerState<ActivateAccessScreen> {
               showBack: true,
               backFallback: RoutePaths.chooseAccess,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 4),
             const ScreenTitle(
               title: 'Activate your access',
               subtitle: 'An invitation links funding to your private account.',

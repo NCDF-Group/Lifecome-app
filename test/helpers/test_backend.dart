@@ -10,6 +10,7 @@ import 'package:lifecome_mobile/features/messaging/application/messaging_control
 import 'package:lifecome_mobile/features/notifications/application/notifications_controller.dart';
 import 'package:lifecome_mobile/features/payer/application/payer_controller.dart';
 import 'package:lifecome_mobile/features/profile/application/profile_controller.dart';
+import 'package:lifecome_mobile/features/profile/data/health_profile_store.dart';
 
 import 'fake_auth_repository.dart';
 import 'fake_booking_repositories.dart';
@@ -32,6 +33,7 @@ class TestBackend {
   final messaging = FakeMessagingRepository();
   final payers = FakePayerRepository();
   final records = FakeHealthRecordsRepository();
+  final healthProfiles = MemoryHealthProfileStore();
 
   List<Override> get overrides => [
     authRepositoryProvider.overrideWithValue(auth as AuthRepository),
@@ -44,5 +46,6 @@ class TestBackend {
     messagingRepositoryProvider.overrideWithValue(messaging),
     payerRepositoryProvider.overrideWithValue(payers),
     healthRecordsRepositoryProvider.overrideWithValue(records),
+    healthProfileStoreProvider.overrideWithValue(healthProfiles),
   ];
 }

@@ -99,7 +99,7 @@ void main() {
     // Starts on system default, with the phone in light mode.
     expect(find.text('Appearance'), findsOneWidget);
     expect(
-      find.text("Matches your phone's light or dark setting."),
+      find.text("Matches your phone's light or dark setting"),
       findsOneWidget,
     );
     expect(_shownBrightness(tester), Brightness.light);
@@ -113,7 +113,7 @@ void main() {
     await _settleTheme(tester);
 
     expect(_shownBrightness(tester), Brightness.dark);
-    expect(find.text('Always dark.'), findsOneWidget);
+    expect(find.text('Always dark'), findsOneWidget);
     expect(await ThemeModeStore().read(), ThemeMode.dark);
 
     // And back to following the phone.

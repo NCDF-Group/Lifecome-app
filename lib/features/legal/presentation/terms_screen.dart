@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/widgets/layout/back_app_bar.dart';
+import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/layout/screen_title.dart';
 
 const _sections = [
   (
@@ -42,14 +43,18 @@ class TermsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.palette.background,
-      appBar: const BackAppBar(
-        title: 'Terms and Conditions',
-        fallback: RoutePaths.profile,
-      ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 25),
           children: [
+            const AppHeaderBar(
+              showBack: true,
+              showBell: false,
+              backFallback: RoutePaths.profile,
+            ),
+            const SizedBox(height: 4),
+            const ScreenTitle(title: 'Terms of use'),
+            const SizedBox(height: 16),
             Text(
               'These terms govern your use of LifeCome Live. By creating an account, you agree '
               'to them.',
@@ -65,7 +70,7 @@ class TermsScreen extends StatelessWidget {
                 section.$1,
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
                   color: context.palette.ink,
                 ),
               ),

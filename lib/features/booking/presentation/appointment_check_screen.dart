@@ -60,7 +60,7 @@ class AppointmentCheckScreen extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             const AppHeaderBar(showBack: true, backFallback: RoutePaths.visits),
-            const SizedBox(height: 20),
+            const SizedBox(height: 4),
             const ScreenTitle(
               title: 'Prepare for your visit',
               subtitle: 'A few things to know before your appointment.',

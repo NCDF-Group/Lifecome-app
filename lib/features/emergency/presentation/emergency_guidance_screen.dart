@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/theme/app_palette.dart';
-import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/media/lc_icons.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
 import '../../../core/widgets/layout/screen_title.dart';
 
@@ -32,7 +33,7 @@ class EmergencyGuidanceScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const AppHeaderBar(showBack: true, showBell: false),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 4),
                   const ScreenTitle(
                     title: 'Need urgent help?',
                     subtitle:
@@ -73,6 +74,13 @@ class EmergencyGuidanceScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 12.5, color: palette.inkMuted),
                   ),
+                  const SizedBox(height: 14),
+                  const InfoBanner(
+                    message:
+                        'Outside England, use the urgent health service for '
+                        'where you are. Outside the UK, use the local '
+                        'emergency number.',
+                  ),
                 ],
               ),
             ),
@@ -103,9 +111,14 @@ class _NumberCard extends StatelessWidget {
 
     return Material(
       color: emergency ? palette.tintRed : palette.tintBlue,
-      borderRadius: BorderRadius.circular(AppRadius.card),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(17),
+        side: BorderSide(
+          color: emergency ? palette.tintRedLine : palette.tintBlueLine,
+        ),
+      ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.card),
+        borderRadius: BorderRadius.circular(17),
         onTap: () async {
           await Clipboard.setData(ClipboardData(text: number));
           if (!context.mounted) return;
@@ -122,7 +135,7 @@ class _NumberCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.phone_in_talk_outlined, color: color),
+                  LcIcon(LcIcons.phone, color: color),
                   const SizedBox(width: AppSpacing.xs),
                   Text(
                     number,

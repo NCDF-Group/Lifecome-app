@@ -131,7 +131,7 @@ class _LinkHealthPlanScreenState extends ConsumerState<LinkHealthPlanScreen> {
               showBack: true,
               backFallback: RoutePaths.chooseAccess,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 4),
             const ScreenTitle(
               title: 'Link your health plan',
               subtitle:

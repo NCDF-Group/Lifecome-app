@@ -120,6 +120,19 @@ abstract final class RoutePaths {
 
   static const helpAndSupport = '/profile/help';
 
+  /// Conditions, medicines and allergies the person chooses to note (screen
+  /// pack 021). Kept on the device until the backend can store it.
+  static const healthProfile = '/profile/health-profile';
+
+  /// How the person pays for care (027).
+  static const paymentMethods = '/profile/payment-methods';
+
+  /// Which updates the person wants (029) — not the notification centre.
+  static const notificationSettings = '/profile/notification-settings';
+
+  /// Text size and motion (036).
+  static const accessibility = '/profile/accessibility';
+
   static const editProfile = '/profile/edit';
 
   /// Who can access the patient's records and why — distinct from

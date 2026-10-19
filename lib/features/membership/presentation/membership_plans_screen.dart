@@ -7,7 +7,12 @@ import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/layout/screen_title.dart';
+import '../../../core/widgets/lists/row_card.dart';
+import '../../../core/widgets/lists/timeline_item.dart';
+import '../../../core/widgets/media/lc_icons.dart';
 import '../../payer/presentation/activate_access_screen.dart';
 
 /// "Membership" — choose a LifeCome Live plan, or activate one already
@@ -29,34 +34,25 @@ class MembershipPlansScreen extends StatelessWidget {
               showBack: true,
               backFallback: RoutePaths.chooseAccess,
             ),
-            const SizedBox(height: 20),
-            Text(
-              'Membership',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: context.palette.ink,
-              ),
-            ),
             const SizedBox(height: 4),
-            Text(
-              "Choose the option that's right for you.",
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: context.palette.ink,
-              ),
+            const ScreenTitle(
+              title: 'More connected care',
+              subtitle: 'A membership built around everyday support.',
             ),
-            const SizedBox(height: 2),
-            Text(
-              'Fees, allowances and availability are shown before you join.',
-              style: TextStyle(
-                fontSize: 13,
-                color: context.palette.inkMuted,
-                height: 1.4,
-              ),
+            const SizedBox(height: 10),
+            const CheckList(
+              items: [
+                'Manage benefits in one place',
+                'See available appointment entitlements',
+                'Keep your care information connected',
+              ],
             ),
-            const SizedBox(height: AppSpacing.md),
+            const InfoBanner(
+              message:
+                  'Fees, allowances and availability are shown before you '
+                  'join.',
+            ),
+            const SizedBox(height: 12),
             _PlanCard(
               background: context.palette.tintGreen,
               accent: context.palette.positive,
@@ -88,64 +84,15 @@ class MembershipPlansScreen extends StatelessWidget {
                 feature: 'Adult household membership',
               ),
             ),
-            const SizedBox(height: AppSpacing.sm),
-            Material(
-              color: context.palette.elevated,
-              borderRadius: BorderRadius.circular(AppRadius.card),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(AppRadius.card),
-                onTap: () => context.push(
-                  RoutePaths.activateAccess,
-                  extra: AccessKind.membership,
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: context.palette.line),
-                    borderRadius: BorderRadius.circular(AppRadius.card),
-                  ),
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: context.palette.tintBlue,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.description_outlined,
-                          color: context.palette.accent,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Existing member?',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: context.palette.ink,
-                              ),
-                            ),
-                            Text(
-                              'Activate your membership.',
-                              style: TextStyle(
-                                fontSize: 12.5,
-                                color: context.palette.inkMuted,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Icon(Icons.chevron_right, color: context.palette.accent),
-                    ],
-                  ),
-                ),
+            const SizedBox(height: 4),
+            RowCard(
+              icon: LcIcons.file,
+              title: 'Existing member?',
+              subtitle: 'Activate your membership',
+              tone: RowCardTone.white,
+              onTap: () => context.push(
+                RoutePaths.activateAccess,
+                extra: AccessKind.membership,
               ),
             ),
           ],
@@ -177,10 +124,11 @@ class _PlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: background,
-        borderRadius: BorderRadius.circular(AppRadius.card),
+        borderRadius: BorderRadius.circular(17),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,7 +149,7 @@ class _PlanCard extends StatelessWidget {
                       title,
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                         color: context.palette.ink,
                       ),
                     ),
@@ -241,9 +189,9 @@ class _PlanCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Material(
             color: AppColors.blue,
-            borderRadius: BorderRadius.circular(AppRadius.pill),
+            borderRadius: BorderRadius.circular(AppRadius.button),
             child: InkWell(
-              borderRadius: BorderRadius.circular(AppRadius.pill),
+              borderRadius: BorderRadius.circular(AppRadius.button),
               onTap: onTap,
               child: Container(
                 height: 48,

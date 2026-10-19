@@ -1,6 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/profile/presentation/accessibility_screen.dart';
+import '../../features/profile/presentation/health_profile_screen.dart';
+import '../../features/profile/presentation/notification_settings_screen.dart';
+import '../../features/profile/presentation/payment_methods_screen.dart';
 import '../../features/health_records/domain/models/clinical_note.dart';
 import '../../features/health_records/domain/models/diagnostic_result.dart';
 import '../../features/health_records/domain/models/prescription.dart';
@@ -396,6 +400,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                         ),
                       ),
                     ],
+                  ),
+                  GoRoute(
+                    path: 'health-profile',
+                    builder: (context, state) => const HealthProfileScreen(),
+                  ),
+                  GoRoute(
+                    path: 'payment-methods',
+                    builder: (context, state) => const PaymentMethodsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'notification-settings',
+                    builder: (context, state) =>
+                        const NotificationSettingsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'accessibility',
+                    builder: (context, state) => const AccessibilityScreen(),
                   ),
                   GoRoute(
                     path: 'help',

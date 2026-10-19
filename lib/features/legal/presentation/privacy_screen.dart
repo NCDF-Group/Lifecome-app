@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/widgets/layout/back_app_bar.dart';
+import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/layout/screen_title.dart';
 
 const _sections = [
   (
@@ -45,14 +46,18 @@ class PrivacyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.palette.background,
-      appBar: const BackAppBar(
-        title: 'Privacy Policy',
-        fallback: RoutePaths.profile,
-      ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 25),
           children: [
+            const AppHeaderBar(
+              showBack: true,
+              showBell: false,
+              backFallback: RoutePaths.profile,
+            ),
+            const SizedBox(height: 4),
+            const ScreenTitle(title: 'Privacy notice'),
+            const SizedBox(height: 16),
             Text(
               'This policy explains what information LifeCome Live collects, how we use it, and '
               'the choices you have.',
@@ -68,7 +73,7 @@ class PrivacyScreen extends StatelessWidget {
                 section.$1,
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
                   color: context.palette.ink,
                 ),
               ),

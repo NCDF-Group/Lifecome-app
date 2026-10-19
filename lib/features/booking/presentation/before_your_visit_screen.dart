@@ -16,6 +16,7 @@ import '../../../core/widgets/layout/screen_title.dart';
 import '../../../core/widgets/layout/step_progress.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
 import '../../profile/application/profile_controller.dart';
+import '../../profile/data/health_profile_store.dart';
 import '../domain/models/appointment.dart';
 import '../domain/models/booking_selection.dart';
 import '../domain/models/consultation_mode.dart';
@@ -71,6 +72,13 @@ class _BeforeYourVisitScreenState extends ConsumerState<BeforeYourVisitScreen> {
       ?selection.city,
       ?selection.postcode,
     ].join(', ');
+    // Offer what the health profile says about medicines and allergies.
+    ref.listenManual(healthProfileProvider, (_, next) {
+      final noted = next.value?.medicinesAndAllergies;
+      if (noted != null && _medicinesController.text.isEmpty) {
+        _medicinesController.text = noted;
+      }
+    }, fireImmediately: true);
     // Offer the number on the account to be rung on; the person can change it.
     ref.listenManual(meProvider, (_, next) {
       final phone = next.value?.account.phoneNumber;

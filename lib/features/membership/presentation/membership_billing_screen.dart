@@ -29,7 +29,7 @@ class MembershipBillingScreen extends StatelessWidget {
               showBack: true,
               backFallback: RoutePaths.profile,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 4),
             const ScreenTitle(
               title: 'Membership and billing',
               subtitle: 'Your plan, household members and payments.',

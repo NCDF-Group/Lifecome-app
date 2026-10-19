@@ -98,7 +98,7 @@ class _ManageAppointmentScreenState
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             const AppHeaderBar(showBack: true, backFallback: RoutePaths.visits),
-            const SizedBox(height: 20),
+            const SizedBox(height: 4),
             const ScreenTitle(
               title: 'Manage appointment',
               subtitle: 'Join, cancel or get help with your appointment.',

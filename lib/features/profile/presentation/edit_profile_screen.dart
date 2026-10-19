@@ -15,7 +15,8 @@ import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/feedback/error_state.dart';
 import '../../../core/widgets/feedback/loading_indicator.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
-import '../../../core/widgets/layout/back_app_bar.dart';
+import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/layout/screen_title.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
 import '../../auth/application/auth_controller.dart';
 import '../application/profile_controller.dart';
@@ -238,12 +239,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
     return Scaffold(
       backgroundColor: context.palette.background,
-      appBar: BackAppBar(
-        title: widget.onboarding
-            ? 'Complete your profile'
-            : 'Your care profile',
-        fallback: widget.onboarding ? RoutePaths.home : RoutePaths.profile,
-      ),
       body: SafeArea(
         child: !ready
             ? (me.hasError
@@ -259,24 +254,30 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   Widget _form(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 25),
       children: [
         MaxContentWidth(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                widget.onboarding
+              AppHeaderBar(
+                showBack: true,
+                showBell: !widget.onboarding,
+                backFallback: widget.onboarding
+                    ? RoutePaths.home
+                    : RoutePaths.profile,
+              ),
+              const SizedBox(height: 4),
+              ScreenTitle(
+                title: widget.onboarding
+                    ? 'Complete your profile'
+                    : 'Personal details',
+                subtitle: widget.onboarding
                     ? 'Tell us a little about you so we can book your care. '
                           'You can change this later.'
-                    : 'Keep your details up to date so we can provide the best care for you.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: context.palette.inkMuted,
-                  height: 1.4,
-                ),
+                    : 'Keep your details up to date.',
               ),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: 18),
               _SectionCard(
                 background: context.palette.tintGreen,
                 icon: Icons.person_outline,
@@ -429,6 +430,7 @@ class _SectionCard extends StatelessWidget {
     required this.children,
   });
 
+  /// The tint behind the section's icon.
   final Color background;
   final IconData icon;
   final Color iconColor;
@@ -440,8 +442,9 @@ class _SectionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(AppRadius.card),
+        color: context.palette.surface,
+        border: Border.all(color: context.palette.line),
+        borderRadius: BorderRadius.circular(17),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -452,7 +455,7 @@ class _SectionCard extends StatelessWidget {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: context.palette.elevated,
+                  color: background,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, size: 16, color: iconColor),

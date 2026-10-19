@@ -74,11 +74,11 @@ void main() {
 
       for (final (label, screen) in [
         ('Personal details', EditProfileScreen),
-        ('Access and benefits', MyBenefitsScreen),
+        ('Membership & benefits', MyBenefitsScreen),
         ('Household membership', MembershipBillingScreen),
         ('Health records', HealthRecordsScreen),
-        ('Privacy and sharing', PrivacySharingScreen),
-        ('Help and support', HelpCentreScreen),
+        ('Privacy & permissions', PrivacySharingScreen),
+        ('Help & support', HelpCentreScreen),
       ]) {
         await tapText(tester, label);
         expect(find.byType(screen), findsOneWidget, reason: label);

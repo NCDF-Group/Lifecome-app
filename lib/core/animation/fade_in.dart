@@ -48,6 +48,10 @@ class _FadeInState extends State<FadeIn> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    // Reduce motion (the phone's setting or the app's own): no fade or rise.
+    if (MediaQuery.maybeDisableAnimationsOf(context) ?? false) {
+      return widget.child;
+    }
     return FadeTransition(
       opacity: _opacity,
       child: SlideTransition(position: _offset, child: widget.child),
