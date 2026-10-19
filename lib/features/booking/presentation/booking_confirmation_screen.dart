@@ -3,22 +3,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
-import '../../../core/theme/app_radius.dart';
-import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/formatters.dart';
-import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/widgets/buttons/primary_button.dart';
+import '../../../core/widgets/buttons/secondary_button.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
+import '../../../core/widgets/feedback/status_chip.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/layout/detail_list.dart';
+import '../../../core/widgets/layout/screen_title.dart';
+import '../../../core/widgets/lists/row_card.dart';
+import '../../../core/widgets/media/lc_icons.dart';
 import '../../payer/domain/models/authorisation.dart';
 import '../../payer/domain/models/eligibility_status.dart';
 import '../../payment/domain/models/payment_status.dart';
 import '../application/booking_controller.dart';
 import '../domain/models/booking_status.dart';
-import '../domain/models/consultation_mode.dart';
 
-/// Blueprint view 17 — Booking Confirmation. Tells the truth about where the
+/// Booking confirmation (screen pack 049). Tells the truth about where the
 /// booking is: confirmed, or still waiting for payment to come through.
 class BookingConfirmationScreen extends ConsumerWidget {
   const BookingConfirmationScreen({super.key, required this.outcome});
@@ -69,108 +71,58 @@ class BookingConfirmationScreen extends ConsumerWidget {
       };
     }
 
+    final (title, subtitle, badge) = switch (appointment.status) {
+      BookingStatus.confirmed => (
+        "You're booked in",
+        'Your ${appointment.mode.consultationLabel.toLowerCase()} has been '
+            'added to Visits.',
+        const StatusBadge('Confirmed'),
+      ),
+      BookingStatus.slotHeld => (
+        'Waiting for confirmation',
+        'Your ${appointment.mode.consultationLabel.toLowerCase()} is not '
+            'booked yet.',
+        const StatusBadge('Waiting', tone: BadgeTone.amber),
+      ),
+      BookingStatus.cancelled => (
+        'Appointment cancelled',
+        'This booking was cancelled.',
+        const StatusBadge('Cancelled', tone: BadgeTone.gray),
+      ),
+      final other => (
+        other.label,
+        'Contact support if you need help with this booking.',
+        StatusBadge(other.label, tone: BadgeTone.blue),
+      ),
+    };
+
     return Scaffold(
       backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 25),
           children: [
             const AppHeaderBar(showBack: true, backFallback: RoutePaths.visits),
-            const SizedBox(height: AppSpacing.md),
-            _StatusBanner(status: appointment.status, mode: appointment.mode),
-            const SizedBox(height: AppSpacing.md),
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                border: Border.all(color: context.palette.line),
-                borderRadius: BorderRadius.circular(AppRadius.card),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: context.palette.tintBlue,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          _modeIcon(appointment.mode),
-                          color: context.palette.accent,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              appointment.serviceName,
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: context.palette.ink,
-                              ),
-                            ),
-                            Text(
-                              appointment.mode.consultationLabel,
-                              style: TextStyle(
-                                fontSize: 12.5,
-                                color: context.palette.inkMuted,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: AppSpacing.sm,
-                    ),
-                    child: Divider(height: 1, color: context.palette.line),
-                  ),
-                  _DetailRow(
-                    icon: Icons.calendar_today_outlined,
-                    label: 'Date',
-                    value: Formatters.longDate(uk),
-                  ),
-                  _DetailRow(
-                    icon: Icons.schedule_outlined,
-                    label: 'Time',
-                    value: '${Formatters.time(uk)} $zone',
-                  ),
-                  _DetailRow(
-                    icon: Icons.person_outline,
-                    label: 'With',
-                    value: appointment.providerName,
-                  ),
-                  if (appointment.locationCity != null)
-                    _DetailRow(
-                      icon: Icons.location_on_outlined,
-                      label: 'Where',
-                      value: appointment.locationCity!,
-                    ),
-                  _DetailRow(
-                    icon: Icons.badge_outlined,
-                    label: 'Reference',
-                    value: appointment.reference,
-                  ),
-                  _DetailRow(
-                    icon: Icons.credit_card_outlined,
-                    label: 'Payment',
-                    value: paymentLabel,
-                    isLast: true,
-                  ),
-                ],
-              ),
+            if (confirmed) const SuccessIcon() else const SizedBox(height: 18),
+            ScreenTitle(title: title, subtitle: subtitle),
+            const SizedBox(height: 12),
+            badge,
+            const SizedBox(height: 8),
+            DetailList(
+              rows: [
+                ('Service', appointment.serviceName),
+                ('Appointment', appointment.mode.consultationLabel),
+                ('Clinician', appointment.providerName),
+                ('Date', Formatters.longDate(uk)),
+                ('Time', '${Formatters.time(uk)} · UK time ($zone)'),
+                if (appointment.locationCity != null)
+                  ('Location', appointment.locationCity!),
+                ('Reference', appointment.reference),
+                ('Payment', paymentLabel),
+              ],
             ),
             if (held) ...[
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: 10),
               InfoBanner(
                 tone: BannerTone.warning,
                 title: 'Your time is being held',
@@ -186,42 +138,8 @@ class BookingConfirmationScreen extends ConsumerWidget {
                     ref.read(appointmentsProvider.notifier).refresh(),
               ),
             ],
-            const SizedBox(height: AppSpacing.md),
-            _ActionRow(
-              icon: Icons.fact_check_outlined,
-              label: 'Prepare for your visit',
-              filled: true,
-              onTap: () =>
-                  context.push(RoutePaths.appointmentCheck, extra: appointment),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _ActionRow(
-              icon: Icons.calendar_month_outlined,
-              iconColor: context.palette.positive,
-              label: 'Add to calendar',
-              onTap: () =>
-                  showComingSoonPopup(context, feature: 'Add to calendar'),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _ActionRow(
-              icon: Icons.receipt_long_outlined,
-              iconColor: context.palette.accent,
-              label: 'View receipt',
-              onTap: () =>
-                  showComingSoonPopup(context, feature: 'View receipt'),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _ActionRow(
-              icon: Icons.settings_outlined,
-              iconColor: context.palette.positive,
-              label: 'Manage booking',
-              onTap: () => context.push(
-                RoutePaths.manageAppointment,
-                extra: appointment,
-              ),
-            ),
             if (confirmed && appointment.mode.isOnline) ...[
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: 10),
               const InfoBanner(
                 icon: Icons.verified_user_outlined,
                 title: 'Join from a private place',
@@ -230,194 +148,31 @@ class BookingConfirmationScreen extends ConsumerWidget {
                     'internet connection.',
               ),
             ],
+            const SizedBox(height: 16),
+            PrimaryButton(
+              label: 'View appointment',
+              onPressed: () => context.push(
+                RoutePaths.manageAppointment,
+                extra: appointment,
+              ),
+            ),
+            const SizedBox(height: 4),
+            RowCard(
+              icon: LcIcons.check,
+              title: 'Prepare for your visit',
+              subtitle:
+                  'What your clinician has been told and what to have '
+                  'ready',
+              tone: RowCardTone.mint,
+              onTap: () =>
+                  context.push(RoutePaths.appointmentCheck, extra: appointment),
+            ),
+            const SizedBox(height: 6),
+            SecondaryButton(
+              label: 'Return home',
+              onPressed: () => context.go(RoutePaths.home),
+            ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-IconData _modeIcon(ConsultationMode mode) => switch (mode) {
-  ConsultationMode.video => Icons.videocam_outlined,
-  ConsultationMode.audio => Icons.call_outlined,
-  ConsultationMode.inPerson => Icons.apartment_outlined,
-};
-
-class _StatusBanner extends StatelessWidget {
-  const _StatusBanner({required this.status, required this.mode});
-
-  final BookingStatus status;
-  final ConsultationMode mode;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = context.palette;
-    final (background, color, icon, title, subtitle) = switch (status) {
-      BookingStatus.confirmed => (
-        palette.tintGreen,
-        AppColors.greenStrong,
-        Icons.check,
-        'Appointment confirmed',
-        'Your ${mode.consultationLabel.toLowerCase()} is booked.',
-      ),
-      BookingStatus.slotHeld => (
-        palette.tintAmber,
-        AppColors.gold,
-        Icons.hourglass_top,
-        'Waiting for confirmation',
-        'Your ${mode.consultationLabel.toLowerCase()} is not booked yet.',
-      ),
-      BookingStatus.cancelled => (
-        palette.tintRed,
-        AppColors.error,
-        Icons.close,
-        'Appointment cancelled',
-        'This booking was cancelled.',
-      ),
-      _ => (
-        palette.tintBlue,
-        AppColors.blue,
-        Icons.info_outline,
-        status.label,
-        'Contact support if you need help with this booking.',
-      ),
-    };
-
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(AppRadius.card),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-            child: Icon(icon, color: AppColors.white, size: 22),
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                    color: palette.ink,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: TextStyle(fontSize: 13, color: palette.inkMuted),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DetailRow extends StatelessWidget {
-  const _DetailRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-    this.isLast = false,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-  final bool isLast;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: isLast ? 0 : AppSpacing.sm),
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: context.palette.inkMuted),
-          const SizedBox(width: AppSpacing.xs),
-          Text(
-            label,
-            style: TextStyle(fontSize: 14, color: context.palette.inkMuted),
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Text(
-              value,
-              textAlign: TextAlign.end,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: context.palette.ink,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// A full-width tappable row used both for the primary "Prepare for your
-/// visit" action and the secondary booking actions below it.
-class _ActionRow extends StatelessWidget {
-  const _ActionRow({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.iconColor,
-    this.filled = false,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final Color? iconColor;
-  final bool filled;
-
-  @override
-  Widget build(BuildContext context) {
-    final fg = filled ? AppColors.white : context.palette.ink;
-    return Material(
-      color: filled ? AppColors.blue : context.palette.elevated,
-      borderRadius: BorderRadius.circular(AppRadius.pill),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-        onTap: onTap,
-        child: Container(
-          height: 52,
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-          decoration: filled
-              ? null
-              : BoxDecoration(
-                  border: Border.all(color: context.palette.line),
-                  borderRadius: BorderRadius.circular(AppRadius.pill),
-                ),
-          child: Row(
-            children: [
-              Icon(icon, size: 20, color: filled ? fg : (iconColor ?? fg)),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: fg,
-                  ),
-                ),
-              ),
-              Icon(Icons.chevron_right, size: 20, color: fg),
-            ],
-          ),
         ),
       ),
     );

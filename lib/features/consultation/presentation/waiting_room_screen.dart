@@ -7,18 +7,19 @@ import 'package:go_router/go_router.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/router/safe_back.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
-import '../../../core/theme/app_radius.dart';
-import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/feedback/error_state.dart';
 import '../../../core/widgets/feedback/loading_indicator.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/buttons/ghost_button.dart';
 import '../../../core/widgets/layout/screen_title.dart';
-import '../../../core/widgets/media/avatar.dart';
+import '../../../core/widgets/lists/row_card.dart';
+import '../../../core/widgets/lists/timeline_item.dart';
+import '../../../core/widgets/media/lc_icons.dart';
+import 'widgets/video_stage.dart';
 import '../../booking/domain/models/appointment.dart';
 import '../application/waiting_room_controller.dart';
 import '../domain/models/consultation_status.dart';
@@ -87,56 +88,17 @@ class _WaitingRoomScreenState extends ConsumerState<WaitingRoomScreen> {
       backgroundColor: context.palette.background,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 25),
           children: [
             const AppHeaderBar(showBack: true, backFallback: RoutePaths.visits),
-            const SizedBox(height: 20),
-            const ScreenTitle(title: 'Your waiting room'),
-            const SizedBox(height: AppSpacing.md),
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                color: context.palette.tintBlue,
-                borderRadius: BorderRadius.circular(AppRadius.card),
-              ),
-              child: Row(
-                children: [
-                  UserAvatar(name: appointment.providerName, radius: 22),
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          appointment.serviceName,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: context.palette.inkMuted,
-                          ),
-                        ),
-                        Text(
-                          '${Formatters.time(uk)} '
-                          '${Formatters.ukZoneLabel(appointment.startsAt)}',
-                          style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600,
-                            color: context.palette.ink,
-                          ),
-                        ),
-                        Text(
-                          appointment.providerName,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: context.palette.inkMuted,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            const SizedBox(height: 4),
+            ScreenTitle(
+              title: 'Your GP will see you soon',
+              subtitle:
+                  '${appointment.providerName} · ${Formatters.time(uk)} '
+                  '${Formatters.ukZoneLabel(appointment.startsAt)}',
             ),
-            const SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: 18),
             session.when(
               loading: () => const LoadingIndicator(),
               error: (error, _) => ErrorState(
@@ -146,63 +108,22 @@ class _WaitingRoomScreenState extends ConsumerState<WaitingRoomScreen> {
               ),
               data: (data) => _stateBody(context, data.status),
             ),
-            const SizedBox(height: AppSpacing.md),
-            Material(
-              color: context.palette.tintBlue,
-              borderRadius: BorderRadius.circular(AppRadius.control),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(AppRadius.control),
-                onTap: () => context.go(RoutePaths.messages),
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.sm),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.support_agent_outlined,
-                        size: 20,
-                        color: context.palette.accent,
-                      ),
-                      const SizedBox(width: AppSpacing.xs),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Trouble connecting?',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: context.palette.ink,
-                              ),
-                            ),
-                            Text(
-                              'Message the care team',
-                              style: TextStyle(
-                                fontSize: 12.5,
-                                color: context.palette.inkMuted,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Icon(Icons.chevron_right, color: context.palette.accent),
-                    ],
-                  ),
-                ),
-              ),
+            const CheckList(
+              items: [
+                'Find a quiet, private place',
+                'Have your medicines and any questions to hand',
+              ],
             ),
-            const SizedBox(height: AppSpacing.md),
-            Center(
-              child: TextButton(
-                onPressed: () => context.goBack(fallback: RoutePaths.visits),
-                child: Text(
-                  'Leave waiting room',
-                  style: TextStyle(
-                    color: context.palette.accent,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+            RowCard(
+              icon: LcIcons.message,
+              title: 'Trouble connecting?',
+              subtitle: 'Message the care team',
+              onTap: () => context.go(RoutePaths.messages),
+            ),
+            const SizedBox(height: 4),
+            GhostButton(
+              label: 'Leave waiting room',
+              onPressed: () => context.goBack(fallback: RoutePaths.visits),
             ),
           ],
         ),
@@ -211,8 +132,6 @@ class _WaitingRoomScreenState extends ConsumerState<WaitingRoomScreen> {
   }
 
   Widget _stateBody(BuildContext context, ConsultationStatus status) {
-    final palette = context.palette;
-
     final (title, subtitle) = switch (status) {
       ConsultationStatus.booked ||
       ConsultationStatus.checkInOpen ||
@@ -247,36 +166,24 @@ class _WaitingRoomScreenState extends ConsumerState<WaitingRoomScreen> {
     };
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _WaitingIllustration(ended: status == ConsultationStatus.ended),
-        const SizedBox(height: AppSpacing.md),
-        Text(
-          title,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w600,
-            color: palette.ink,
-          ),
+        VideoStage(
+          name: widget.appointment.providerName,
+          title: title,
+          message: subtitle,
+          minHeight: 280,
         ),
-        const SizedBox(height: 2),
-        Text(
-          subtitle,
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 13, color: palette.inkMuted, height: 1.4),
-        ),
-        const SizedBox(height: AppSpacing.lg),
+        const SizedBox(height: 16),
         if (status.isBeforeWaiting)
           PrimaryButton(
             label: 'Check in',
-            icon: Icons.login,
             loading: _checkingIn,
             onPressed: _checkIn,
           )
         else if (status.isLive)
           PrimaryButton(
             label: 'Join your appointment',
-            icon: Icons.videocam_outlined,
             onPressed: () => context.pushReplacement(
               RoutePaths.consultationCall,
               extra: widget.appointment,
@@ -285,73 +192,12 @@ class _WaitingRoomScreenState extends ConsumerState<WaitingRoomScreen> {
         else if (status == ConsultationStatus.ended)
           PrimaryButton(
             label: 'View your care plan',
-            icon: Icons.arrow_forward,
             onPressed: () => context.pushReplacement(
               RoutePaths.careplan,
               extra: widget.appointment,
             ),
           ),
       ],
-    );
-  }
-}
-
-class _WaitingIllustration extends StatelessWidget {
-  const _WaitingIllustration({required this.ended});
-
-  final bool ended;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 150,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Positioned(
-            left: 70,
-            top: 10,
-            child: Icon(Icons.circle, size: 6, color: context.palette.accent),
-          ),
-          Positioned(
-            right: 60,
-            top: 30,
-            child: Icon(Icons.circle, size: 4, color: context.palette.accent),
-          ),
-          Positioned(
-            left: 50,
-            bottom: 20,
-            child: Icon(Icons.circle, size: 4, color: context.palette.accent),
-          ),
-          Container(
-            width: 170,
-            height: 120,
-            decoration: BoxDecoration(
-              color: context.palette.tintBlue,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: context.palette.accent, width: 2.5),
-            ),
-            child: Center(
-              child: Icon(
-                ended ? Icons.check_circle_outline : Icons.hourglass_empty,
-                size: 52,
-                color: context.palette.accent,
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            child: Container(
-              width: 190,
-              height: 8,
-              decoration: BoxDecoration(
-                color: AppColors.blue,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

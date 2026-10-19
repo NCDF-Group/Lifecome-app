@@ -580,7 +580,7 @@ void main() {
       );
 
       expect(find.byType(BookingConfirmationScreen), findsOneWidget);
-      expect(find.text('Appointment confirmed'), findsOneWidget);
+      expect(find.text("You're booked in"), findsOneWidget);
       expect(find.text('Covered by Bupa'), findsOneWidget);
 
       await disposeApp(tester);
@@ -607,7 +607,7 @@ void main() {
       expect(find.text('Waiting for confirmation'), findsOneWidget);
       expect(find.text('Waiting for Bupa to approve'), findsOneWidget);
       expect(find.text('Your time is being held'), findsOneWidget);
-      expect(find.text('Appointment confirmed'), findsNothing);
+      expect(find.text("You're booked in"), findsNothing);
 
       await disposeApp(tester);
     });
@@ -623,7 +623,7 @@ void main() {
       await tapText(tester, 'Confirm booking');
 
       expect(backend.booking.calls, contains('confirmAppointment'));
-      expect(find.text('Appointment confirmed'), findsOneWidget);
+      expect(find.text("You're booked in"), findsOneWidget);
       expect(find.text('Approved by Bupa'), findsOneWidget);
 
       await disposeApp(tester);

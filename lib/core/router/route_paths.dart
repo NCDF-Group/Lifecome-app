@@ -57,6 +57,30 @@ abstract final class RoutePaths {
   /// What to do in an emergency (999, NHS 111).
   static const emergency = '/emergency';
 
+  /// GP services hub (screen pack 037): online or in-clinic GP, Menopause
+  /// Care, and the person's GP care.
+  static const gp = '/gp';
+
+  /// "Before you book" (038) — who the visit is for, where they will be,
+  /// and that it is not an emergency. Reached with a `BookingStart` whose
+  /// `mode` was chosen on the GP hub.
+  static const gpEligibility = '/gp/eligibility';
+
+  /// Menopause Care hub (062), under GP.
+  static const menopause = '/gp/menopause';
+
+  /// Menopause assessment (063-065): topic, history, then review.
+  static const menopauseAssessment = '/gp/menopause/assessment';
+
+  /// Online or in-clinic menopause consultation (066).
+  static const menopauseBooking = '/gp/menopause/booking';
+
+  /// The menopause care plan (067).
+  static const menopausePlan = '/gp/menopause/plan';
+
+  /// Review check-in before another menopause appointment (068).
+  static const menopauseReview = '/gp/menopause/review';
+
   /// Explore our services (GP care + everyday wellbeing). Was a tab before
   /// the screen-pack redesign; now a pushed screen.
   static const services = '/services';

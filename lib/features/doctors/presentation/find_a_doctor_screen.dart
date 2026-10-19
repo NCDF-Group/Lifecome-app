@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -13,6 +12,8 @@ import '../../../core/widgets/feedback/error_state.dart';
 import '../../../core/widgets/feedback/loading_indicator.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../../core/widgets/layout/screen_title.dart';
+import '../../../core/widgets/layout/step_progress.dart';
+import '../../../core/widgets/media/lc_icons.dart';
 import '../../../core/widgets/media/avatar.dart';
 import '../../booking/application/booking_controller.dart';
 import '../../booking/domain/models/availability_slot.dart';
@@ -127,14 +128,13 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            const AppHeaderBar(showBack: true),
-            const SizedBox(height: 20),
+            const AppHeaderBar(showBack: true, backFallback: RoutePaths.gp),
+            const StepProgress(step: 3, total: 6),
             ScreenTitle(
-              title: _inPerson ? 'Find a clinic' : 'Find an appointment',
-              subtitle: _inPerson
-                  ? 'Choose a clinic and a time that works for you.'
-                  : "Choose how you'd like to see a GP and find a time that "
-                        'works for you.',
+              title: _inPerson ? 'Choose your clinic' : 'Choose your GP',
+              subtitle:
+                  'Find the right person for your appointment, then '
+                  'pick a time or view their profile.',
             ),
             const SizedBox(height: AppSpacing.md),
             if (!_inPerson) ...[
@@ -267,14 +267,18 @@ class _ModeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return Material(
-      color: selected ? AppColors.blue : context.palette.surface,
-      borderRadius: BorderRadius.circular(AppRadius.control),
+      color: selected ? palette.tintBlueFaint : palette.elevated,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.control),
+        side: BorderSide(color: selected ? palette.accent : palette.line),
+      ),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.control),
         onTap: onTap,
         child: Container(
-          height: 52,
+          height: 48,
           alignment: Alignment.center,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -282,7 +286,7 @@ class _ModeButton extends StatelessWidget {
               Icon(
                 icon,
                 size: 20,
-                color: selected ? AppColors.white : context.palette.ink,
+                color: selected ? palette.accent : palette.ink,
               ),
               const SizedBox(width: 8),
               Text(
@@ -290,7 +294,7 @@ class _ModeButton extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: selected ? AppColors.white : context.palette.ink,
+                  color: selected ? palette.accent : palette.ink,
                 ),
               ),
             ],
@@ -380,98 +384,98 @@ class _DoctorCard extends ConsumerWidget {
     final slots = ref.watch(availabilityProvider(doctor.id));
 
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: green ? palette.tintGreen : palette.tintBlue,
-        borderRadius: BorderRadius.circular(AppRadius.card),
+        color: palette.elevated,
+        border: Border.all(color: palette.line),
+        borderRadius: BorderRadius.circular(17),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              UserAvatar(name: doctor.name, radius: 26),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      doctor.name,
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                        color: palette.ink,
+          InkWell(
+            onTap: onViewProfile,
+            borderRadius: BorderRadius.circular(12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                UserAvatar(name: doctor.name, radius: 24),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        doctor.name,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: palette.ink,
+                        ),
                       ),
-                    ),
-                    Text(
-                      doctor.specialty,
-                      style: TextStyle(fontSize: 13, color: palette.inkMuted),
-                    ),
-                    if (doctor.languages.isNotEmpty)
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.chat_bubble_outline,
-                            size: 13,
-                            color: palette.inkMuted,
-                          ),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: Text(
-                              doctor.languages.join(', '),
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 12.5,
-                                color: palette.inkMuted,
+                      Text(
+                        doctor.specialty,
+                        style: TextStyle(fontSize: 13, color: palette.inkMuted),
+                      ),
+                      if (doctor.languages.isNotEmpty)
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.chat_bubble_outline,
+                              size: 13,
+                              color: palette.inkMuted,
+                            ),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: Text(
+                                doctor.languages.join(', '),
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  color: palette.inkMuted,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    if (doctor.locationLabel != null)
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on_outlined,
-                            size: 13,
-                            color: palette.inkMuted,
-                          ),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: Text(
-                              doctor.locationLabel!,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 12.5,
-                                color: palette.inkMuted,
+                          ],
+                        ),
+                      if (doctor.locationLabel != null)
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.location_on_outlined,
+                              size: 13,
+                              color: palette.inkMuted,
+                            ),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: Text(
+                                doctor.locationLabel!,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  color: palette.inkMuted,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                  ],
+                          ],
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-              InkWell(
-                onTap: onViewProfile,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'View profile',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: palette.accent,
-                      ),
+                Semantics(
+                  button: true,
+                  label: 'View profile',
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 14, left: 8),
+                    child: LcIcon(
+                      LcIcons.chevron,
+                      size: 16,
+                      color: palette.accent,
                     ),
-                    Icon(Icons.chevron_right, size: 16, color: palette.accent),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
@@ -561,9 +565,12 @@ class _SlotPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: context.palette.elevated,
-      borderRadius: BorderRadius.circular(AppRadius.control),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: context.palette.line),
+      ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.control),
+        borderRadius: BorderRadius.circular(10),
         onTap: onTap,
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),

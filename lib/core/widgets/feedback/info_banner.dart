@@ -6,7 +6,8 @@ import '../../theme/app_spacing.dart';
 
 enum BannerTone { info, success, warning, danger }
 
-/// A rounded, tinted note with an icon: a heads-up, a reassurance, a warning.
+/// A rounded, tinted, bordered note with an icon (the screen pack's
+/// `.notice`): a heads-up, a reassurance, a warning.
 class InfoBanner extends StatelessWidget {
   const InfoBanner({
     super.key,
@@ -28,29 +29,38 @@ class InfoBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
-    final (background, color, defaultIcon) = switch (tone) {
-      BannerTone.info => (palette.tintBlue, palette.accent, Icons.info_outline),
+    final (background, border, color, defaultIcon) = switch (tone) {
+      BannerTone.info => (
+        palette.tintBlueFaint,
+        palette.tintBlueLine,
+        palette.accent,
+        Icons.info_outline,
+      ),
       BannerTone.success => (
-        palette.tintGreen,
+        palette.tintGreenFaint,
+        palette.tintGreenLine,
         palette.positive,
         Icons.check_circle_outline,
       ),
       BannerTone.warning => (
         palette.tintAmber,
+        palette.amber.withValues(alpha: 0.3),
         palette.amber,
         Icons.warning_amber_rounded,
       ),
       BannerTone.danger => (
         palette.tintRed,
+        palette.tintRedLine,
         palette.danger,
         Icons.error_outline,
       ),
     };
 
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: background,
+        border: Border.all(color: border),
         borderRadius: BorderRadius.circular(AppRadius.control),
       ),
       child: Row(
@@ -74,9 +84,9 @@ class InfoBanner extends StatelessWidget {
                 Text(
                   message,
                   style: TextStyle(
-                    fontSize: 12.5,
+                    fontSize: 13,
                     color: title == null ? palette.ink : palette.inkMuted,
-                    height: 1.4,
+                    height: 1.55,
                     fontWeight: title == null
                         ? FontWeight.w500
                         : FontWeight.w400,

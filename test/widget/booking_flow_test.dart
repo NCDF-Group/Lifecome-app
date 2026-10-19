@@ -220,7 +220,7 @@ void main() {
       await tester.enterText(field(0), 'Leeds');
       await tester.enterText(field(1), 'LS1 4AB');
       await tapText(tester, 'Check availability');
-      await tester.tap(find.text('View profile').first);
+      await tester.tap(find.text('Dr Sam Okoro').first);
       await settle(tester);
 
       expect(find.byType(DoctorProfileScreen), findsOneWidget);
@@ -228,7 +228,7 @@ void main() {
       expect(find.text('English, Igbo'), findsOneWidget);
       expect(find.text('Professional registration'), findsNothing);
 
-      await tapText(tester, 'View appointment times');
+      await tapText(tester, 'Choose a time');
       expect(find.byType(ChooseAppointmentTimeScreen), findsOneWidget);
       expect(find.textContaining('UK time ('), findsOneWidget);
 
@@ -325,7 +325,7 @@ void main() {
       expect(backend.booking.lastPaymentKey, isNotNull);
 
       expect(find.byType(BookingConfirmationScreen), findsOneWidget);
-      expect(find.text('Appointment confirmed'), findsOneWidget);
+      expect(find.text("You're booked in"), findsOneWidget);
       expect(find.text('Dr Sam Okoro'), findsOneWidget);
       expect(find.text('LCL-BBBBBBBB'), findsOneWidget);
       // No payment has been seen to succeed, so none is claimed.
@@ -360,13 +360,13 @@ void main() {
       expect(find.byType(BookingConfirmationScreen), findsOneWidget);
       expect(find.text('Waiting for confirmation'), findsOneWidget);
       expect(find.text('Your time is being held'), findsOneWidget);
-      expect(find.text('Appointment confirmed'), findsNothing);
+      expect(find.text("You're booked in"), findsNothing);
       expect(find.textContaining('awaiting payment'), findsOneWidget);
 
       // The payment comes through on the server; checking brings it in.
       backend.booking.confirmOnServer('bbbbbbbb-1111-2222-3333-444444444444');
       await tapText(tester, 'Check status');
-      expect(find.text('Appointment confirmed'), findsOneWidget);
+      expect(find.text("You're booked in"), findsOneWidget);
 
       await disposeApp(tester);
     });

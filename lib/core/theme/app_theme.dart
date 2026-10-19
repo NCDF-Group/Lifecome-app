@@ -55,18 +55,18 @@ ThemeData buildAppTheme({Brightness brightness = Brightness.light}) {
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: palette.elevated,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.control),
-        borderSide: BorderSide(color: palette.line, width: 1.5),
+        borderSide: BorderSide(color: palette.line),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.control),
-        borderSide: BorderSide(color: palette.line, width: 1.5),
+        borderSide: BorderSide(color: palette.line),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.control),
-        borderSide: BorderSide(color: palette.accent, width: 2),
+        borderSide: BorderSide(color: palette.accent, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.control),

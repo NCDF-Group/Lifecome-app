@@ -6,23 +6,24 @@ import '../../../core/network/api_exception.dart';
 import '../../../core/network/idempotency_key_generator.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_palette.dart';
-import '../../../core/theme/app_radius.dart';
-import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
-import '../../../core/widgets/layout/back_app_bar.dart';
+import '../../../core/widgets/inputs/choice_card.dart';
+import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/layout/detail_list.dart';
+import '../../../core/widgets/layout/screen_title.dart';
+import '../../../core/widgets/layout/step_progress.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
-import '../../../core/widgets/media/avatar.dart';
 import '../../payer/domain/models/eligibility_status.dart';
 import '../application/booking_controller.dart';
 import '../../profile/presentation/profile_required_prompt.dart';
 import '../domain/models/booking_selection.dart';
 import '../domain/models/consultation_mode.dart';
 
-/// Blueprint views 15-16 — Review Booking & Payment, then Payment / HMO
-/// Authorisation, merged into one screen: the review shows what will be
-/// booked, and confirming it creates the appointment on the backend.
+/// "Review your appointment" — step 6 of the GP booking (screen pack 047
+/// and 048 merged): what will be booked and how it is paid for; confirming
+/// creates the appointment on the backend.
 class ReviewBookingScreen extends ConsumerStatefulWidget {
   const ReviewBookingScreen({super.key, required this.selection});
 
@@ -93,156 +94,129 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     final selection = widget.selection;
     final doctor = selection.doctor!;
     final service = selection.service!;
     final slot = selection.slot!;
     final isHmo = selection.accessType == BookingAccessType.hmo;
     final uk = Formatters.ukTime(slot.startsAt);
+    final inPerson = selection.mode == ConsultationMode.inPerson;
 
     return Scaffold(
-      backgroundColor: context.palette.background,
-      appBar: const BackAppBar(title: 'Review and confirm'),
+      backgroundColor: palette.background,
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.all(AppSpacing.lg),
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                 children: [
                   MaxContentWidth(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
-                          'Please check your appointment details before '
-                          'confirming.',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: context.palette.inkMuted,
-                          ),
+                        const AppHeaderBar(
+                          showBack: true,
+                          backFallback: RoutePaths.gp,
                         ),
-                        const SizedBox(height: AppSpacing.md),
-                        Container(
-                          padding: const EdgeInsets.all(AppSpacing.md),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: context.palette.line),
-                            borderRadius: BorderRadius.circular(AppRadius.card),
-                          ),
-                          child: Row(
+                        const StepProgress(step: 6, total: 6),
+                        const ScreenTitle(
+                          title: 'Review your appointment',
+                          subtitle: 'Check the details before you confirm.',
+                        ),
+                        const SizedBox(height: 10),
+                        DetailList(
+                          rows: [
+                            ('Service', service.title),
+                            ('Appointment', selection.mode.consultationLabel),
+                            ('Clinician', doctor.name),
+                            ('Date', Formatters.date(uk)),
+                            (
+                              'Time',
+                              '${Formatters.time(uk)} · UK time '
+                                  '(${Formatters.ukZoneLabel(slot.startsAt)})',
+                            ),
+                            if (inPerson && selection.city != null)
+                              ('Location', selection.city!)
+                            else if (!inPerson)
+                              ('Location', 'Secure online appointment'),
+                            ('Length', '${service.durationMinutes} min'),
+                            if (selection.concern != null &&
+                                selection.concern!.isNotEmpty)
+                              ('Concern', selection.concern!),
+                          ],
+                        ),
+                        PanelCard(
+                          title: isHmo ? 'How it is paid for' : 'Payment',
+                          child: Column(
                             children: [
-                              UserAvatar(name: doctor.name, radius: 22),
-                              const SizedBox(width: AppSpacing.sm),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      doctor.name,
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600,
-                                        color: context.palette.ink,
-                                      ),
-                                    ),
-                                    Text(
-                                      doctor.specialty,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: context.palette.inkMuted,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    Formatters.date(uk),
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: context.palette.ink,
-                                    ),
+                              DetailList(
+                                rows: [
+                                  (
+                                    isHmo ? 'Funding' : 'Payment route',
+                                    isHmo
+                                        ? (selection.hmoName ?? 'Health plan')
+                                        : 'Pay per visit',
                                   ),
-                                  Text(
-                                    '${Formatters.time(uk)} '
-                                    '${Formatters.ukZoneLabel(slot.startsAt)}',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: context.palette.inkMuted,
-                                    ),
-                                  ),
+                                  if (isHmo) ('Cover', _coverLabel(selection)),
                                 ],
                               ),
+                              if (!isHmo)
+                                Container(
+                                  padding: const EdgeInsets.only(top: 14),
+                                  margin: const EdgeInsets.only(top: 4),
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      top: BorderSide(color: palette.line),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          'Total',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                            color: palette.ink,
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        service.priceLabel,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                          color: palette.ink,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: AppSpacing.sm),
-                        _ReviewRow(
-                          icon: Icons.description_outlined,
-                          label: 'Service',
-                          value: service.title,
-                          trailing: '${service.durationMinutes} min',
-                        ),
-                        _ReviewRow(
-                          icon: selection.mode == ConsultationMode.inPerson
-                              ? Icons.apartment_outlined
-                              : (selection.mode == ConsultationMode.audio
-                                    ? Icons.call_outlined
-                                    : Icons.videocam_outlined),
-                          label: 'Appointment type',
-                          value: selection.mode.consultationLabel,
-                          trailing: selection.mode == ConsultationMode.inPerson
-                              ? selection.city
-                              : null,
-                        ),
-                        _ReviewRow(
-                          icon: Icons.credit_card,
-                          label: isHmo ? 'Funding' : 'Payment',
-                          value: isHmo
-                              ? (selection.hmoName ?? 'Health plan')
-                              : 'Pay per visit',
-                          trailing: isHmo
-                              ? _coverLabel(selection)
-                              : service.priceLabel,
-                          trailingColor: isHmo
-                              ? _coverColor(context, selection)
-                              : context.palette.ink,
-                        ),
-                        if (selection.concern != null &&
-                            selection.concern!.isNotEmpty)
-                          _ReviewRow(
-                            icon: Icons.notes_outlined,
-                            label: 'Concern',
-                            value: selection.concern!,
-                          ),
-                        const SizedBox(height: AppSpacing.md),
-                        CheckboxListTile(
+                        CheckRow(
                           value: _agreed,
                           onChanged: (value) => setState(() {
-                            _agreed = value ?? false;
+                            _agreed = value;
                             if (_agreed) _showAgreeError = false;
                           }),
-                          controlAffinity: ListTileControlAffinity.leading,
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(
-                            'I confirm that the information provided is '
-                            'correct and I agree to the Terms of Service and '
-                            'Privacy Policy.',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: context.palette.ink,
-                            ),
-                          ),
+                          label:
+                              'I confirm that the information provided is '
+                              'correct and I agree to the Terms of Service and '
+                              'Privacy Policy.',
                         ),
                         if (_showAgreeError)
-                          Text(
-                            'Please confirm to continue.',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: context.palette.danger,
+                          Padding(
+                            padding: const EdgeInsets.only(left: 30),
+                            child: Text(
+                              'Please confirm to continue.',
+                              style: TextStyle(
+                                fontSize: 12.5,
+                                color: palette.danger,
+                              ),
                             ),
                           ),
                       ],
@@ -252,11 +226,10 @@ class _ReviewBookingScreenState extends ConsumerState<ReviewBookingScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
               child: MaxContentWidth(
                 child: PrimaryButton(
                   label: 'Confirm booking',
-                  icon: Icons.arrow_forward,
                   loading: _loading,
                   onPressed: _confirm,
                 ),
@@ -282,74 +255,4 @@ String _coverLabel(BookingSelection selection) {
     EligibilityStatus.preAuthorisationRequired => 'Needs authorisation',
     final other => other.label,
   };
-}
-
-Color _coverColor(BuildContext context, BookingSelection selection) {
-  final status = selection.eligibility?.status;
-  return status == EligibilityStatus.covered
-      ? context.palette.positive
-      : context.palette.warning;
-}
-
-class _ReviewRow extends StatelessWidget {
-  const _ReviewRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-    this.trailing,
-    this.trailingColor,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-  final String? trailing;
-  final Color? trailingColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 20, color: context.palette.inkMuted),
-          const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: context.palette.inkMuted,
-                  ),
-                ),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: context.palette.ink,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (trailing != null) ...[
-            const SizedBox(width: AppSpacing.xs),
-            Text(
-              trailing!,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: trailingColor ?? context.palette.ink,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
 }

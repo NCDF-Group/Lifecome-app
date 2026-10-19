@@ -8,9 +8,10 @@ import 'app_bar_back.dart';
 
 /// The header shared by Home and the screens reached from it (the screen
 /// pack's `.app-header`): an optional back arrow, the logo, a static "UK"
-/// chip, and the notification bell (see [NotificationsBell]).
+/// chip and the notification bell (see [NotificationsBell]), with an optional
+/// blue "‹ Back" link below ([BackLink]).
 ///
-/// The back arrow goes to the previous screen, or to [backFallback] when
+/// The back link goes to the previous screen, or to [backFallback] when
 /// nothing is behind this one, so it always does something. Pass [onBack] only
 /// when a screen has to do something else first.
 class AppHeaderBar extends StatelessWidget {
@@ -32,12 +33,8 @@ class AppHeaderBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    final header = Row(
       children: [
-        if (showBack) ...[
-          AppBackButton(fallback: backFallback, onPressed: onBack),
-          const SizedBox(width: 8),
-        ],
         Image.asset(
           context.palette.logoAsset,
           height: 28,
@@ -46,6 +43,15 @@ class AppHeaderBar extends StatelessWidget {
         const Spacer(),
         const _CountryChip(),
         if (showBell) ...[const SizedBox(width: 8), const NotificationsBell()],
+      ],
+    );
+    if (!showBack) return header;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        header,
+        const SizedBox(height: 8),
+        BackLink(fallback: backFallback, onPressed: onBack),
       ],
     );
   }

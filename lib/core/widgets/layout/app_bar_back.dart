@@ -42,3 +42,46 @@ class AppBackButton extends StatelessWidget {
     );
   }
 }
+
+/// The blue "‹ Back" link under the header on screens below a tab root (the
+/// screen pack's `.back`). Same behaviour as [AppBackButton].
+class BackLink extends StatelessWidget {
+  const BackLink({super.key, this.fallback = RoutePaths.home, this.onPressed});
+
+  final String fallback;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = context.palette.accent;
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Tooltip(
+        message: 'Back',
+        child: InkWell(
+          onTap: onPressed ?? () => context.goBack(fallback: fallback),
+          borderRadius: BorderRadius.circular(8),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 44),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.arrow_back_ios_new, size: 14, color: color),
+                const SizedBox(width: 6),
+                Text(
+                  'Back',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: color,
+                  ),
+                ),
+                const SizedBox(width: 6),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

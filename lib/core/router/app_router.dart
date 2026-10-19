@@ -1,6 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/menopause/presentation/menopause_assessment_screen.dart';
+import '../../features/menopause/presentation/menopause_booking_screen.dart';
+import '../../features/menopause/presentation/menopause_hub_screen.dart';
+import '../../features/menopause/presentation/menopause_plan_screen.dart';
+import '../../features/menopause/presentation/menopause_review_screen.dart';
+import '../../features/gp/presentation/gp_eligibility_screen.dart';
+import '../../features/gp/presentation/gp_hub_screen.dart';
 import '../../features/auth/presentation/app_lock_screen.dart';
 import '../../features/auth/presentation/create_account_screen.dart';
 import '../../features/auth/presentation/forgot_password_screen.dart';
@@ -239,7 +246,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: RoutePaths.findSmartGpClinic,
-        builder: (context, state) => const FindSmartGpClinicScreen(),
+        builder: (context, state) =>
+            FindSmartGpClinicScreen(start: state.extra as BookingStart?),
       ),
       GoRoute(
         path: RoutePaths.consultationWaitingRoom,
@@ -263,6 +271,36 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.services,
         builder: (context, state) => const ServicesScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.gp,
+        builder: (context, state) => const GpHubScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.gpEligibility,
+        redirect: _requires<BookingStart>(RoutePaths.gp),
+        builder: (context, state) =>
+            GpEligibilityScreen(start: state.extra! as BookingStart),
+      ),
+      GoRoute(
+        path: RoutePaths.menopause,
+        builder: (context, state) => const MenopauseHubScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.menopauseAssessment,
+        builder: (context, state) => const MenopauseAssessmentScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.menopauseBooking,
+        builder: (context, state) => const MenopauseBookingScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.menopausePlan,
+        builder: (context, state) => const MenopausePlanScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.menopauseReview,
+        builder: (context, state) => const MenopauseReviewScreen(),
       ),
       GoRoute(
         path: RoutePaths.emergency,

@@ -3,9 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
-import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
@@ -14,8 +12,9 @@ import '../../../core/widgets/feedback/error_state.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/feedback/loading_indicator.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/inputs/choice_card.dart';
 import '../../../core/widgets/layout/screen_title.dart';
-import '../../../core/widgets/media/avatar.dart';
+import '../../../core/widgets/layout/step_progress.dart';
 import '../application/booking_controller.dart';
 import '../domain/models/availability_slot.dart';
 import '../domain/models/booking_selection.dart';
@@ -88,60 +87,17 @@ class _ChooseAppointmentTimeScreenState
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
                 children: [
-                  const AppHeaderBar(showBack: true),
-                  const SizedBox(height: 20),
-                  const ScreenTitle(
-                    title: 'Choose a time',
-                    subtitle: 'Select a date, time and how you would like to be seen.',
+                  const AppHeaderBar(
+                    showBack: true,
+                    backFallback: RoutePaths.gp,
                   ),
-                  const SizedBox(height: AppSpacing.md),
-                  Material(
-                    color: context.palette.tintGreen,
-                    borderRadius: BorderRadius.circular(AppRadius.card),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(AppRadius.card),
-                      onTap: () => context.push(
-                        RoutePaths.doctorsProfile,
-                        extra: widget.selection,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppSpacing.sm),
-                        child: Row(
-                          children: [
-                            UserAvatar(name: doctor.name, radius: 22),
-                            const SizedBox(width: AppSpacing.sm),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    doctor.name,
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      color: context.palette.ink,
-                                    ),
-                                  ),
-                                  Text(
-                                    doctor.specialty,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: context.palette.inkMuted,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Icon(
-                              Icons.chevron_right,
-                              color: context.palette.accent,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                  const StepProgress(step: 4, total: 6),
+                  ScreenTitle(
+                    title: 'Choose your time',
+                    subtitle:
+                        '${doctor.name} · ${widget.selection.mode.isOnline ? 'Online GP' : 'In-clinic GP'}',
                   ),
-                  const SizedBox(height: AppSpacing.md),
+                  const SizedBox(height: 16),
                   if (allowed.isEmpty)
                     const InfoBanner(
                       tone: BannerTone.warning,
@@ -153,36 +109,21 @@ class _ChooseAppointmentTimeScreenState
                     Text(
                       'How would you like to be seen?',
                       style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
                         color: context.palette.ink,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
-                    IntrinsicHeight(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          for (var i = 0; i < allowed.length; i++) ...[
-                            Expanded(
-                              child: _ModeCard(
-                                icon: allowed[i] == ConsultationMode.video
-                                    ? Icons.videocam_outlined
-                                    : Icons.call_outlined,
-                                title: allowed[i].label,
-                                subtitle: allowed[i] == ConsultationMode.video
-                                    ? 'See the GP online'
-                                    : 'Speak by phone',
-                                selected: _mode == allowed[i],
-                                onTap: () => setState(() => _mode = allowed[i]),
-                              ),
-                            ),
-                            if (i != allowed.length - 1)
-                              const SizedBox(width: AppSpacing.sm),
-                          ],
-                        ],
+                    for (final mode in allowed)
+                      ChoiceCard(
+                        title: mode.label,
+                        subtitle: mode == ConsultationMode.video
+                            ? 'See the GP online'
+                            : 'Speak by phone',
+                        selected: _mode == mode,
+                        onTap: () => setState(() => _mode = mode),
                       ),
-                    ),
                     const SizedBox(height: AppSpacing.md),
                   ],
                   slots.when(
@@ -201,7 +142,6 @@ class _ChooseAppointmentTimeScreenState
               padding: const EdgeInsets.all(AppSpacing.lg),
               child: PrimaryButton(
                 label: 'Continue',
-                icon: Icons.arrow_forward,
                 onPressed: _slot == null || allowed.isEmpty ? null : _continue,
               ),
             ),
@@ -238,22 +178,22 @@ class _ChooseAppointmentTimeScreenState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Select a date',
+          'Choose a date',
           style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
             color: context.palette.ink,
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
         SizedBox(
-          height: 96,
+          height: 80,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: days.length,
             separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.xs),
             itemBuilder: (context, index) => SizedBox(
-              width: 82,
+              width: 74,
               child: _DayCard(
                 day: days[index],
                 selected: days[index] == day,
@@ -273,8 +213,8 @@ class _ChooseAppointmentTimeScreenState
             Text(
               'Available times',
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
                 color: context.palette.ink,
               ),
             ),
@@ -287,12 +227,12 @@ class _ChooseAppointmentTimeScreenState
         ),
         const SizedBox(height: AppSpacing.sm),
         GridView.count(
-          crossAxisCount: 4,
+          crossAxisCount: 3,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: AppSpacing.xs,
           crossAxisSpacing: AppSpacing.xs,
-          childAspectRatio: 2.1,
+          childAspectRatio: 2.6,
           children: [
             for (final slot in onDay)
               _TimeChip(
@@ -322,69 +262,6 @@ class _ChooseAppointmentTimeScreenState
   }
 }
 
-class _ModeCard extends StatelessWidget {
-  const _ModeCard({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: selected ? context.palette.tintBlue : context.palette.elevated,
-      borderRadius: BorderRadius.circular(AppRadius.card),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.card),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(AppSpacing.sm),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppRadius.card),
-            border: Border.all(
-              color: selected ? context.palette.accent : context.palette.line,
-              width: 1.5,
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(icon, color: context.palette.ink, size: 20),
-                  const Spacer(),
-                  _RadioCircle(selected: selected),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: context.palette.ink,
-                ),
-              ),
-              Text(
-                subtitle,
-                style: TextStyle(fontSize: 12, color: context.palette.inkMuted),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _DayCard extends StatelessWidget {
   const _DayCard({
     required this.day,
@@ -402,39 +279,34 @@ class _DayCard extends StatelessWidget {
     final weekday = label == 'Today' || label == 'Tomorrow'
         ? label
         : label.split(' ').first;
+    final palette = context.palette;
+    final color = selected ? palette.accent : palette.ink;
     return Material(
-      color: selected ? context.palette.tintBlue : context.palette.elevated,
-      borderRadius: BorderRadius.circular(AppRadius.card),
+      color: selected ? palette.tintBlueFaint : palette.elevated,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(11),
+        side: BorderSide(color: selected ? palette.accent : palette.line),
+      ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.card),
+        borderRadius: BorderRadius.circular(11),
         onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppRadius.card),
-            border: Border.all(
-              color: selected ? context.palette.accent : context.palette.line,
-              width: 1.5,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(weekday, style: TextStyle(fontSize: 11, color: color)),
+            Text(
+              '${day.day}',
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
             ),
-          ),
-          child: Column(
-            children: [
-              Text(
-                weekday,
-                style: TextStyle(fontSize: 12, color: context.palette.inkMuted),
-              ),
-              Text(
-                '${day.day} ${Formatters.shortDate(day).split(' ').last}',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: context.palette.ink,
-                ),
-              ),
-              const SizedBox(height: 4),
-              _RadioCircle(selected: selected),
-            ],
-          ),
+            Text(
+              Formatters.shortDate(day).split(' ').last,
+              style: TextStyle(fontSize: 11, color: color),
+            ),
+          ],
         ),
       ),
     );
@@ -454,11 +326,15 @@ class _TimeChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return Material(
-      color: selected ? AppColors.blue : context.palette.surface,
-      borderRadius: BorderRadius.circular(AppRadius.control),
+      color: selected ? palette.tintBlueFaint : palette.elevated,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: selected ? palette.accent : palette.line),
+      ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.control),
+        borderRadius: BorderRadius.circular(10),
         onTap: onTap,
         child: Container(
           alignment: Alignment.center,
@@ -466,45 +342,12 @@ class _TimeChip extends StatelessWidget {
             time,
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: selected ? AppColors.white : context.palette.ink,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              color: selected ? palette.accent : palette.ink,
             ),
           ),
         ),
       ),
-    );
-  }
-}
-
-class _RadioCircle extends StatelessWidget {
-  const _RadioCircle({required this.selected});
-
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 20,
-      height: 20,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: selected ? context.palette.accent : context.palette.line,
-          width: 2,
-        ),
-      ),
-      child: selected
-          ? Center(
-              child: Container(
-                width: 10,
-                height: 10,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.blue,
-                ),
-              ),
-            )
-          : null,
     );
   }
 }

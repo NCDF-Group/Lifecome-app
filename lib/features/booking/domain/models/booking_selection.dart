@@ -10,15 +10,19 @@ import 'consultation_mode.dart';
 enum BookingAccessType { hmo, direct }
 
 /// Where a booking begins: how it will be paid for and, when it starts from
-/// the clinic finder, the clinician already chosen.
+/// the GP hub, eligibility check or clinic finder, what is already known —
+/// the visit type, where the patient will be, the clinician.
 class BookingStart {
-  const BookingStart.direct({this.doctor})
+  const BookingStart.direct({this.doctor, this.mode, this.city, this.postcode})
     : accessType = BookingAccessType.direct,
       plan = null;
-
-  const BookingStart.hmo(LinkedPlan this.plan)
-    : accessType = BookingAccessType.hmo,
-      doctor = null;
+  const BookingStart.hmo(
+    LinkedPlan this.plan, {
+    this.mode,
+    this.city,
+    this.postcode,
+  }) : accessType = BookingAccessType.hmo,
+       doctor = null;
 
   final BookingAccessType accessType;
 
@@ -26,7 +30,27 @@ class BookingStart {
   final LinkedPlan? plan;
   final Doctor? doctor;
 
+  /// Online or in-clinic, when chosen on the GP hub.
+  final ConsultationMode? mode;
+
+  /// Where the patient will be (or wants a clinic), when given on the
+  /// eligibility step. With these set the booking skips the location step.
+  final String? city;
+  final String? postcode;
+
   String? get hmoName => plan?.name;
+
+  /// The same start with [doctor] chosen (from the clinic finder).
+  BookingStart withDoctor(Doctor doctor) => switch (accessType) {
+    BookingAccessType.direct => BookingStart.direct(
+      doctor: doctor,
+      mode: ConsultationMode.inPerson,
+      city: city,
+      postcode: postcode,
+    ),
+    // The clinic finder only starts direct-pay bookings.
+    BookingAccessType.hmo => this,
+  };
 }
 
 /// Accumulates the patient's choices as they move through the booking journey

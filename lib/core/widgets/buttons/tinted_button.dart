@@ -4,7 +4,7 @@ import '../../theme/app_palette.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 
-/// A filled light-blue pill button — a lower-emphasis action next to a
+/// A filled light-blue button — a lower-emphasis action next to a
 /// [PrimaryButton] that still reads as a real button, not a text link (e.g.
 /// "Back to sign in", "Change number").
 class TintedButton extends StatelessWidget {
@@ -17,18 +17,18 @@ class TintedButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 52,
+      height: 50,
       child: FilledButton(
         onPressed: onPressed,
         style: FilledButton.styleFrom(
           backgroundColor: context.palette.tintBlue,
           foregroundColor: context.palette.accent,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.pill),
+            borderRadius: BorderRadius.circular(AppRadius.button),
           ),
           textStyle: const TextStyle(
             fontFamily: appFontFamily,
-            fontSize: 16,
+            fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
         ),

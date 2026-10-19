@@ -10,7 +10,10 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
-import '../../../core/widgets/layout/back_app_bar.dart';
+import '../../../core/widgets/inputs/choice_card.dart';
+import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/layout/screen_title.dart';
+import '../../../core/widgets/layout/step_progress.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
 import '../../profile/application/profile_controller.dart';
 import '../domain/models/appointment.dart';
@@ -163,23 +166,24 @@ class _BeforeYourVisitScreenState extends ConsumerState<BeforeYourVisitScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.palette.background,
-      appBar: const BackAppBar(title: 'Help your doctor prepare'),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 25),
           children: [
             MaxContentWidth(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'A few details before your consultation.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: context.palette.inkMuted,
-                    ),
+                  const AppHeaderBar(
+                    showBack: true,
+                    backFallback: RoutePaths.gp,
                   ),
-                  const SizedBox(height: AppSpacing.md),
+                  const StepProgress(step: 5, total: 6),
+                  const ScreenTitle(
+                    title: 'Help your GP prepare',
+                    subtitle: 'A few details before your consultation.',
+                  ),
+                  const SizedBox(height: 18),
                   _MultilineField(
                     label: 'What would you like to discuss?',
                     hint: 'Briefly describe your concern',
@@ -191,12 +195,12 @@ class _BeforeYourVisitScreenState extends ConsumerState<BeforeYourVisitScreen> {
                   Text(
                     'How long has this been happening?',
                     style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
                       color: context.palette.ink,
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.xs),
+                  const SizedBox(height: 7),
                   DropdownButtonFormField<String>(
                     initialValue: _duration,
                     items: [
@@ -253,22 +257,15 @@ class _BeforeYourVisitScreenState extends ConsumerState<BeforeYourVisitScreen> {
                       onChanged: (_) => _revalidate(),
                     ),
                     const SizedBox(height: AppSpacing.sm),
-                    CheckboxListTile(
+                    CheckRow(
                       value: _consented,
                       onChanged: (value) {
-                        setState(() => _consented = value ?? false);
+                        setState(() => _consented = value);
                         _revalidate();
                       },
-                      controlAffinity: ListTileControlAffinity.leading,
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(
-                        'I agree to an online consultation and understand it '
-                        "may not be suitable for every concern.",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: context.palette.ink,
-                        ),
-                      ),
+                      label:
+                          'I agree to an online consultation and understand it '
+                          'may not be suitable for every concern.',
                     ),
                     if (_consentError != null)
                       Padding(
@@ -283,15 +280,11 @@ class _BeforeYourVisitScreenState extends ConsumerState<BeforeYourVisitScreen> {
                       ),
                   ],
                   const SizedBox(height: AppSpacing.md),
-                  PrimaryButton(
-                    label: 'Continue',
-                    icon: Icons.arrow_forward,
-                    onPressed: _continue,
-                  ),
+                  PrimaryButton(label: 'Continue', onPressed: _continue),
                   const SizedBox(height: AppSpacing.xs),
                   Center(
                     child: Text(
-                      'Your doctor will review these details.',
+                      'Your GP will review these details.',
                       style: TextStyle(
                         fontSize: 12,
                         color: context.palette.inkMuted,
@@ -335,12 +328,12 @@ class _MultilineField extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
             color: context.palette.ink,
           ),
         ),
-        const SizedBox(height: AppSpacing.xs),
+        const SizedBox(height: 7),
         TextField(
           controller: controller,
           maxLines: maxLines,

@@ -16,16 +16,14 @@ import '../../../core/widgets/lists/row_card.dart';
 import '../../../core/widgets/media/lc_icons.dart';
 import '../../booking/application/booking_controller.dart';
 import '../../booking/domain/models/appointment.dart';
-import '../../booking/domain/models/booking_selection.dart';
 import '../../profile/application/profile_controller.dart';
 
 /// The Home tab — the screen pack's "How can we help today?" (008): the
 /// four services (GP, Care, Wellbeing, Insurance), the next step (the next
 /// real visit, or booking one), shared shortcuts and urgent help.
 ///
-/// GP goes straight into the direct-pay booking flow and Wellbeing to the
-/// existing services page until their hubs are built; Care and Insurance
-/// say they are coming soon.
+/// GP opens the GP hub; Wellbeing opens the existing services page until
+/// its hub is built; Care and Insurance say they are coming soon.
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
@@ -62,12 +60,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return 'Good evening';
   }
 
-  void _openDirectBooking() {
-    context.push(
-      RoutePaths.bookingChooseService,
-      extra: const BookingStart.direct(),
-    );
-  }
+  void _openGp() => context.push(RoutePaths.gp);
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +91,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               const SizedBox(height: 12),
             ],
             _ServiceGrid(
-              onGp: _openDirectBooking,
+              onGp: _openGp,
               onCare: () =>
                   showComingSoonPopup(context, feature: 'Professional Care'),
               onWellbeing: () => context.push(RoutePaths.services),
@@ -114,7 +107,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 icon: LcIcons.video,
                 title: 'Book a GP appointment',
                 subtitle: 'Choose a time that works for you',
-                onTap: _openDirectBooking,
+                onTap: _openGp,
               ),
             ],
             const SectionHeader(title: 'Your health, together'),

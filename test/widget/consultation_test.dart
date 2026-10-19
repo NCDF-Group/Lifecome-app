@@ -153,7 +153,7 @@ void main() {
         find.text("Your written plan isn't in the app yet"),
         findsOneWidget,
       );
-      expect(find.text('with Dr Sam Okoro'), findsOneWidget);
+      expect(find.text('Dr Sam Okoro'), findsOneWidget);
 
       await disposeApp(tester);
     });
