@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_palette.dart';
-import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/feedback/app_popup.dart';
@@ -94,11 +93,11 @@ class _MessageComposerState extends State<MessageComposer> {
                   vertical: AppSpacing.sm,
                 ),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.control + 6),
+                  borderRadius: BorderRadius.circular(11),
                   borderSide: BorderSide(color: palette.line),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.control + 6),
+                  borderRadius: BorderRadius.circular(11),
                   borderSide: BorderSide(color: palette.line),
                 ),
               ),
@@ -111,9 +110,9 @@ class _MessageComposerState extends State<MessageComposer> {
               color: _canSend
                   ? AppColors.blue
                   : AppColors.blue.withValues(alpha: 0.35),
-              shape: const CircleBorder(),
+              borderRadius: BorderRadius.circular(11),
               child: InkWell(
-                customBorder: const CircleBorder(),
+                borderRadius: BorderRadius.circular(11),
                 onTap: _canSend ? _send : null,
                 child: SizedBox(
                   width: 44,

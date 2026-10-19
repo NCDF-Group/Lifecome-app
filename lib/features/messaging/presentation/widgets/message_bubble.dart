@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_palette.dart';
-import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../domain/models/message_thread.dart';
@@ -29,10 +28,10 @@ class MessageBubble extends StatelessWidget {
             const SizedBox(height: 2),
             Container(
               constraints: BoxConstraints(maxWidth: maxWidth),
-              padding: const EdgeInsets.all(AppSpacing.sm),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
                 color: palette.tintGreen,
-                borderRadius: BorderRadius.circular(AppRadius.control),
+                borderRadius: BorderRadius.circular(15),
               ),
               child: SelectableText(
                 message.body,
@@ -83,10 +82,13 @@ class MessageBubble extends StatelessWidget {
                 const SizedBox(height: 4),
                 Container(
                   constraints: BoxConstraints(maxWidth: maxWidth),
-                  padding: const EdgeInsets.all(AppSpacing.sm),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: palette.tintBlue,
-                    borderRadius: BorderRadius.circular(AppRadius.control),
+                    borderRadius: BorderRadius.circular(15),
                   ),
                   child: SelectableText(
                     message.body,

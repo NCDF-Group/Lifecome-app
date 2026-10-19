@@ -9,7 +9,8 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/feedback/error_state.dart';
 import '../../../core/widgets/feedback/loading_indicator.dart';
-import '../../../core/widgets/layout/back_app_bar.dart';
+import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/layout/screen_title.dart';
 import '../application/messaging_controller.dart';
 import '../domain/models/message_thread.dart';
 import 'widgets/message_bubble.dart';
@@ -57,13 +58,28 @@ class _ThreadDetailScreenState extends ConsumerState<ThreadDetailScreen> {
 
     return Scaffold(
       backgroundColor: context.palette.background,
-      appBar: BackAppBar(
-        title: thread?.title ?? 'Care team',
-        fallback: RoutePaths.messages,
-      ),
       body: SafeArea(
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const AppHeaderBar(
+                    showBack: true,
+                    showBell: false,
+                    backFallback: RoutePaths.messages,
+                  ),
+                  const SizedBox(height: 4),
+                  ScreenTitle(
+                    title: thread?.title ?? 'Care team',
+                    subtitle: 'Replies usually arrive during service hours.',
+                  ),
+                ],
+              ),
+            ),
+            Divider(height: 1, color: context.palette.line),
             Expanded(
               child: messages.when(
                 loading: () => const LoadingIndicator(),
@@ -105,10 +121,7 @@ class _ThreadDetailScreenState extends ConsumerState<ThreadDetailScreen> {
     }
     return ListView(
       reverse: true,
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       children: children.reversed.toList(),
     );
   }

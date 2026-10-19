@@ -4,19 +4,20 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_palette.dart';
-import '../../../core/theme/app_radius.dart';
-import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/formatters.dart';
-import '../../../core/widgets/buttons/primary_button.dart';
+import '../../../core/widgets/buttons/secondary_button.dart';
 import '../../../core/widgets/feedback/error_state.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/feedback/loading_indicator.dart';
-import '../../../core/widgets/layout/app_bar_back.dart';
+import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/widgets/layout/screen_title.dart';
+import '../../../core/widgets/lists/row_card.dart';
+import '../../../core/widgets/media/lc_icons.dart';
 import '../application/messaging_controller.dart';
 import '../domain/models/message_thread.dart';
 
-/// The Messages tab — blueprint view 22, Care Team Messages: the person's
-/// real conversations with the care team, most recent first, and the way to
+/// The Messages tab ("Your messages", screen pack 014): the person's real
+/// conversations with the care team, most recent first, and the way to
 /// start another.
 class MessageThreadsScreen extends ConsumerWidget {
   const MessageThreadsScreen({super.key});
@@ -26,194 +27,51 @@ class MessageThreadsScreen extends ConsumerWidget {
     final threads = ref.watch(threadsProvider);
     final notifier = ref.read(threadsProvider.notifier);
 
+    Widget body(List<MessageThread> list) => list.isEmpty
+        ? const _EmptyThreads()
+        : Column(children: [for (final t in list) _ThreadCard(thread: t)]);
+
     return Scaffold(
       backgroundColor: context.palette.background,
       body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-              child: Row(
-                children: [
-                  // A tab root, so the arrow goes Home.
-                  const AppBackButton(fallback: RoutePaths.home),
-                  const SizedBox(width: 8),
-                  Image.asset(
-                    context.palette.logoAsset,
-                    height: 24,
-                    semanticLabel: 'LifeCome Health',
-                  ),
-                  const Spacer(),
-                  Material(
-                    color: context.palette.surface,
-                    shape: const CircleBorder(),
-                    child: InkWell(
-                      customBorder: const CircleBorder(),
-                      onTap: () => context.go(RoutePaths.profile),
-                      child: SizedBox(
-                        width: 38,
-                        height: 38,
-                        child: Icon(
-                          Icons.person_outline,
-                          size: 20,
-                          color: context.palette.ink,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+        child: RefreshIndicator(
+          onRefresh: notifier.refresh,
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 25),
+            children: [
+              // A tab root, so the back link goes Home.
+              const AppHeaderBar(showBack: true),
+              const SizedBox(height: 4),
+              const ScreenTitle(
+                title: 'Your messages',
+                subtitle: 'Stay connected with your care team.',
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Messages',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: context.palette.inkMuted,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Care team messages',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
-                      color: context.palette.ink,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Patient support.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: context.palette.inkMuted,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  const InfoBanner(
-                    message:
-                        'Messages are reviewed during service hours, not '
-                        'continuously.',
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: threads.when(
+              const SizedBox(height: 14),
+              threads.when(
                 loading: () => const LoadingIndicator(),
                 error: (error, _) => threads.hasValue
-                    ? _list(context, threads.requireValue, notifier.refresh)
+                    ? body(threads.requireValue)
                     : ErrorState(error: error, onRetry: notifier.refresh),
-                data: (data) => _list(context, data, notifier.refresh),
+                data: body,
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.md,
-                AppSpacing.xs,
-                AppSpacing.md,
-                AppSpacing.xs,
-              ),
-              child: PrimaryButton(
+              const SizedBox(height: 8),
+              SecondaryButton(
                 label: 'New message',
-                icon: Icons.edit_outlined,
                 onPressed: () => context.push(RoutePaths.newMessage),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.md,
-                0,
-                AppSpacing.md,
-                AppSpacing.sm,
+              const SizedBox(height: 14),
+              const InfoBanner(
+                message:
+                    'Messages are reviewed during service hours and are not '
+                    'monitored for emergencies.',
               ),
-              child: Material(
-                color: context.palette.tintRed,
-                borderRadius: BorderRadius.circular(AppRadius.control),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(AppRadius.control),
-                  onTap: () => context.push(RoutePaths.emergency),
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.sm),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.emergency_outlined,
-                          size: 18,
-                          color: context.palette.danger,
-                        ),
-                        const SizedBox(width: AppSpacing.xs),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Need urgent help?',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: context.palette.danger,
-                                ),
-                              ),
-                              Text(
-                                'View emergency guidance.',
-                                style: TextStyle(
-                                  fontSize: 12.5,
-                                  color: context.palette.danger.withValues(
-                                    alpha: 0.85,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.chevron_right,
-                          size: 18,
-                          color: context.palette.danger,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              UrgentHelpLink(onTap: () => context.push(RoutePaths.emergency)),
+            ],
+          ),
         ),
       ),
-    );
-  }
-
-  Widget _list(
-    BuildContext context,
-    List<MessageThread> threads,
-    Future<void> Function() onRefresh,
-  ) {
-    return RefreshIndicator(
-      onRefresh: onRefresh,
-      child: threads.isEmpty
-          ? LayoutBuilder(
-              builder: (context, constraints) => SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: SizedBox(
-                  height: constraints.maxHeight,
-                  child: const _EmptyThreads(),
-                ),
-              ),
-            )
-          : ListView.separated(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(AppSpacing.md),
-              itemCount: threads.length,
-              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.xs),
-              itemBuilder: (context, index) =>
-                  _ThreadCard(thread: threads[index]),
-            ),
     );
   }
 }
@@ -223,31 +81,25 @@ class _EmptyThreads extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 16),
+      decoration: BoxDecoration(
+        color: context.palette.surface,
+        border: Border.all(color: context.palette.line),
+        borderRadius: BorderRadius.circular(17),
+      ),
+      child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: context.palette.tintBlue,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.forum_outlined,
-                color: context.palette.accent,
-                size: 28,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
+            LcIcon(LcIcons.message, size: 36, color: context.palette.accent),
+            const SizedBox(height: 10),
             Text(
               'No messages yet',
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
                 color: context.palette.ink,
               ),
             ),
@@ -268,6 +120,15 @@ class _EmptyThreads extends StatelessWidget {
   }
 }
 
+/// The [LcIcons] for a conversation's topic.
+String _topicIcon(MessageTopic? topic) => switch (topic) {
+  MessageTopic.bookingPayments => LcIcons.card,
+  MessageTopic.onlineAppointment => LcIcons.video,
+  MessageTopic.clinicVisit => LcIcons.clinic,
+  MessageTopic.followUp => LcIcons.calendar,
+  null => LcIcons.message,
+};
+
 class _ThreadCard extends StatelessWidget {
   const _ThreadCard({required this.thread});
 
@@ -275,68 +136,15 @@ class _ThreadCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final palette = context.palette;
-    return Material(
-      color: palette.tintBlue,
-      borderRadius: BorderRadius.circular(AppRadius.card),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.card),
-        onTap: () => context.push('${RoutePaths.messageThread}/${thread.id}'),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: palette.elevated,
-                child: Icon(Icons.support_agent, color: palette.accent),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            thread.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: palette.ink,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          Formatters.relative(thread.updatedAt),
-                          style: TextStyle(
-                            fontSize: 11.5,
-                            color: palette.inkMuted,
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (thread.lastMessage != null)
-                      Text(
-                        thread.lastMessage!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: palette.inkMuted,
-                          height: 1.3,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+    return RowCard(
+      icon: _topicIcon(thread.topic),
+      title: thread.title,
+      subtitle: thread.lastMessage ?? 'No messages yet',
+      trailing: Text(
+        Formatters.relative(thread.updatedAt),
+        style: TextStyle(fontSize: 12, color: context.palette.inkMuted),
       ),
+      onTap: () => context.push('${RoutePaths.messageThread}/${thread.id}'),
     );
   }
 }
