@@ -1,6 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/health_records/domain/models/clinical_note.dart';
+import '../../features/health_records/domain/models/diagnostic_result.dart';
+import '../../features/health_records/domain/models/prescription.dart';
+import '../../features/health_records/domain/models/referral.dart';
+import '../../features/health_records/presentation/diagnostic_result_screen.dart';
+import '../../features/health_records/presentation/prescription_detail_screen.dart';
+import '../../features/health_records/presentation/record_detail_screen.dart';
+import '../../features/health_records/presentation/records_list_screen.dart';
+import '../../features/health_records/presentation/referral_detail_screen.dart';
 import '../../features/menopause/presentation/menopause_assessment_screen.dart';
 import '../../features/menopause/presentation/menopause_booking_screen.dart';
 import '../../features/menopause/presentation/menopause_hub_screen.dart';
@@ -343,6 +352,50 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'health-records',
                     builder: (context, state) => const HealthRecordsScreen(),
+                    routes: [
+                      GoRoute(
+                        path: 'list',
+                        redirect: _requires<RecordKind>(
+                          RoutePaths.healthRecords,
+                        ),
+                        builder: (context, state) =>
+                            RecordsListScreen(kind: state.extra! as RecordKind),
+                      ),
+                      GoRoute(
+                        path: 'note',
+                        redirect: _requires<ClinicalNote>(
+                          RoutePaths.healthRecords,
+                        ),
+                        builder: (context, state) => RecordDetailScreen(
+                          note: state.extra! as ClinicalNote,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'prescription',
+                        redirect: _requires<Prescription>(
+                          RoutePaths.healthRecords,
+                        ),
+                        builder: (context, state) => PrescriptionDetailScreen(
+                          prescription: state.extra! as Prescription,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'referral',
+                        redirect: _requires<Referral>(RoutePaths.healthRecords),
+                        builder: (context, state) => ReferralDetailScreen(
+                          referral: state.extra! as Referral,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'result',
+                        redirect: _requires<DiagnosticResult>(
+                          RoutePaths.healthRecords,
+                        ),
+                        builder: (context, state) => DiagnosticResultScreen(
+                          result: state.extra! as DiagnosticResult,
+                        ),
+                      ),
+                    ],
                   ),
                   GoRoute(
                     path: 'help',

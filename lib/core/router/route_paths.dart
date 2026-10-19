@@ -108,6 +108,16 @@ abstract final class RoutePaths {
 
   static const healthRecords = '/profile/health-records';
 
+  /// One kind of record (notes, prescriptions, referrals, results), with a
+  /// `RecordKind` passed as `extra`.
+  static const healthRecordsList = '/profile/health-records/list';
+
+  /// Record details, each with its model passed as `extra`.
+  static const clinicalNote = '/profile/health-records/note';
+  static const prescription = '/profile/health-records/prescription';
+  static const referral = '/profile/health-records/referral';
+  static const diagnosticResult = '/profile/health-records/result';
+
   static const helpAndSupport = '/profile/help';
 
   static const editProfile = '/profile/edit';

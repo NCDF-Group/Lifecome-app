@@ -46,7 +46,7 @@ void main() {
       );
 
       expect(find.byType(HealthRecordsScreen), findsOneWidget);
-      expect(find.text('No records yet'), findsOneWidget);
+      expect(find.text('Your records will appear here'), findsOneWidget);
       for (final invented in [
         'Sample records',
         'GP visit summary',

@@ -5,6 +5,7 @@ import 'package:lifecome_mobile/features/auth/data/auth_repository.dart';
 import 'package:lifecome_mobile/features/booking/application/booking_controller.dart';
 import 'package:lifecome_mobile/features/consultation/application/waiting_room_controller.dart';
 import 'package:lifecome_mobile/features/doctors/application/doctor_search_controller.dart';
+import 'package:lifecome_mobile/features/health_records/application/health_records_controller.dart';
 import 'package:lifecome_mobile/features/messaging/application/messaging_controller.dart';
 import 'package:lifecome_mobile/features/notifications/application/notifications_controller.dart';
 import 'package:lifecome_mobile/features/payer/application/payer_controller.dart';
@@ -12,6 +13,7 @@ import 'package:lifecome_mobile/features/profile/application/profile_controller.
 
 import 'fake_auth_repository.dart';
 import 'fake_booking_repositories.dart';
+import 'fake_health_records_repository.dart';
 import 'fake_messaging_repository.dart';
 import 'fake_notifications_repository.dart';
 import 'fake_payer_repository.dart';
@@ -29,6 +31,7 @@ class TestBackend {
   final consultation = FakeConsultationRepository();
   final messaging = FakeMessagingRepository();
   final payers = FakePayerRepository();
+  final records = FakeHealthRecordsRepository();
 
   List<Override> get overrides => [
     authRepositoryProvider.overrideWithValue(auth as AuthRepository),
@@ -40,5 +43,6 @@ class TestBackend {
     consultationRepositoryProvider.overrideWithValue(consultation),
     messagingRepositoryProvider.overrideWithValue(messaging),
     payerRepositoryProvider.overrideWithValue(payers),
+    healthRecordsRepositoryProvider.overrideWithValue(records),
   ];
 }
