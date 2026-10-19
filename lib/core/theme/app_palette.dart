@@ -115,6 +115,38 @@ class AppPalette extends ThemeExtension<AppPalette> {
     danger: AppColors.error,
     warning: AppColors.gold,
     amber: Color(0xFFB2690A),
+    tintBlue: Color(0xFFEDF7FF),
+    tintBlueFaint: Color(0xFFF1F8FF),
+    tintBlueStrong: Color(0xFFD8EEFF),
+    tintBlueLine: Color(0xFFD8EAFE),
+    tintGreen: Color(0xFFEDF9F0),
+    tintGreenFaint: Color(0xFFF0FAF4),
+    tintGreenStrong: Color(0xFFD9F3E1),
+    tintGreenLine: Color(0xFFE0F2E5),
+    tintRed: Color(0xFFFCEAEA),
+    tintRedStrong: Color(0xFFF7D7D4),
+    tintRedLine: Color(0xFFF2CFCB),
+    tintAmber: Color(0xFFFFF1D5),
+    logoAsset: 'assets/images/logo/lifecome-health-logo.png',
+  );
+
+  /// The light palette as it was before the screen-pack redesign. Only the
+  /// welcome screen uses it: that screen keeps its approved look while the
+  /// rest of the app moves to the new tokens. (Dark mode was not retuned, so
+  /// the welcome screen's dark look needs no frozen copy.)
+  static const welcomeLight = AppPalette(
+    isDark: false,
+    background: Color(0xFFFFFFFF),
+    surface: Color(0xFFF4F9FC),
+    elevated: Color(0xFFFFFFFF),
+    line: Color(0xFFD8E4EE),
+    ink: Color(0xFF0B2540),
+    inkMuted: Color(0xFF435A70),
+    accent: Color(0xFF0667B8),
+    positive: Color(0xFF2F7D00),
+    danger: AppColors.error,
+    warning: AppColors.gold,
+    amber: Color(0xFFB2690A),
     tintBlue: Color(0xFFE3EEFB),
     tintBlueFaint: Color(0xFFE8F4FC),
     tintBlueStrong: Color(0xFFDCEEFA),

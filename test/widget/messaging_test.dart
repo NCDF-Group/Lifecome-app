@@ -4,6 +4,7 @@ import 'package:lifecome_mobile/core/network/api_exception.dart';
 import 'package:lifecome_mobile/core/router/route_paths.dart';
 import 'package:lifecome_mobile/core/utils/formatters.dart';
 import 'package:lifecome_mobile/features/emergency/presentation/emergency_guidance_screen.dart';
+import 'package:lifecome_mobile/features/notifications/presentation/widgets/notifications_bell.dart';
 import 'package:lifecome_mobile/features/messaging/domain/models/message_thread.dart';
 import 'package:lifecome_mobile/features/messaging/presentation/message_threads_screen.dart';
 import 'package:lifecome_mobile/features/messaging/presentation/new_message_screen.dart';
@@ -502,7 +503,7 @@ void main() {
         overrides: backend.overrides,
       );
 
-      await tester.tap(find.byIcon(Icons.notifications_outlined));
+      await tester.tap(find.byType(NotificationsBell));
       await settle(tester);
       await tapText(tester, 'Sent you a Message');
 

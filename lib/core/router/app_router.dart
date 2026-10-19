@@ -258,6 +258,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) =>
             CarePlanScreen(appointment: state.extra as Appointment?),
       ),
+      // No longer a tab: Home's four service cards replaced it. Kept as a
+      // pushed screen until the Wellbeing hub takes over its content.
+      GoRoute(
+        path: RoutePaths.services,
+        builder: (context, state) => const ServicesScreen(),
+      ),
       GoRoute(
         path: RoutePaths.emergency,
         builder: (context, state) => const EmergencyGuidanceScreen(),
@@ -271,14 +277,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: RoutePaths.home,
                 builder: (context, state) => const DashboardScreen(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: RoutePaths.services,
-                builder: (context, state) => const ServicesScreen(),
               ),
             ],
           ),

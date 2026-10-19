@@ -87,10 +87,10 @@ class WellbeingService {
   final String? footerNote;
 }
 
-const _green = Color(0xFFEAF7E8);
-const _greenIcon = Color(0xFF2F7D00);
-const _blue = Color(0xFFE3EEFB);
-const _blueIcon = Color(0xFF0667B8);
+const _green = Color(0xFFEDF9F0);
+const _greenIcon = Color(0xFF128B36);
+const _blue = Color(0xFFEDF7FF);
+const _blueIcon = Color(0xFF0068F5);
 
 const wellbeingServices = [
   WellbeingService(
@@ -132,7 +132,7 @@ const wellbeingServices = [
     title: 'Healthy eating education',
     subtitle: 'Practical food choices for everyday life.',
     heroIcon: Icons.apple_outlined,
-    heroColor: Color(0xFF2F7D00),
+    heroColor: Color(0xFF128B36),
     heroImage: 'assets/images/wellbeing/healthy-eating.webp',
     // Her hair reaches the top of the photo, so crop from the bottom first.
     heroImageAlignment: Alignment(0, -0.6),
@@ -153,7 +153,7 @@ const wellbeingServices = [
     title: 'Stress management and relaxation',
     subtitle: 'Make space for everyday calm.',
     heroIcon: Icons.self_improvement_outlined,
-    heroColor: Color(0xFF2F7D00),
+    heroColor: Color(0xFF128B36),
     heroImage: 'assets/images/wellbeing/stress-management.webp',
     // The photo is very wide and she sits right of centre.
     heroImageAlignment: Alignment(0.5, 0),

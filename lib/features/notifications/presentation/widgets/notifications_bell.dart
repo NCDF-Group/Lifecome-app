@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/route_paths.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_palette.dart';
+import '../../../../core/widgets/media/lc_icons.dart';
 import '../../application/notifications_controller.dart';
 
 /// The bell in the top bar. The blue dot is there only when the backend says
@@ -22,32 +23,32 @@ class NotificationsBell extends ConsumerWidget {
       button: true,
       label: unread > 0 ? 'Notifications, $unread unread' : 'Notifications',
       child: Material(
-        color: context.palette.surface,
-        shape: const CircleBorder(),
+        color: context.palette.tintBlue,
+        borderRadius: BorderRadius.circular(12),
+        clipBehavior: Clip.antiAlias,
         child: InkWell(
-          customBorder: const CircleBorder(),
           onTap: () => context.push(RoutePaths.notifications),
           child: SizedBox(
-            width: 38,
-            height: 38,
+            width: 36,
+            height: 36,
             child: Stack(
               alignment: Alignment.center,
               children: [
                 ExcludeSemantics(
-                  child: Icon(
-                    Icons.notifications_outlined,
-                    size: 20,
+                  child: LcIcon(
+                    LcIcons.bell,
+                    size: 21,
                     color: context.palette.ink,
                   ),
                 ),
                 if (unread > 0)
                   Positioned(
-                    top: 8,
-                    right: 9,
+                    top: 5,
+                    right: 7,
                     child: Container(
                       key: const ValueKey('unread-dot'),
-                      width: 8,
-                      height: 8,
+                      width: 7,
+                      height: 7,
                       decoration: const BoxDecoration(
                         color: AppColors.blue,
                         shape: BoxShape.circle,

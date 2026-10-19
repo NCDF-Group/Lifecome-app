@@ -6,14 +6,36 @@ import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_typography.dart';
-import '../../../core/widgets/buttons/primary_button.dart';
-import '../../../core/widgets/layout/app_header_bar.dart';
+import '../../../core/country/app_country.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
+
+/// The brand blue and green this screen was approved with, from before the
+/// screen-pack redesign retuned [AppColors]. See [WelcomeScreen].
+const _welcomeBlue = Color(0xFF0667B8);
+const _welcomeGreen = Color(0xFF2F7D00);
 
 /// The welcome screen shown after the splash screen when there is no
 /// remembered session — the app's front door.
+///
+/// This screen keeps its approved look through the screen-pack redesign: it
+/// reads [AppPalette.welcomeLight] (the pre-redesign light palette) and draws
+/// its own header and buttons rather than the restyled shared ones.
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    if (theme.brightness == Brightness.dark) return const _WelcomeBody();
+    return Theme(
+      data: theme.copyWith(extensions: [AppPalette.welcomeLight]),
+      child: const _WelcomeBody(),
+    );
+  }
+}
+
+class _WelcomeBody extends StatelessWidget {
+  const _WelcomeBody();
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +48,7 @@ class WelcomeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const AppHeaderBar(showBell: false),
+                const _WelcomeHeader(),
                 const SizedBox(height: 20),
                 const FadeIn(child: _HeroPhotos()),
                 const SizedBox(height: 24),
@@ -102,10 +124,29 @@ class WelcomeScreen extends StatelessWidget {
                 const SizedBox(height: 28),
                 FadeIn(
                   delay: const Duration(milliseconds: 180),
-                  child: PrimaryButton(
-                    label: 'Create an account',
-                    icon: Icons.arrow_forward,
-                    onPressed: () => context.push(RoutePaths.createAccount),
+                  child: SizedBox(
+                    height: 52,
+                    child: FilledButton(
+                      onPressed: () => context.push(RoutePaths.createAccount),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: _welcomeBlue,
+                        foregroundColor: AppColors.white,
+                        shape: const StadiumBorder(),
+                        textStyle: const TextStyle(
+                          fontFamily: appFontFamily,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Create an account'),
+                          SizedBox(width: 8),
+                          Icon(Icons.arrow_forward, size: 20),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -276,7 +317,7 @@ class _ArcPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.blue.withValues(alpha: 0.45)
+      ..color = _welcomeBlue.withValues(alpha: 0.45)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.6
       ..strokeCap = StrokeCap.round;
@@ -341,7 +382,7 @@ class _VideoBadge extends StatelessWidget {
       width: 34,
       height: 34,
       decoration: const BoxDecoration(
-        color: AppColors.blue,
+        color: _welcomeBlue,
         shape: BoxShape.circle,
       ),
       child: const Icon(Icons.videocam, color: AppColors.white, size: 16),
@@ -358,7 +399,7 @@ class _PlusBadge extends StatelessWidget {
       width: 38,
       height: 38,
       decoration: BoxDecoration(
-        color: AppColors.greenStrong,
+        color: _welcomeGreen,
         shape: BoxShape.circle,
         border: Border.all(color: context.palette.background, width: 3),
       ),
@@ -398,6 +439,51 @@ class _FeatureIcon extends StatelessWidget {
             fontSize: 13,
             fontWeight: FontWeight.w600,
             color: context.palette.ink,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// The logo and "UK" chip, as the shared header drew them before the
+/// screen-pack redesign.
+class _WelcomeHeader extends StatelessWidget {
+  const _WelcomeHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Image.asset(
+          context.palette.logoAsset,
+          height: 24,
+          semanticLabel: 'LifeCome Health',
+        ),
+        const Spacer(),
+        Container(
+          decoration: BoxDecoration(
+            color: context.palette.surface,
+            borderRadius: BorderRadius.circular(999),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                AppCountry.unitedKingdom.flag,
+                style: const TextStyle(fontSize: 15),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                AppCountry.unitedKingdom.name,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: context.palette.ink,
+                ),
+              ),
+            ],
           ),
         ),
       ],

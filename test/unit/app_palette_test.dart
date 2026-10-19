@@ -14,7 +14,7 @@ double _contrast(Color a, Color b) {
 
 void main() {
   group('AppPalette.light', () {
-    test('reproduces the original brand palette exactly', () {
+    test('uses the screen pack tokens exactly', () {
       const p = AppPalette.light;
       expect(p.isDark, isFalse);
       expect(p.background, AppColors.white);
@@ -27,10 +27,10 @@ void main() {
       expect(p.positive, AppColors.greenStrong);
       expect(p.danger, AppColors.error);
       expect(p.warning, AppColors.gold);
-      expect(p.tintBlue, const Color(0xFFE3EEFB));
-      expect(p.tintGreen, const Color(0xFFEAF7E8));
+      expect(p.tintBlue, const Color(0xFFEDF7FF));
+      expect(p.tintGreen, const Color(0xFFEDF9F0));
       expect(p.tintRed, const Color(0xFFFCEAEA));
-      expect(p.tintAmber, const Color(0xFFFBEBD4));
+      expect(p.tintAmber, const Color(0xFFFFF1D5));
     });
 
     test('uses the full-colour logo', () {
@@ -107,8 +107,8 @@ void main() {
       expect(AppPalette.light.adapt(unrelated), unrelated);
       expect(AppPalette.light.adapt(AppColors.blue), AppColors.blue);
       expect(
-        AppPalette.light.adapt(const Color(0xFFE3EEFB)),
-        const Color(0xFFE3EEFB),
+        AppPalette.light.adapt(const Color(0xFFEDF7FF)),
+        const Color(0xFFEDF7FF),
       );
     });
 
@@ -117,10 +117,10 @@ void main() {
       expect(d.adapt(AppColors.blue), d.accent);
       expect(d.adapt(AppColors.greenStrong), d.positive);
       expect(d.adapt(AppColors.error), d.danger);
-      expect(d.adapt(const Color(0xFFE3EEFB)), d.tintBlue);
-      expect(d.adapt(const Color(0xFFEAF7E8)), d.tintGreen);
+      expect(d.adapt(const Color(0xFFEDF7FF)), d.tintBlue);
+      expect(d.adapt(const Color(0xFFEDF9F0)), d.tintGreen);
       expect(d.adapt(const Color(0xFFFCEAEA)), d.tintRed);
-      expect(d.adapt(const Color(0xFFFBEBD4)), d.tintAmber);
+      expect(d.adapt(const Color(0xFFFFF1D5)), d.tintAmber);
     });
 
     test('passes colours outside the design system through unchanged', () {

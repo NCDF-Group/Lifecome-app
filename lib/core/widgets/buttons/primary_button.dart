@@ -4,8 +4,7 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 
-/// The filled blue call-to-action button, matching the website's primary
-/// `ButtonLink` variant. Shows a small spinner in place of the label while
+/// The filled blue call-to-action button (the screen pack's `.btn`). Shows a small spinner in place of the label while
 /// [loading] is true, and disables itself so a slow request cannot be
 /// triggered twice.
 class PrimaryButton extends StatelessWidget {
@@ -24,7 +23,7 @@ class PrimaryButton extends StatelessWidget {
   final IconData? icon;
 
   /// True for a square-cornered button (the sign-up flow) instead of the
-  /// usual pill shape.
+  /// usual rounded rectangle.
   final bool squared;
 
   @override
@@ -33,7 +32,7 @@ class PrimaryButton extends StatelessWidget {
 
     return SizedBox(
       width: double.infinity,
-      height: 52,
+      height: 50,
       child: FilledButton(
         onPressed: enabled ? onPressed : null,
         style: FilledButton.styleFrom(
@@ -41,11 +40,11 @@ class PrimaryButton extends StatelessWidget {
           disabledBackgroundColor: AppColors.blue.withValues(alpha: 0.5),
           foregroundColor: AppColors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(squared ? 0 : AppRadius.pill),
+            borderRadius: BorderRadius.circular(squared ? 0 : AppRadius.button),
           ),
           textStyle: const TextStyle(
             fontFamily: appFontFamily,
-            fontSize: 16,
+            fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
         ),

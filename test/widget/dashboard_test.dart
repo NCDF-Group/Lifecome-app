@@ -44,7 +44,7 @@ void main() {
     expect(find.textContaining('GP Consultation ·'), findsOneWidget);
     expect(find.text('with Dr Sam Okoro'), findsOneWidget);
 
-    await tester.tap(find.text('Your next visit'));
+    await tester.tap(find.textContaining('GP Consultation ·'));
     await settle(tester);
     expect(find.byType(ManageAppointmentScreen), findsOneWidget);
 

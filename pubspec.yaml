@@ -41,7 +41,7 @@ flutter:
     - assets/images/welcome/
     - assets/images/home/
     - assets/images/wellbeing/
-    - assets/icons/nav/
+    - assets/icons/lc/
 
   # Manrope, bundled so every weight is a real font file and the app never
   # waits on a font CDN. Static instances of Google Fonts' Manrope[wght].ttf

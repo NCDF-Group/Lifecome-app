@@ -5,7 +5,6 @@ import 'package:lifecome_mobile/features/booking/presentation/my_visits_screen.d
 import 'package:lifecome_mobile/features/dashboard/presentation/dashboard_screen.dart';
 import 'package:lifecome_mobile/features/messaging/presentation/message_threads_screen.dart';
 import 'package:lifecome_mobile/features/profile/presentation/patient_profile_screen.dart';
-import 'package:lifecome_mobile/features/services/presentation/services_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/pump_app.dart';
@@ -27,7 +26,6 @@ void main() {
   final backArrow = find.byIcon(Icons.arrow_back_ios_new);
 
   for (final (name, path, screen) in [
-    ('Services', RoutePaths.services, ServicesScreen),
     ('Visits', RoutePaths.visits, MyVisitsScreen),
     ('Messages', RoutePaths.messages, MessageThreadsScreen),
     ('Profile', RoutePaths.profile, PatientProfileScreen),

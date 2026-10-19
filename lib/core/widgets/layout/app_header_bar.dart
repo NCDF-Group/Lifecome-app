@@ -6,9 +6,9 @@ import '../../router/route_paths.dart';
 import '../../theme/app_palette.dart';
 import 'app_bar_back.dart';
 
-/// The header shared by Home, Services and the screens reached from them: an
-/// optional back arrow, the logo, a static "UK" chip, and the notification
-/// bell (see [NotificationsBell]).
+/// The header shared by Home and the screens reached from it (the screen
+/// pack's `.app-header`): an optional back arrow, the logo, a static "UK"
+/// chip, and the notification bell (see [NotificationsBell]).
 ///
 /// The back arrow goes to the previous screen, or to [backFallback] when
 /// nothing is behind this one, so it always does something. Pass [onBack] only
@@ -40,7 +40,7 @@ class AppHeaderBar extends StatelessWidget {
         ],
         Image.asset(
           context.palette.logoAsset,
-          height: 24,
+          height: 28,
           semanticLabel: 'LifeCome Health',
         ),
         const Spacer(),
@@ -56,29 +56,25 @@ class _CountryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: context.palette.surface,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            AppCountry.unitedKingdom.flag,
-            style: const TextStyle(fontSize: 15),
+    return Semantics(
+      label: AppCountry.unitedKingdom.name,
+      excludeSemantics: true,
+      child: Container(
+        decoration: BoxDecoration(
+          color: context.palette.elevated,
+          border: Border.all(color: context.palette.tintBlueLine),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 9),
+        child: Text(
+          'UK',
+          style: TextStyle(
+            fontSize: 12,
+            height: 1,
+            fontWeight: FontWeight.w600,
+            color: context.palette.ink,
           ),
-          const SizedBox(width: 4),
-          Text(
-            AppCountry.unitedKingdom.name,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: context.palette.ink,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -9,6 +9,7 @@ import 'package:lifecome_mobile/features/booking/presentation/my_visits_screen.d
 import 'package:lifecome_mobile/features/notifications/application/notifications_controller.dart';
 import 'package:lifecome_mobile/features/notifications/presentation/notifications_screen.dart';
 import 'package:lifecome_mobile/features/profile/application/profile_controller.dart';
+import 'package:lifecome_mobile/features/notifications/presentation/widgets/notifications_bell.dart';
 import 'package:lifecome_mobile/features/services/presentation/services_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -35,7 +36,7 @@ void main() {
     ];
   });
 
-  final bell = find.byIcon(Icons.notifications_outlined);
+  final bell = find.byType(NotificationsBell);
   final dot = find.byKey(const ValueKey('unread-dot'));
 
   Future<void> openBell(WidgetTester tester) async {

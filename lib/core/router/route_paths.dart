@@ -57,7 +57,8 @@ abstract final class RoutePaths {
   /// What to do in an emergency (999, NHS 111).
   static const emergency = '/emergency';
 
-  /// Services tab — Explore our services (GP care + everyday wellbeing).
+  /// Explore our services (GP care + everyday wellbeing). Was a tab before
+  /// the screen-pack redesign; now a pushed screen.
   static const services = '/services';
 
   /// A wellbeing service's detail page (see
