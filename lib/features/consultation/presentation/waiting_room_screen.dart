@@ -117,8 +117,8 @@ class _WaitingRoomScreenState extends ConsumerState<WaitingRoomScreen> {
             RowCard(
               icon: LcIcons.message,
               title: 'Trouble connecting?',
-              subtitle: 'Message the care team',
-              onTap: () => context.go(RoutePaths.messages),
+              subtitle: 'Checks to try, or message the care team',
+              onTap: () => context.push(RoutePaths.connectionHelp),
             ),
             const SizedBox(height: 4),
             GhostButton(

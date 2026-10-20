@@ -19,9 +19,9 @@ class LifeComeLiveApp extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
 
     // The backend stopped accepting the saved sign-in (it expired): the
-    // session has already been cleared, so go to sign in.
+    // session has already been cleared, so say so, then sign in again.
     ref.listen<int>(sessionExpiredProvider, (previous, next) {
-      router.go(RoutePaths.signIn);
+      router.go(RoutePaths.sessionEnded);
     });
 
     return MaterialApp.router(

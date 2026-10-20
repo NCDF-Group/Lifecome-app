@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/network/idempotency_key_generator.dart';
 import '../../../core/router/route_paths.dart';
+import '../../../core/widgets/buttons/ghost_button.dart';
+import '../../../core/widgets/buttons/secondary_button.dart';
 import '../../../core/router/safe_back.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_radius.dart';
@@ -57,6 +59,9 @@ class _VerifyHmoMembershipScreenState
     return error == null;
   }
 
+  /// The insurer could not verify the last number tried.
+  bool _notVerified = false;
+
   Future<void> _verify() async {
     if (_loading) return;
     setState(() => _submitted = true);
@@ -82,9 +87,10 @@ class _VerifyHmoMembershipScreenState
     } on ApiException catch (error) {
       if (!mounted) return;
       if (error.code == 'MEMBERSHIP_NOT_VERIFIED') {
-        setState(
-          () => _memberError = membershipErrorMessage(error, widget.payer.name),
-        );
+        setState(() {
+          _memberError = membershipErrorMessage(error, widget.payer.name);
+          _notVerified = true;
+        });
       } else if (error.code == 'PROFILE_REQUIRED') {
         await promptCompleteProfile(context);
       } else {
@@ -187,10 +193,24 @@ class _VerifyHmoMembershipScreenState
             const SizedBox(height: AppSpacing.md),
             PrimaryButton(
               label: 'Verify membership',
-              icon: Icons.arrow_forward,
               loading: _loading,
               onPressed: _verify,
             ),
+            // "Policy not verified" (screen pack 146): after a failed check,
+            // the ways forward besides correcting the number above.
+            if (_notVerified) ...[
+              const SizedBox(height: 10),
+              SecondaryButton(
+                label: 'Choose a different plan',
+                onPressed: () =>
+                    context.goBack(fallback: RoutePaths.payerSelectHmo),
+              ),
+              const SizedBox(height: 4),
+              GhostButton(
+                label: 'Contact support',
+                onPressed: () => context.push(RoutePaths.newMessage),
+              ),
+            ],
             const SizedBox(height: AppSpacing.sm),
             const InfoBanner(
               message:

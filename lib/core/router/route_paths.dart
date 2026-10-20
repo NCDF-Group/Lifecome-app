@@ -336,6 +336,13 @@ abstract final class RoutePaths {
   /// `BookingSelection`.
   static const consultationCall = '/consultation/call';
 
+  /// "Let's get you connected" (screen pack 144), from the waiting room.
+  static const connectionHelp = '/consultation/connection-help';
+
+  /// "Your session has ended" (screen pack 149), shown when the backend
+  /// stops accepting the saved sign-in.
+  static const sessionEnded = '/session-ended';
+
   /// Blueprint view 20 — Care Plan & Visit Summary. Optionally reached with
   /// a `BookingSelection` passed as `extra` (a just-finished visit); with
   /// none, shows the empty state instead.

@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
+import '../../../core/router/safe_back.dart';
+import '../../../core/widgets/media/lc_icons.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
-import '../../../core/widgets/feedback/empty_state.dart';
+import '../../../core/widgets/feedback/recovery_view.dart';
 import '../../../core/widgets/feedback/error_state.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/feedback/loading_indicator.dart';
@@ -153,12 +155,16 @@ class _ChooseAppointmentTimeScreenState
 
   Widget _times(BuildContext context, List<AvailabilitySlot> all) {
     if (all.isEmpty) {
-      return const EmptyState(
-        icon: Icons.event_busy_outlined,
+      return RecoveryView(
+        icon: LcIcons.calendar,
         title: 'No times available',
         message:
             'This clinician has no free times right now. Try another '
-            'clinician, or check back later.',
+            'clinician or appointment type, or check back later.',
+        primaryLabel: 'Choose another GP',
+        onPrimary: () => context.goBack(fallback: RoutePaths.gp),
+        ghostLabel: 'Contact support',
+        onGhost: () => context.push(RoutePaths.newMessage),
       );
     }
 

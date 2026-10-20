@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/common_states/presentation/session_ended_screen.dart';
+import '../../features/consultation/presentation/connection_help_screen.dart';
 import '../../features/insurance/domain/insurance_models.dart';
 import '../../features/insurance/presentation/insurance_claims_screens.dart';
 import '../../features/insurance/presentation/insurance_hub_screens.dart';
@@ -348,6 +350,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.wellbeingCheckIn,
         builder: (context, state) => const WellbeingCheckInScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.sessionEnded,
+        builder: (context, state) => const SessionEndedScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.connectionHelp,
+        builder: (context, state) => const ConnectionHelpScreen(),
       ),
       GoRoute(
         path: RoutePaths.insurance,

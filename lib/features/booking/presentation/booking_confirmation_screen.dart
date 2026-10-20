@@ -8,6 +8,7 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/buttons/secondary_button.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
+import '../../../core/widgets/feedback/recovery_view.dart';
 import '../../../core/widgets/feedback/status_chip.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../../core/widgets/layout/detail_list.dart';
@@ -71,6 +72,12 @@ class BookingConfirmationScreen extends ConsumerWidget {
       };
     }
 
+    final paymentFailed =
+        !confirmed &&
+        plan == null &&
+        payment != null &&
+        payment.status == PaymentStatus.failed;
+
     final (title, subtitle, badge) = switch (appointment.status) {
       BookingStatus.confirmed => (
         "You're booked in",
@@ -103,8 +110,29 @@ class BookingConfirmationScreen extends ConsumerWidget {
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 25),
           children: [
             const AppHeaderBar(showBack: true, backFallback: RoutePaths.visits),
-            if (confirmed) const SuccessIcon() else const SizedBox(height: 18),
-            ScreenTitle(title: title, subtitle: subtitle),
+            if (paymentFailed)
+              RecoveryView(
+                icon: LcIcons.card,
+                title: 'Payment wasn’t completed',
+                message:
+                    'Your appointment isn’t confirmed by this payment attempt. '
+                    'Check again in a moment, or book again and choose how to '
+                    'pay.',
+                primaryLabel: 'Check status',
+                onPrimary: () =>
+                    ref.read(appointmentsProvider.notifier).refresh(),
+                secondaryLabel: 'Book again',
+                onSecondary: () => context.push(RoutePaths.gp),
+                ghostLabel: 'Contact support',
+                onGhost: () => context.push(RoutePaths.newMessage),
+              )
+            else ...[
+              if (confirmed)
+                const SuccessIcon()
+              else
+                const SizedBox(height: 18),
+              ScreenTitle(title: title, subtitle: subtitle),
+            ],
             const SizedBox(height: 12),
             badge,
             const SizedBox(height: 8),
