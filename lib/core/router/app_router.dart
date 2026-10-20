@@ -1,6 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/insurance/domain/insurance_models.dart';
+import '../../features/insurance/presentation/insurance_claims_screens.dart';
+import '../../features/insurance/presentation/insurance_hub_screens.dart';
+import '../../features/insurance/presentation/insurance_policy_screens.dart';
 import '../../features/shop/domain/shop_models.dart';
 import '../../features/shop/presentation/shop_checkout_screens.dart';
 import '../../features/shop/presentation/shop_order_screens.dart';
@@ -344,6 +348,91 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.wellbeingCheckIn,
         builder: (context, state) => const WellbeingCheckInScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.insurance,
+        builder: (context, state) => const InsuranceHubScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.insuranceProducts,
+        builder: (context, state) => const InsuranceProductsScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.insurancePolicies,
+        builder: (context, state) => const InsurancePoliciesScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.insuranceCover,
+        builder: (context, state) => const InsuranceCoverScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.insuranceClaims,
+        builder: (context, state) => const InsuranceClaimsScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.insuranceClaimStart,
+        builder: (context, state) => const InsuranceClaimStartScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.insuranceSupport,
+        builder: (context, state) => const InsuranceSupportScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.insuranceProduct,
+        redirect: _requires<InsuranceCategory>(RoutePaths.insurance),
+        builder: (context, state) =>
+            InsuranceProductScreen(category: state.extra! as InsuranceCategory),
+      ),
+      GoRoute(
+        path: RoutePaths.insuranceEnquiry,
+        redirect: _requires<InsuranceCategory>(RoutePaths.insurance),
+        builder: (context, state) =>
+            InsuranceEnquiryScreen(category: state.extra! as InsuranceCategory),
+      ),
+      GoRoute(
+        path: RoutePaths.insuranceEnquirySent,
+        redirect: _requires<InsuranceEnquiry>(RoutePaths.insurance),
+        builder: (context, state) => InsuranceEnquirySentScreen(
+          enquiry: state.extra! as InsuranceEnquiry,
+        ),
+      ),
+      GoRoute(
+        path: RoutePaths.insurancePolicy,
+        redirect: _requires<LinkedPlan>(RoutePaths.insurance),
+        builder: (context, state) =>
+            InsurancePolicyScreen(plan: state.extra! as LinkedPlan),
+      ),
+      GoRoute(
+        path: RoutePaths.insuranceDocuments,
+        redirect: _requires<LinkedPlan>(RoutePaths.insurance),
+        builder: (context, state) =>
+            InsuranceDocumentsScreen(plan: state.extra! as LinkedPlan),
+      ),
+      GoRoute(
+        path: RoutePaths.insuranceDocument,
+        redirect: _requires<InsuranceDocument>(RoutePaths.insurance),
+        builder: (context, state) => InsuranceDocumentScreen(
+          document: state.extra! as InsuranceDocument,
+        ),
+      ),
+      GoRoute(
+        path: RoutePaths.insuranceClaim,
+        redirect: _requires<ClaimEnquiry>(RoutePaths.insurance),
+        builder: (context, state) =>
+            InsuranceClaimScreen(claim: state.extra! as ClaimEnquiry),
+      ),
+      GoRoute(
+        path: RoutePaths.insuranceClaimSent,
+        redirect: _requires<ClaimEnquiry>(RoutePaths.insurance),
+        builder: (context, state) =>
+            InsuranceClaimSentScreen(claim: state.extra! as ClaimEnquiry),
+      ),
+      GoRoute(
+        path: RoutePaths.insuranceSupportSent,
+        redirect: _requires<InsuranceSupportEnquiry>(RoutePaths.insurance),
+        builder: (context, state) => InsuranceSupportSentScreen(
+          enquiry: state.extra! as InsuranceSupportEnquiry,
+        ),
       ),
       GoRoute(
         path: RoutePaths.shop,

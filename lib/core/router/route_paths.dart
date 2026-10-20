@@ -91,6 +91,42 @@ abstract final class RoutePaths {
   static const wellbeingPlan = '/wellbeing/plan';
   static const wellbeingCheckIn = '/wellbeing/check-in';
 
+  /// Insurance hub (screen pack 117) and its screens (118-141). Linking a
+  /// plan and checking cover use the real payer flow; enquiries, claims and
+  /// support are in-session preview data.
+  static const insurance = '/insurance';
+  static const insuranceProducts = '/insurance/products';
+
+  /// One category, with an `InsuranceCategory` passed as `extra`.
+  static const insuranceProduct = '/insurance/product';
+
+  /// The enquiry, with an `InsuranceCategory` passed as `extra`.
+  static const insuranceEnquiry = '/insurance/enquiry';
+
+  /// The finished enquiry, with an `InsuranceEnquiry` passed as `extra`.
+  static const insuranceEnquirySent = '/insurance/enquiry-sent';
+  static const insurancePolicies = '/insurance/policies';
+
+  /// A linked plan, with a `LinkedPlan` passed as `extra`.
+  static const insurancePolicy = '/insurance/policy';
+
+  /// A linked plan's documents, with a `LinkedPlan` passed as `extra`.
+  static const insuranceDocuments = '/insurance/documents';
+
+  /// One document, with an `InsuranceDocument` passed as `extra`.
+  static const insuranceDocument = '/insurance/document';
+  static const insuranceCover = '/insurance/cover';
+  static const insuranceClaims = '/insurance/claims';
+  static const insuranceClaimStart = '/insurance/claim-start';
+
+  /// A claim enquiry, with a `ClaimEnquiry` passed as `extra`.
+  static const insuranceClaim = '/insurance/claim';
+  static const insuranceClaimSent = '/insurance/claim-sent';
+  static const insuranceSupport = '/insurance/support';
+
+  /// The support enquiry, with an `InsuranceSupportEnquiry` as `extra`.
+  static const insuranceSupportSent = '/insurance/support-sent';
+
   /// Wellbeing Shop (screen pack 105-116). Preview data until it has a
   /// backend.
   static const shop = '/shop';

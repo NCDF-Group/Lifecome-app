@@ -60,6 +60,13 @@ class MyBenefitsScreen extends ConsumerWidget {
               subtitle: 'Activate a benefit from your employer',
               onTap: () => context.push(RoutePaths.activateAccess),
             ),
+            RowCard(
+              icon: LcIcons.shield,
+              title: 'Insurance',
+              subtitle: 'Policies, cover checks and claims',
+              tone: RowCardTone.mint,
+              onTap: () => context.push(RoutePaths.insurance),
+            ),
             const SectionHeader(title: 'Health plans'),
             const SizedBox(height: 6),
             if (plans.isEmpty)

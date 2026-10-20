@@ -7,7 +7,6 @@ import '../../../core/router/route_paths.dart';
 import '../../../core/services/session_store.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/utils/formatters.dart';
-import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../../core/widgets/layout/screen_title.dart';
@@ -22,8 +21,7 @@ import '../../profile/application/profile_controller.dart';
 /// four services (GP, Care, Wellbeing, Insurance), the next step (the next
 /// real visit, or booking one), shared shortcuts and urgent help.
 ///
-/// GP, Care and Wellbeing open their hubs; Insurance says it is coming
-/// soon.
+/// Each of the four service cards opens its hub.
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
@@ -94,8 +92,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               onGp: _openGp,
               onCare: () => context.push(RoutePaths.care),
               onWellbeing: () => context.push(RoutePaths.wellbeing),
-              onInsurance: () =>
-                  showComingSoonPopup(context, feature: 'Insurance'),
+              onInsurance: () => context.push(RoutePaths.insurance),
             ),
             if (next != null) ...[
               const SectionHeader(title: 'Your next visit'),
