@@ -1,6 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/shop/domain/shop_models.dart';
+import '../../features/shop/presentation/shop_checkout_screens.dart';
+import '../../features/shop/presentation/shop_order_screens.dart';
+import '../../features/shop/presentation/shop_screens.dart';
 import '../../features/wellbeing/domain/wellbeing_models.dart';
 import '../../features/wellbeing/presentation/wellbeing_booking_screens.dart';
 import '../../features/wellbeing/presentation/wellbeing_screens.dart';
@@ -340,6 +344,66 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.wellbeingCheckIn,
         builder: (context, state) => const WellbeingCheckInScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.shop,
+        builder: (context, state) => const ShopScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.shopBasket,
+        builder: (context, state) => const ShopBasketScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.shopDelivery,
+        builder: (context, state) => const ShopDeliveryScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.shopPayment,
+        builder: (context, state) => const ShopPaymentScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.shopReview,
+        builder: (context, state) => const ShopReviewScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.shopOrders,
+        builder: (context, state) => const ShopOrdersScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.shopProduct,
+        redirect: _requires<ShopProduct>(RoutePaths.shop),
+        builder: (context, state) =>
+            ShopProductScreen(product: state.extra! as ShopProduct),
+      ),
+      GoRoute(
+        path: RoutePaths.shopConfirmed,
+        redirect: _requires<ShopOrder>(RoutePaths.shop),
+        builder: (context, state) =>
+            ShopConfirmedScreen(order: state.extra! as ShopOrder),
+      ),
+      GoRoute(
+        path: RoutePaths.shopOrder,
+        redirect: _requires<ShopOrder>(RoutePaths.shop),
+        builder: (context, state) =>
+            ShopOrderScreen(order: state.extra! as ShopOrder),
+      ),
+      GoRoute(
+        path: RoutePaths.shopTracking,
+        redirect: _requires<ShopOrder>(RoutePaths.shop),
+        builder: (context, state) =>
+            ShopTrackingScreen(order: state.extra! as ShopOrder),
+      ),
+      GoRoute(
+        path: RoutePaths.shopReturn,
+        redirect: _requires<ShopOrder>(RoutePaths.shop),
+        builder: (context, state) =>
+            ShopReturnScreen(order: state.extra! as ShopOrder),
+      ),
+      GoRoute(
+        path: RoutePaths.shopReturnSent,
+        redirect: _requires<ShopReturnRequest>(RoutePaths.shop),
+        builder: (context, state) =>
+            ShopReturnSentScreen(request: state.extra! as ShopReturnRequest),
       ),
       GoRoute(
         path: RoutePaths.care,

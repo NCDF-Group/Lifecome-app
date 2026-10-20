@@ -7,7 +7,6 @@ import '../../../core/theme/app_palette.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/buttons/ghost_button.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
-import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/layout/detail_list.dart';
 import '../../../core/widgets/layout/screen_title.dart';
@@ -51,7 +50,7 @@ class WellbeingHubScreen extends ConsumerWidget {
           title: 'Wellbeing Shop',
           subtitle: 'Products for your everyday routine',
           tone: RowCardTone.mint,
-          onTap: () => showComingSoonPopup(context, feature: 'Wellbeing Shop'),
+          onTap: () => context.push(RoutePaths.shop),
         ),
         const SectionHeader(title: 'Your wellbeing'),
         RowCard(

@@ -91,6 +91,29 @@ abstract final class RoutePaths {
   static const wellbeingPlan = '/wellbeing/plan';
   static const wellbeingCheckIn = '/wellbeing/check-in';
 
+  /// Wellbeing Shop (screen pack 105-116). Preview data until it has a
+  /// backend.
+  static const shop = '/shop';
+
+  /// One product, with a `ShopProduct` passed as `extra`.
+  static const shopProduct = '/shop/product';
+  static const shopBasket = '/shop/basket';
+  static const shopDelivery = '/shop/delivery';
+  static const shopPayment = '/shop/payment';
+  static const shopReview = '/shop/review';
+
+  /// The placed order, with a `ShopOrder` passed as `extra`.
+  static const shopConfirmed = '/shop/confirmed';
+  static const shopOrders = '/shop/orders';
+
+  /// Order screens below take a `ShopOrder` as `extra`.
+  static const shopOrder = '/shop/order';
+  static const shopTracking = '/shop/tracking';
+  static const shopReturn = '/shop/return';
+
+  /// The return request, with a `ShopReturnRequest` passed as `extra`.
+  static const shopReturnSent = '/shop/return-sent';
+
   /// Professional Care hub (screen pack 069) and its screens (070-090).
   /// Care runs on in-session preview data until it has a backend.
   static const care = '/care';
