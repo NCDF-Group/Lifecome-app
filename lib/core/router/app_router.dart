@@ -1,6 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/wellbeing/domain/wellbeing_models.dart';
+import '../../features/wellbeing/presentation/wellbeing_booking_screens.dart';
+import '../../features/wellbeing/presentation/wellbeing_screens.dart';
+import '../../features/wellbeing/presentation/wellbeing_session_screens.dart';
 import '../../features/care/domain/care_models.dart';
 import '../../features/care/presentation/care_hub_screens.dart';
 import '../../features/care/presentation/care_journey_screens.dart';
@@ -77,9 +81,6 @@ import '../../features/payer/presentation/verify_hmo_membership_screen.dart';
 import '../../features/profile/presentation/edit_profile_screen.dart';
 import '../../features/profile/presentation/patient_profile_screen.dart';
 import '../../features/profile/presentation/privacy_sharing_screen.dart';
-import '../../features/services/domain/models/wellbeing_service.dart';
-import '../../features/services/presentation/services_screen.dart';
-import '../../features/services/presentation/wellbeing_service_screen.dart';
 import '../../features/splash/presentation/splash_screen.dart';
 import '../../features/support/presentation/help_centre_screen.dart';
 import '../../features/welcome/presentation/welcome_screen.dart';
@@ -209,11 +210,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             BookingLocationScreen(selection: state.extra! as BookingSelection),
       ),
       GoRoute(
-        path: RoutePaths.wellbeingService,
-        builder: (context, state) =>
-            WellbeingServiceScreen(service: state.extra! as WellbeingService),
-      ),
-      GoRoute(
         path: RoutePaths.doctorsFindADoctor,
         redirect: _requires<BookingSelection>(RoutePaths.chooseAccess),
         builder: (context, state) =>
@@ -284,12 +280,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) =>
             CarePlanScreen(appointment: state.extra as Appointment?),
       ),
-      // No longer a tab: Home's four service cards replaced it. Kept as a
-      // pushed screen until the Wellbeing hub takes over its content.
-      GoRoute(
-        path: RoutePaths.services,
-        builder: (context, state) => const ServicesScreen(),
-      ),
       GoRoute(
         path: RoutePaths.gp,
         builder: (context, state) => const GpHubScreen(),
@@ -299,6 +289,57 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         redirect: _requires<BookingStart>(RoutePaths.gp),
         builder: (context, state) =>
             GpEligibilityScreen(start: state.extra! as BookingStart),
+      ),
+      GoRoute(
+        path: RoutePaths.wellbeing,
+        builder: (context, state) => const WellbeingHubScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.wellbeingOffer,
+        redirect: _requires<WellbeingOffer>(RoutePaths.wellbeing),
+        builder: (context, state) =>
+            WellbeingOfferScreen(offer: state.extra! as WellbeingOffer),
+      ),
+      GoRoute(
+        path: RoutePaths.wellbeingPractitioner,
+        redirect: _requires<WellbeingOffer>(RoutePaths.wellbeing),
+        builder: (context, state) =>
+            WellbeingPractitionerScreen(offer: state.extra! as WellbeingOffer),
+      ),
+      GoRoute(
+        path: RoutePaths.wellbeingSlots,
+        builder: (context, state) =>
+            WellbeingSlotsScreen(offer: state.extra as WellbeingOffer?),
+      ),
+      GoRoute(
+        path: RoutePaths.wellbeingReview,
+        redirect: _requires<WellbeingBookingDraft>(RoutePaths.wellbeing),
+        builder: (context, state) =>
+            WellbeingReviewScreen(draft: state.extra! as WellbeingBookingDraft),
+      ),
+      GoRoute(
+        path: RoutePaths.wellbeingConfirmed,
+        builder: (context, state) => const WellbeingConfirmedScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.wellbeingSession,
+        builder: (context, state) => const WellbeingSessionScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.wellbeingCancel,
+        builder: (context, state) => const WellbeingCancelScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.wellbeingCall,
+        builder: (context, state) => const WellbeingCallScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.wellbeingPlan,
+        builder: (context, state) => const WellbeingPlanScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.wellbeingCheckIn,
+        builder: (context, state) => const WellbeingCheckInScreen(),
       ),
       GoRoute(
         path: RoutePaths.care,

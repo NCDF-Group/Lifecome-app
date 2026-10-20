@@ -68,6 +68,29 @@ abstract final class RoutePaths {
   /// `mode` was chosen on the GP hub.
   static const gpEligibility = '/gp/eligibility';
 
+  /// Wellbeing hub (screen pack 091) and its screens (092-104). Sessions
+  /// run on in-session preview data until they have a backend.
+  static const wellbeing = '/wellbeing';
+
+  /// One wellbeing offer, with a `WellbeingOffer` passed as `extra`.
+  static const wellbeingOffer = '/wellbeing/offer';
+
+  /// The practitioner, with a `WellbeingOffer` passed as `extra`.
+  static const wellbeingPractitioner = '/wellbeing/practitioner';
+
+  /// Choose a time, with a `WellbeingOffer` (book) or nothing (reschedule
+  /// the booked session) passed as `extra`.
+  static const wellbeingSlots = '/wellbeing/slots';
+
+  /// Review, with a `WellbeingBookingDraft` passed as `extra`.
+  static const wellbeingReview = '/wellbeing/review';
+  static const wellbeingConfirmed = '/wellbeing/confirmed';
+  static const wellbeingSession = '/wellbeing/session';
+  static const wellbeingCancel = '/wellbeing/cancel';
+  static const wellbeingCall = '/wellbeing/call';
+  static const wellbeingPlan = '/wellbeing/plan';
+  static const wellbeingCheckIn = '/wellbeing/check-in';
+
   /// Professional Care hub (screen pack 069) and its screens (070-090).
   /// Care runs on in-session preview data until it has a backend.
   static const care = '/care';
@@ -105,15 +128,6 @@ abstract final class RoutePaths {
 
   /// Review check-in before another menopause appointment (068).
   static const menopauseReview = '/gp/menopause/review';
-
-  /// Explore our services (GP care + everyday wellbeing). Was a tab before
-  /// the screen-pack redesign; now a pushed screen.
-  static const services = '/services';
-
-  /// A wellbeing service's detail page (see
-  /// `lib/features/services/domain/models/wellbeing_service.dart`). Reached
-  /// with a `WellbeingService` passed as `extra`.
-  static const wellbeingService = '/services/wellbeing';
 
   /// My Visits tab — upcoming/past appointments and their sub-flows.
   static const visits = '/visits';

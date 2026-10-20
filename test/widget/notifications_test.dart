@@ -10,7 +10,7 @@ import 'package:lifecome_mobile/features/notifications/application/notifications
 import 'package:lifecome_mobile/features/notifications/presentation/notifications_screen.dart';
 import 'package:lifecome_mobile/features/profile/application/profile_controller.dart';
 import 'package:lifecome_mobile/features/notifications/presentation/widgets/notifications_bell.dart';
-import 'package:lifecome_mobile/features/services/presentation/services_screen.dart';
+import 'package:lifecome_mobile/features/wellbeing/presentation/wellbeing_screens.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/fake_auth_repository.dart';
@@ -48,9 +48,9 @@ void main() {
     tester,
   ) async {
     feed.items = [testBookingNotification(read: true)];
-    await pumpAppAt(tester, RoutePaths.services, overrides: overrides);
+    await pumpAppAt(tester, RoutePaths.wellbeing, overrides: overrides);
 
-    expect(find.byType(ServicesScreen), findsOneWidget);
+    expect(find.byType(WellbeingHubScreen), findsOneWidget);
     expect(bell, findsOneWidget);
     expect(dot, findsNothing);
 
@@ -61,7 +61,7 @@ void main() {
     tester,
   ) async {
     feed.items = [testBookingNotification(), testMessageNotification()];
-    await pumpAppAt(tester, RoutePaths.services, overrides: overrides);
+    await pumpAppAt(tester, RoutePaths.wellbeing, overrides: overrides);
     expect(dot, findsOneWidget);
 
     await openBell(tester);
@@ -95,7 +95,7 @@ void main() {
     tester,
   ) async {
     feed.items = [testBookingNotification(), testMessageNotification()];
-    await pumpAppAt(tester, RoutePaths.services, overrides: overrides);
+    await pumpAppAt(tester, RoutePaths.wellbeing, overrides: overrides);
 
     await openBell(tester);
     await tester.tap(find.text('Mark all read'));
@@ -105,14 +105,14 @@ void main() {
     expect(find.text('Mark all read'), findsNothing);
 
     await tapBack(tester);
-    expect(find.byType(ServicesScreen), findsOneWidget);
+    expect(find.byType(WellbeingHubScreen), findsOneWidget);
     expect(dot, findsNothing);
 
     await disposeApp(tester);
   });
 
   testWidgets('an empty feed says so honestly', (tester) async {
-    await pumpAppAt(tester, RoutePaths.services, overrides: overrides);
+    await pumpAppAt(tester, RoutePaths.wellbeing, overrides: overrides);
 
     await openBell(tester);
     expect(find.text("You're all caught up"), findsOneWidget);
@@ -125,7 +125,7 @@ void main() {
     tester,
   ) async {
     feed.loadFailure = const ApiException(ApiException.networkMessage);
-    await pumpAppAt(tester, RoutePaths.services, overrides: overrides);
+    await pumpAppAt(tester, RoutePaths.wellbeing, overrides: overrides);
     expect(dot, findsNothing);
 
     await openBell(tester);

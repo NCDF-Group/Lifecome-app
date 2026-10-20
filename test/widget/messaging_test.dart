@@ -499,7 +499,7 @@ void main() {
       backend.notifications.items = [testMessageNotification()];
       await pumpAppAt(
         tester,
-        RoutePaths.services,
+        RoutePaths.wellbeing,
         overrides: backend.overrides,
       );
 
