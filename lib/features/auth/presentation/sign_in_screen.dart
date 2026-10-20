@@ -19,7 +19,7 @@ import 'widgets/auth_header.dart';
 
 /// View 01 (Sign In). Email and password, matching a conventional login
 /// form. The single-page sign-up flow lives on [CreateAccountScreen] and
-/// [VerifyMobileScreen] instead, for first-time sign-up.
+/// [VerifyEmailScreen] instead, for first-time sign-up.
 class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
 

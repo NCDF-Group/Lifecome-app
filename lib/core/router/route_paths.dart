@@ -19,10 +19,12 @@ abstract final class RoutePaths {
   /// One page: name, email, mobile number and password together.
   static const createAccount = '/create-account';
 
-  /// Sign-up's last step — verifies the SMS code sent to the mobile number
-  /// collected on [createAccount], then signs the account straight in.
-  /// Reached with a [VerifyMobileArgs] passed as the route's `extra`.
-  static const verifyMobile = '/verify-mobile';
+  /// Sign-up's last step — verifies the email code, then signs the account
+  /// straight in. Reached with a [VerifyEmailArgs] passed as route `extra`.
+  static const verifyEmail = '/verify-email';
+
+  /// Kept as a source-compatible alias while older callers update.
+  static const verifyMobile = verifyEmail;
 
   /// Shown once sign-up finishes. Reached with an [AuthSuccessArgs] passed
   /// as `extra`.
@@ -65,6 +67,29 @@ abstract final class RoutePaths {
   /// and that it is not an emergency. Reached with a `BookingStart` whose
   /// `mode` was chosen on the GP hub.
   static const gpEligibility = '/gp/eligibility';
+
+  /// Professional Care hub (screen pack 069) and its screens (070-090).
+  /// Care runs on in-session preview data until it has a backend.
+  static const care = '/care';
+  static const careServices = '/care/services';
+
+  /// One care service, with a `CareService` passed as `extra`.
+  static const careService = '/care/service';
+  static const careRequest = '/care/request';
+  static const careSubmitted = '/care/submitted';
+  static const careStatus = '/care/status';
+  static const careAssessment = '/care/assessment';
+  static const careProposal = '/care/proposal';
+  static const careAgreement = '/care/agreement';
+  static const carePlan = '/care/plan';
+  static const careVisits = '/care/visits';
+
+  /// One visit, with a `CareVisit` passed as `extra`.
+  static const careVisit = '/care/visit';
+  static const careVisitNote = '/care/visit-note';
+  static const careTeam = '/care/team';
+  static const careChange = '/care/change';
+  static const careChangeSent = '/care/change-sent';
 
   /// Menopause Care hub (062), under GP.
   static const menopause = '/gp/menopause';

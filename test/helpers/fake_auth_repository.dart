@@ -40,11 +40,11 @@ class FakeAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<SignedInAccount> verifyPhoneCode({
+  Future<SignedInAccount> verifyEmailCode({
     required String email,
     required String code,
   }) async {
-    _record('verifyPhoneCode:$email:$code');
+    _record('verifyEmailCode:$email:$code');
     return SignedInAccount(
       accessToken: 'token',
       userAccountId: 'account-1',
@@ -55,8 +55,8 @@ class FakeAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> resendPhoneCode({required String email}) async {
-    _record('resendPhoneCode:$email');
+  Future<void> resendEmailCode({required String email}) async {
+    _record('resendEmailCode:$email');
   }
 
   @override

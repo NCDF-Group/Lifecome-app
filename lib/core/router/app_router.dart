@@ -1,6 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/care/domain/care_models.dart';
+import '../../features/care/presentation/care_hub_screens.dart';
+import '../../features/care/presentation/care_journey_screens.dart';
+import '../../features/care/presentation/care_request_screen.dart';
+import '../../features/care/presentation/care_visits_screens.dart';
 import '../../features/profile/presentation/accessibility_screen.dart';
 import '../../features/profile/presentation/health_profile_screen.dart';
 import '../../features/profile/presentation/notification_settings_screen.dart';
@@ -114,9 +119,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const CreateAccountScreen(),
       ),
       GoRoute(
-        path: RoutePaths.verifyMobile,
+        path: RoutePaths.verifyEmail,
         builder: (context, state) =>
-            VerifyMobileScreen(args: state.extra! as VerifyMobileArgs),
+            VerifyEmailScreen(args: state.extra! as VerifyEmailArgs),
       ),
       GoRoute(
         path: RoutePaths.signUpSuccess,
@@ -294,6 +299,75 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         redirect: _requires<BookingStart>(RoutePaths.gp),
         builder: (context, state) =>
             GpEligibilityScreen(start: state.extra! as BookingStart),
+      ),
+      GoRoute(
+        path: RoutePaths.care,
+        builder: (context, state) => const CareHubScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.careServices,
+        builder: (context, state) => const CareServicesScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.careService,
+        redirect: _requires<CareService>(RoutePaths.careServices),
+        builder: (context, state) =>
+            CareServiceScreen(service: state.extra! as CareService),
+      ),
+      GoRoute(
+        path: RoutePaths.careRequest,
+        builder: (context, state) =>
+            CareRequestScreen(service: state.extra as CareService?),
+      ),
+      GoRoute(
+        path: RoutePaths.careSubmitted,
+        builder: (context, state) => const CareSubmittedScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.careStatus,
+        builder: (context, state) => const CareStatusScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.careAssessment,
+        builder: (context, state) => const CareAssessmentScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.careProposal,
+        builder: (context, state) => const CareProposalScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.careAgreement,
+        builder: (context, state) => const CareAgreementScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.carePlan,
+        builder: (context, state) => const CarePlanDetailScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.careVisits,
+        builder: (context, state) => const CareVisitsScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.careVisit,
+        redirect: _requires<CareVisit>(RoutePaths.careVisits),
+        builder: (context, state) =>
+            CareVisitScreen(visit: state.extra! as CareVisit),
+      ),
+      GoRoute(
+        path: RoutePaths.careVisitNote,
+        builder: (context, state) => const CareVisitNoteScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.careTeam,
+        builder: (context, state) => const CareTeamScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.careChange,
+        builder: (context, state) => const CareChangeScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.careChangeSent,
+        builder: (context, state) => const CareChangeSentScreen(),
       ),
       GoRoute(
         path: RoutePaths.menopause,

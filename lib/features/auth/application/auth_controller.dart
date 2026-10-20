@@ -6,7 +6,7 @@ import '../domain/models/auth_session.dart';
 
 const _resendCooldown = Duration(seconds: 30);
 
-/// Holds the state for the sign-in, create-account and verify-mobile screens.
+/// Holds the state for the sign-in, create-account and email-verification screens.
 /// One controller for the whole flow, since the three screens are really one
 /// journey: register, then verify the code.
 class AuthController extends Notifier<AuthSessionState> {
@@ -72,7 +72,7 @@ class AuthController extends Notifier<AuthSessionState> {
   }
 
   /// Registers with everything the single-page sign-up form collects, and
-  /// triggers the first SMS code. The account already has its password at
+  /// triggers the first email code. The account already has its password at
   /// this point — [verifyCode] is sign-up's last step, not a separate
   /// "create password" screen after it.
   Future<bool> signUp({
@@ -122,7 +122,7 @@ class AuthController extends Notifier<AuthSessionState> {
     }
   }
 
-  /// Verifies the SMS code and, since the password was already set at
+  /// Verifies the email code and, since the password was already set at
   /// [signUp], signs the account straight in.
   Future<bool> verifyCode(String code) async {
     state = state.copyWith(status: AuthStatus.verifying, clearError: true);
@@ -130,7 +130,7 @@ class AuthController extends Notifier<AuthSessionState> {
     try {
       final account = await ref
           .read(authRepositoryProvider)
-          .verifyPhoneCode(email: state.email, code: code);
+          .verifyEmailCode(email: state.email, code: code);
       await ref
           .read(sessionManagerProvider)
           .start(
@@ -160,7 +160,7 @@ class AuthController extends Notifier<AuthSessionState> {
     try {
       await ref
           .read(authRepositoryProvider)
-          .resendPhoneCode(email: state.email);
+          .resendEmailCode(email: state.email);
       state = state.copyWith(
         resendAvailableAt: DateTime.now().add(_resendCooldown),
         clearError: true,

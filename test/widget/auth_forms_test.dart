@@ -223,7 +223,7 @@ void main() {
       ]);
       expect(find.byType(VerifyMobileScreen), findsOneWidget);
       expect(
-        find.textContaining('+44 •••• ••0123', findRichText: true),
+        find.textContaining('a•••@example.com', findRichText: true),
         findsOneWidget,
       );
 
@@ -261,7 +261,7 @@ void main() {
 
       await tapText(tester, 'Verify and continue');
       expect(find.text('Enter the 6-digit code.'), findsOneWidget);
-      expect(auth.calls.where((c) => c.startsWith('verifyPhoneCode')), isEmpty);
+      expect(auth.calls.where((c) => c.startsWith('verifyEmailCode')), isEmpty);
 
       await tapBack(tester);
       expect(find.byType(VerifyMobileScreen), findsNothing);

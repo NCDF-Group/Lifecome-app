@@ -18,40 +18,39 @@ import '../domain/models/auth_session.dart';
 import 'widgets/auth_header.dart';
 import 'widgets/otp_timer.dart';
 
-/// What this screen needs to know: which account the code was sent for
-/// (the backend keys verification off `email`, see `AuthRepository`), and
-/// the phone number it went to, shown masked.
-class VerifyMobileArgs {
-  const VerifyMobileArgs({required this.email, required this.phoneNumber});
+/// The email address the backend sent the code to.
+class VerifyEmailArgs {
+  const VerifyEmailArgs({required this.email});
   final String email;
-  final String phoneNumber;
 }
 
-/// Masks all but the dial code and last 4 digits, e.g. "+447700900123" ->
-/// "+44 •••• ••0123". The service is UK-only, so the dial code is always +44
-/// (matching it by shape would swallow the first digits of the number).
-String _maskPhoneNumber(String phoneNumber) {
-  const dialCode = '+44';
-  if (!phoneNumber.startsWith(dialCode)) return phoneNumber;
-  final local = phoneNumber.substring(dialCode.length);
-  if (local.length < 4) return phoneNumber;
-  final last4 = local.substring(local.length - 4);
-  return '$dialCode •••• ••$last4';
+/// Keeps enough of the address visible to identify the inbox without showing
+/// the full local part, e.g. "alex@example.com" -> "a•••@example.com".
+String _maskEmail(String email) {
+  final separator = email.indexOf('@');
+  if (separator < 1 || separator == email.length - 1) return email;
+  final local = email.substring(0, separator);
+  final visible = local.length == 1 ? local : local.substring(0, 1);
+  return '$visible•••${email.substring(separator)}';
 }
 
-/// View 02 (Verify Mobile) — the last step of sign-up. The password was
+/// View 02 (Verify Email) — the last step of sign-up. The password was
 /// already set on [CreateAccountScreen], so a correct code signs the
 /// account straight in (see `AuthController.verifyCode`).
-class VerifyMobileScreen extends ConsumerStatefulWidget {
-  const VerifyMobileScreen({super.key, required this.args});
+class VerifyEmailScreen extends ConsumerStatefulWidget {
+  const VerifyEmailScreen({super.key, required this.args});
 
-  final VerifyMobileArgs args;
+  final VerifyEmailArgs args;
 
   @override
-  ConsumerState<VerifyMobileScreen> createState() => _VerifyMobileScreenState();
+  ConsumerState<VerifyEmailScreen> createState() => _VerifyEmailScreenState();
 }
 
-class _VerifyMobileScreenState extends ConsumerState<VerifyMobileScreen> {
+/// Source-compatible aliases for callers that still use the old mobile-flow names.
+typedef VerifyMobileArgs = VerifyEmailArgs;
+typedef VerifyMobileScreen = VerifyEmailScreen;
+
+class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
   final _otpKey = GlobalKey<OtpInputState>();
   String _code = '';
 
@@ -105,7 +104,7 @@ class _VerifyMobileScreenState extends ConsumerState<VerifyMobileScreen> {
                 const AuthHeader(fallback: RoutePaths.createAccount),
                 const SizedBox(height: AppSpacing.lg),
                 Text(
-                  'Verify your mobile',
+                  'Verify your email',
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w600,
@@ -123,7 +122,7 @@ class _VerifyMobileScreenState extends ConsumerState<VerifyMobileScreen> {
                     children: [
                       const TextSpan(text: 'Enter the 6-digit code sent to\n'),
                       TextSpan(
-                        text: _maskPhoneNumber(widget.args.phoneNumber),
+                        text: _maskEmail(widget.args.email),
                         style: TextStyle(
                           color: context.palette.ink,
                           fontWeight: FontWeight.w600,
@@ -151,7 +150,7 @@ class _VerifyMobileScreenState extends ConsumerState<VerifyMobileScreen> {
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 TintedButton(
-                  label: 'Change number',
+                  label: 'Back to sign up',
                   onPressed: () =>
                       context.goBack(fallback: RoutePaths.createAccount),
                 ),
@@ -170,9 +169,9 @@ class _VerifyMobileScreenState extends ConsumerState<VerifyMobileScreen> {
                 _InfoCard(
                   background: context.palette.tintGreen,
                   iconColor: context.palette.positive,
-                  icon: Icons.sms_outlined,
-                  title: 'Get verification help',
-                  subtitle: "See options if you're having trouble receiving your code.",
+                  icon: Icons.mail_outline,
+                  title: 'Check your inbox',
+                  subtitle: "Check your spam folder if the verification email doesn't arrive.",
                   onTap: _showVerificationHelp,
                 ),
                 const SizedBox(height: AppSpacing.sm),
@@ -181,7 +180,7 @@ class _VerifyMobileScreenState extends ConsumerState<VerifyMobileScreen> {
                   iconColor: context.palette.accent,
                   icon: Icons.lock_outline,
                   title: 'Never share your code',
-                  subtitle: 'LifeCome Live will never ask for your code by phone, email or text.',
+                  subtitle: 'Never share your verification code with anyone.',
                 ),
               ],
             ),

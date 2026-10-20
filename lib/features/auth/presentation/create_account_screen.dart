@@ -22,8 +22,8 @@ import 'widgets/password_rules_checklist.dart';
 
 /// View 01 (Create Account) — one page: name, email, mobile number and
 /// password together, matching the app's current single-step sign-up
-/// design. Sends the first verification code by SMS to the mobile number
-/// (see `AuthController.signUp`); [VerifyMobileScreen] is the only step
+/// design. Sends the first verification code to the email address
+/// (see `AuthController.signUp`); [VerifyEmailScreen] is the only step
 /// after this one.
 class CreateAccountScreen extends ConsumerStatefulWidget {
   const CreateAccountScreen({super.key});
@@ -139,8 +139,8 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
     if (!mounted) return;
     if (sent) {
       context.push(
-        RoutePaths.verifyMobile,
-        extra: VerifyMobileArgs(email: email, phoneNumber: phoneNumber),
+        RoutePaths.verifyEmail,
+        extra: VerifyEmailArgs(email: email),
       );
     } else {
       final state = ref.read(authControllerProvider);

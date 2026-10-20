@@ -23,7 +23,8 @@ import '../../profile/application/profile_controller.dart';
 /// real visit, or booking one), shared shortcuts and urgent help.
 ///
 /// GP opens the GP hub; Wellbeing opens the existing services page until
-/// its hub is built; Care and Insurance say they are coming soon.
+/// its hub is built; Care opens Professional Care; Insurance says it is
+/// coming soon.
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
@@ -92,8 +93,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             ],
             _ServiceGrid(
               onGp: _openGp,
-              onCare: () =>
-                  showComingSoonPopup(context, feature: 'Professional Care'),
+              onCare: () => context.push(RoutePaths.care),
               onWellbeing: () => context.push(RoutePaths.services),
               onInsurance: () =>
                   showComingSoonPopup(context, feature: 'Insurance'),

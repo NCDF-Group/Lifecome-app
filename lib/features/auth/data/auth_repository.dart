@@ -42,7 +42,7 @@ abstract interface class AuthRepository {
   });
 
   /// Registers with name, email, phone number and password all at once, and
-  /// sends the first verification code by SMS to [phoneNumber]. Returns the
+  /// sends the first verification code to the email address. Returns the
   /// id of the account the code was sent for.
   Future<String> register({
     required String firstName,
@@ -52,17 +52,17 @@ abstract interface class AuthRepository {
     required String password,
   });
 
-  /// Verifies the 6-digit code sent to [email]'s phone number. The password
+  /// Verifies the 6-digit code sent to [email]. The password
   /// was already set at [register], so a successful verify signs the
   /// account straight in — throws an [AuthException] if the code is wrong,
   /// expired, or has been tried too many times.
-  Future<SignedInAccount> verifyPhoneCode({
+  Future<SignedInAccount> verifyEmailCode({
     required String email,
     required String code,
   });
 
   /// Requests a new code for an account that already has one pending.
-  Future<void> resendPhoneCode({required String email});
+  Future<void> resendEmailCode({required String email});
 
   /// Step 1 of the forgot-password flow: sends a reset code to [email] if
   /// an account exists for it. Never reveals whether the account exists.
@@ -170,7 +170,7 @@ class DioAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<SignedInAccount> verifyPhoneCode({
+  Future<SignedInAccount> verifyEmailCode({
     required String email,
     required String code,
   }) async {
@@ -188,7 +188,7 @@ class DioAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> resendPhoneCode({required String email}) async {
+  Future<void> resendEmailCode({required String email}) async {
     try {
       final accountId = await _accountIdFor(email);
       await _client.post(
