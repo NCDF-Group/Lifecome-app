@@ -57,7 +57,7 @@ Anything used by **more than one** feature lives in `core/widgets/` instead of a
 | # | Blueprint view | File(s) |
 |---|---|---|
 | 01 | Sign In / Create Account | `features/auth/presentation/sign_in_screen.dart`, `create_account_screen.dart` |
-| 02 | Verify Mobile Number | `features/auth/presentation/verify_otp_screen.dart` |
+| 02 | Verify Email Address | `features/auth/presentation/verify_mobile_screen.dart` |
 | 03 | Patient Profile | `features/profile/presentation/patient_profile_screen.dart`, `edit_profile_screen.dart` |
 | 04 | LifeCome Live Dashboard | `features/dashboard/presentation/dashboard_screen.dart` |
 | 05 | Choose How to Pay | `features/payer/presentation/choose_payment_method_screen.dart` |
