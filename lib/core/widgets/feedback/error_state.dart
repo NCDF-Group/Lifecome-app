@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../network/api_exception.dart';
+import '../../router/route_paths.dart';
 import '../media/lc_icons.dart';
 import 'recovery_view.dart';
 
@@ -45,6 +47,10 @@ class ErrorState extends StatelessWidget {
       message: message,
       primaryLabel: 'Try again',
       onPrimary: onRetry,
+      secondaryLabel: 'Go to home',
+      onSecondary: () => context.go(RoutePaths.home),
+      ghostLabel: 'Contact support',
+      onGhost: () => context.push(RoutePaths.newMessage),
     );
   }
 }

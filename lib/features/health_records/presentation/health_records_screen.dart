@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_palette.dart';
-import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
+import '../../../core/widgets/feedback/recovery_view.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../../core/widgets/layout/screen_title.dart';
 import '../../../core/widgets/layout/section_header.dart';
@@ -50,90 +50,103 @@ class HealthRecordsScreen extends ConsumerWidget {
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 25),
           children: [
             const AppHeaderBar(showBack: true),
-            const SizedBox(height: 4),
-            const ScreenTitle(
-              title: 'Your health records',
-              subtitle: 'Your information, easy to find.',
-            ),
-            if (empty) ...[
-              const SizedBox(height: 24),
-              Center(
-                child: LcIcon(
-                  LcIcons.file,
-                  size: 48,
-                  color: palette.accent.withValues(alpha: 0.55),
-                ),
+            if (empty)
+              RecoveryView(
+                icon: LcIcons.file,
+                title: 'No records yet.',
+                message:
+                    'Your health records will appear here after your care '
+                    'team shares them.',
+                details: [
+                  _ShortcutGrid(
+                    shortcuts: [
+                      (
+                        LcIcons.file,
+                        'Consultation notes',
+                        () => open(RecordKind.notes),
+                        true,
+                      ),
+                      (
+                        LcIcons.plus,
+                        'Prescriptions',
+                        () => open(RecordKind.prescriptions),
+                        false,
+                      ),
+                      (
+                        LcIcons.arrow,
+                        'Referrals',
+                        () => open(RecordKind.referrals),
+                        false,
+                      ),
+                      (
+                        LcIcons.leaf,
+                        'Results',
+                        () => open(RecordKind.results),
+                        true,
+                      ),
+                    ],
+                  ),
+                ],
+                primaryLabel: 'Explore GP services',
+                primaryIcon: LcIcons.calendar,
+                onPrimary: () => context.push(RoutePaths.gp),
+                secondaryLabel: 'Back to home',
+                secondaryIcon: LcIcons.back,
+                onSecondary: () => context.go(RoutePaths.home),
+              )
+            else ...[
+              const SizedBox(height: 4),
+              const ScreenTitle(
+                title: 'Your health records',
+                subtitle: 'Your information, easy to find.',
               ),
-              const SizedBox(height: 12),
-              Text(
-                'Your records will appear here',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.6,
-                  color: palette.ink,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'After a consultation, your care team can share notes, '
-                'documents and next steps.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  height: 1.6,
-                  color: palette.inkMuted,
-                ),
-              ),
-              const SizedBox(height: 16),
-              PrimaryButton(
-                label: 'Explore GP services',
-                onPressed: () => context.push(RoutePaths.gp),
-              ),
-              const SectionHeader(title: 'Your records'),
-            ] else
               const SizedBox(height: 14),
-            RowCard(
-              icon: LcIcons.file,
-              title: 'Consultation notes',
-              subtitle: countLabel(counts[0], 'Your GP appointment summaries'),
-              onTap: () => open(RecordKind.notes),
-            ),
-            RowCard(
-              icon: LcIcons.plus,
-              title: 'Prescriptions',
-              subtitle: countLabel(
-                counts[1],
-                'Issued prescriptions and status',
+            ],
+            if (!empty) ...[
+              RowCard(
+                icon: LcIcons.file,
+                title: 'Consultation notes',
+                subtitle: countLabel(
+                  counts[0],
+                  'Your GP appointment summaries',
+                ),
+                onTap: () => open(RecordKind.notes),
               ),
-              onTap: () => open(RecordKind.prescriptions),
-            ),
-            RowCard(
-              icon: LcIcons.arrow,
-              title: 'Referrals',
-              subtitle: countLabel(
-                counts[2],
-                'Referral documents and next steps',
+              RowCard(
+                icon: LcIcons.plus,
+                title: 'Prescriptions',
+                subtitle: countLabel(
+                  counts[1],
+                  'Issued prescriptions and status',
+                ),
+                onTap: () => open(RecordKind.prescriptions),
               ),
-              onTap: () => open(RecordKind.referrals),
-            ),
-            RowCard(
-              icon: LcIcons.file,
-              title: 'Test results',
-              subtitle: countLabel(
-                counts[3],
-                'Results shared by your clinician',
+              RowCard(
+                icon: LcIcons.arrow,
+                title: 'Referrals',
+                subtitle: countLabel(
+                  counts[2],
+                  'Referral documents and next steps',
+                ),
+                onTap: () => open(RecordKind.referrals),
               ),
-              onTap: () => open(RecordKind.results),
-            ),
-            RowCard(
-              icon: LcIcons.leaf,
-              title: 'Menopause care plan',
-              subtitle: 'Your assessment and review journey',
-              tone: RowCardTone.mint,
-              onTap: () => context.push(RoutePaths.menopausePlan),
-            ),
+              RowCard(
+                icon: LcIcons.file,
+                title: 'Test results',
+                subtitle: countLabel(
+                  counts[3],
+                  'Results shared by your clinician',
+                ),
+                onTap: () => open(RecordKind.results),
+              ),
+              RowCard(
+                icon: LcIcons.leaf,
+                title: 'Menopause care plan',
+                subtitle: 'Your assessment and review journey',
+                tone: RowCardTone.mint,
+                onTap: () => context.push(RoutePaths.menopausePlan),
+              ),
+            ],
             const SectionHeader(title: 'Sharing'),
             RowCard(
               icon: LcIcons.people,
@@ -158,6 +171,85 @@ class HealthRecordsScreen extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The four record shortcuts under the empty state: a 2 x 2 grid of tinted
+/// tiles, each an icon, a name and a chevron.
+class _ShortcutGrid extends StatelessWidget {
+  const _ShortcutGrid({required this.shortcuts});
+
+  /// (icon, label, onTap, green) — green tiles use the mint tint.
+  final List<(String, String, VoidCallback, bool)> shortcuts;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    Widget tile((String, String, VoidCallback, bool) item) {
+      final (icon, label, onTap, green) = item;
+      final tint = green ? palette.tintGreen : palette.tintBlueFaint;
+      final strong = green ? palette.tintGreenStrong : palette.tintBlue;
+      final ink = green ? palette.positive : palette.accent;
+      return Expanded(
+        child: Material(
+          color: tint,
+          borderRadius: BorderRadius.circular(18),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: strong,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    alignment: Alignment.center,
+                    child: LcIcon(icon, size: 20, color: ink),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: palette.ink,
+                      ),
+                    ),
+                  ),
+                  LcIcon(LcIcons.chevron, size: 16, color: ink),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            tile(shortcuts[0]),
+            const SizedBox(width: 10),
+            tile(shortcuts[1]),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            tile(shortcuts[2]),
+            const SizedBox(width: 10),
+            tile(shortcuts[3]),
+          ],
+        ),
+      ],
     );
   }
 }

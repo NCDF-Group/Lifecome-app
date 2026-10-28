@@ -24,13 +24,13 @@ class NotificationsBell extends ConsumerWidget {
       label: unread > 0 ? 'Notifications, $unread unread' : 'Notifications',
       child: Material(
         color: context.palette.tintBlue,
-        borderRadius: BorderRadius.circular(12),
+        shape: const CircleBorder(),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: () => context.push(RoutePaths.notifications),
           child: SizedBox(
-            width: 36,
-            height: 36,
+            width: 40,
+            height: 40,
             child: Stack(
               alignment: Alignment.center,
               children: [
@@ -43,12 +43,12 @@ class NotificationsBell extends ConsumerWidget {
                 ),
                 if (unread > 0)
                   Positioned(
-                    top: 5,
-                    right: 7,
+                    top: 6,
+                    right: 8,
                     child: Container(
                       key: const ValueKey('unread-dot'),
-                      width: 7,
-                      height: 7,
+                      width: 9,
+                      height: 9,
                       decoration: const BoxDecoration(
                         color: AppColors.blue,
                         shape: BoxShape.circle,

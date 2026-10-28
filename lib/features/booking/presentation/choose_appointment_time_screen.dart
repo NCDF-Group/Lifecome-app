@@ -157,11 +157,10 @@ class _ChooseAppointmentTimeScreenState
     if (all.isEmpty) {
       return RecoveryView(
         icon: LcIcons.calendar,
-        title: 'No times available',
-        message:
-            'This clinician has no free times right now. Try another '
-            'clinician or appointment type, or check back later.',
+        title: 'No appointments available',
+        message: 'No times match your current selection.',
         primaryLabel: 'Choose another GP',
+        primaryIcon: LcIcons.people,
         onPrimary: () => context.goBack(fallback: RoutePaths.gp),
         ghostLabel: 'Contact support',
         onGhost: () => context.push(RoutePaths.newMessage),

@@ -64,6 +64,6 @@ Future<void> tapText(WidgetTester tester, String text) async {
 
 /// Taps the back arrow at the top of the screen.
 Future<void> tapBack(WidgetTester tester) async {
-  await tester.tap(find.byIcon(Icons.arrow_back_ios_new));
+  await tester.tap(find.byTooltip('Back'));
   await settle(tester);
 }

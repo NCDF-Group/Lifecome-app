@@ -33,7 +33,7 @@ void main() {
       RoutePaths.healthRecords,
       overrides: backend.overrides,
     );
-    expect(find.text('Your records will appear here'), findsOneWidget);
+    expect(find.text('No records yet.'), findsOneWidget);
     await tapText(tester, 'Explore GP services');
     expect(find.byType(GpHubScreen), findsOneWidget);
 
@@ -106,7 +106,7 @@ void main() {
       RoutePaths.healthRecords,
       overrides: backend.overrides,
     );
-    expect(find.text('Your records will appear here'), findsNothing);
+    expect(find.text('No records yet.'), findsNothing);
     expect(find.text('1 record'), findsNWidgets(4));
 
     for (final (section, row, screen, text) in [

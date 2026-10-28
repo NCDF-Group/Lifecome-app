@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lifecome_mobile/core/router/route_paths.dart';
 import 'package:lifecome_mobile/features/booking/presentation/my_visits_screen.dart';
@@ -23,7 +22,7 @@ void main() {
     backend = TestBackend();
   });
 
-  final backArrow = find.byIcon(Icons.arrow_back_ios_new);
+  final backArrow = find.byTooltip('Back');
 
   for (final (name, path, screen) in [
     ('Visits', RoutePaths.visits, MyVisitsScreen),

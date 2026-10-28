@@ -4,7 +4,8 @@ import '../../../features/notifications/presentation/widgets/notifications_bell.
 import '../../country/app_country.dart';
 import '../../router/route_paths.dart';
 import '../../theme/app_palette.dart';
-import 'app_bar_back.dart';
+import '../../router/safe_back.dart';
+import '../media/lc_icons.dart';
 
 /// The header shared by Home and the screens reached from it (the screen
 /// pack's `.app-header`): an optional back arrow, the logo, a static "UK"
@@ -33,8 +34,29 @@ class AppHeaderBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final header = Row(
+    return Row(
       children: [
+        if (showBack) ...[
+          Tooltip(
+            message: 'Back',
+            child: InkWell(
+              onTap: onBack ?? () => context.goBack(fallback: backFallback),
+              borderRadius: BorderRadius.circular(20),
+              child: SizedBox(
+                width: 32,
+                height: 40,
+                child: Center(
+                  child: LcIcon(
+                    LcIcons.back,
+                    size: 24,
+                    color: context.palette.ink,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 6),
+        ],
         Image.asset(
           context.palette.logoAsset,
           height: 28,
@@ -43,15 +65,6 @@ class AppHeaderBar extends StatelessWidget {
         const Spacer(),
         const _CountryChip(),
         if (showBell) ...[const SizedBox(width: 8), const NotificationsBell()],
-      ],
-    );
-    if (!showBack) return header;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        header,
-        const SizedBox(height: 8),
-        BackLink(fallback: backFallback, onPressed: onBack),
       ],
     );
   }
@@ -67,19 +80,35 @@ class _CountryChip extends StatelessWidget {
       excludeSemantics: true,
       child: Container(
         decoration: BoxDecoration(
-          color: context.palette.elevated,
+          color: context.palette.surface,
           border: Border.all(color: context.palette.tintBlueLine),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(999),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 9),
-        child: Text(
-          'UK',
-          style: TextStyle(
-            fontSize: 12,
-            height: 1,
-            fontWeight: FontWeight.w600,
-            color: context.palette.ink,
-          ),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              AppCountry.unitedKingdom.flag,
+              style: const TextStyle(fontSize: 15),
+            ),
+            const SizedBox(width: 5),
+            Text(
+              'UK',
+              style: TextStyle(
+                fontSize: 14,
+                height: 1,
+                fontWeight: FontWeight.w700,
+                color: context.palette.ink,
+              ),
+            ),
+            const SizedBox(width: 2),
+            Icon(
+              Icons.keyboard_arrow_down,
+              size: 18,
+              color: context.palette.ink,
+            ),
+          ],
         ),
       ),
     );

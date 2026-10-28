@@ -113,15 +113,23 @@ class BookingConfirmationScreen extends ConsumerWidget {
             if (paymentFailed)
               RecoveryView(
                 icon: LcIcons.card,
-                title: 'Payment wasn’t completed',
+                tone: RecoveryTone.amber,
+                title: 'Payment unsuccessful',
                 message:
-                    'Your appointment isn’t confirmed by this payment attempt. '
-                    'Check again in a moment, or book again and choose how to '
-                    'pay.',
+                    'We couldn’t complete this payment.\n'
+                    'Appointment not confirmed.',
+                details: [
+                  _AmountAttempted(
+                    amount: Formatters.money(payment.amountMinor),
+                  ),
+                  const _PendingChargeNote(),
+                ],
                 primaryLabel: 'Check status',
+                primaryIcon: LcIcons.clock,
                 onPrimary: () =>
                     ref.read(appointmentsProvider.notifier).refresh(),
                 secondaryLabel: 'Book again',
+                secondaryIcon: LcIcons.card,
                 onSecondary: () => context.push(RoutePaths.gp),
                 ghostLabel: 'Contact support',
                 onGhost: () => context.push(RoutePaths.newMessage),
@@ -202,6 +210,118 @@ class BookingConfirmationScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// "Amount attempted" on the payment-unsuccessful state.
+class _AmountAttempted extends StatelessWidget {
+  const _AmountAttempted({required this.amount});
+
+  final String amount;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: palette.tintBlueFaint,
+        border: Border.all(color: palette.tintBlueLine),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: palette.elevated,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            alignment: Alignment.center,
+            child: LcIcon(LcIcons.card, size: 24, color: palette.accent),
+          ),
+          const SizedBox(width: 14),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Amount attempted',
+                style: TextStyle(fontSize: 14, color: palette.inkMuted),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                amount,
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  color: palette.ink,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The "Please note" card under the amount.
+class _PendingChargeNote extends StatelessWidget {
+  const _PendingChargeNote();
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: palette.tintGreen,
+        border: Border.all(color: palette.tintGreenLine),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: palette.tintGreenStrong,
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: LcIcon(LcIcons.info, size: 22, color: palette.positive),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Please note',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: palette.ink,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'If a pending charge appears, check its status before '
+                  'retrying.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 1.4,
+                    color: palette.inkMuted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

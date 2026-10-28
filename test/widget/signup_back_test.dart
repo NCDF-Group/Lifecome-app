@@ -43,7 +43,7 @@ Future<void> _settle(WidgetTester tester) async {
 }
 
 Future<void> _tapBack(WidgetTester tester) async {
-  await tester.tap(find.byIcon(Icons.arrow_back_ios_new));
+  await tester.tap(find.byTooltip('Back'));
   await _settle(tester);
 }
 

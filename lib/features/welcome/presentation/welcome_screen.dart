@@ -13,6 +13,8 @@ import '../../../core/widgets/layout/max_content_width.dart';
 /// screen-pack redesign retuned [AppColors]. See [WelcomeScreen].
 const _welcomeBlue = Color(0xFF0667B8);
 const _welcomeGreen = Color(0xFF2F7D00);
+const _welcomeHeadlineBlue = Color(0xFF2563EB);
+const _welcomeButtonBlue = Color(0xFF0066FF);
 
 /// The welcome screen shown after the splash screen when there is no
 /// remembered session — the app's front door.
@@ -57,19 +59,19 @@ class _WelcomeBody extends StatelessWidget {
                   child: Text.rich(
                     TextSpan(
                       style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w600,
-                        height: 1.15,
-                        letterSpacing: -0.6,
+                        fontSize: 34,
+                        fontWeight: FontWeight.w800,
+                        height: 1.12,
+                        letterSpacing: -0.8,
                         color: context.palette.ink,
                       ),
                       children: [
-                        TextSpan(text: 'GP care and\n'),
+                        TextSpan(text: 'Your health.\n'),
                         TextSpan(
-                          text: 'everyday wellbeing,\n',
-                          style: TextStyle(color: context.palette.positive),
+                          text: 'Your life.\n',
+                          style: TextStyle(color: _welcomeHeadlineBlue),
                         ),
-                        TextSpan(text: 'connected.'),
+                        TextSpan(text: 'Connected.'),
                       ],
                     ),
                   ),
@@ -78,8 +80,8 @@ class _WelcomeBody extends StatelessWidget {
                 FadeIn(
                   delay: const Duration(milliseconds: 100),
                   child: Text(
-                    'GP appointments and practical support for healthier '
-                    'routines, eating well and relaxation.',
+                    'GP appointments, professional care, everyday wellbeing '
+                    'and insurance. All in one place.',
                     style: TextStyle(
                       fontSize: 15,
                       color: context.palette.inkMuted,
@@ -90,35 +92,46 @@ class _WelcomeBody extends StatelessWidget {
                 const SizedBox(height: 24),
                 FadeIn(
                   delay: const Duration(milliseconds: 140),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _FeatureIcon(
-                          icon: Icons.videocam_outlined,
-                          background: context.palette.tintBlue,
-                          color: context.palette.accent,
-                          label: 'Online GP',
+                  child: IntrinsicHeight(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _FeatureIcon(
+                            icon: Icons.videocam,
+                            background: context.palette.tintGreenFaint,
+                            color: context.palette.positive,
+                            label: 'GP',
+                          ),
                         ),
-                      ),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: _FeatureIcon(
-                          icon: Icons.location_on_outlined,
-                          background: context.palette.tintGreenFaint,
-                          color: context.palette.positive,
-                          label: 'Clinic care',
+                        const _FeatureDivider(),
+                        Expanded(
+                          child: _FeatureIcon(
+                            icon: Icons.monitor_heart,
+                            background: context.palette.tintBlue,
+                            color: _welcomeHeadlineBlue,
+                            label: 'Care',
+                          ),
                         ),
-                      ),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: _FeatureIcon(
-                          icon: Icons.spa_outlined,
-                          background: context.palette.tintBlue,
-                          color: context.palette.accent,
-                          label: 'Wellbeing',
+                        const _FeatureDivider(),
+                        Expanded(
+                          child: _FeatureIcon(
+                            icon: Icons.spa,
+                            background: context.palette.tintGreenFaint,
+                            color: context.palette.positive,
+                            label: 'Wellbeing',
+                          ),
                         ),
-                      ),
-                    ],
+                        const _FeatureDivider(),
+                        Expanded(
+                          child: _FeatureIcon(
+                            icon: Icons.verified_user,
+                            background: context.palette.tintBlue,
+                            color: _welcomeHeadlineBlue,
+                            label: 'Insurance',
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 28),
@@ -129,9 +142,11 @@ class _WelcomeBody extends StatelessWidget {
                     child: FilledButton(
                       onPressed: () => context.push(RoutePaths.createAccount),
                       style: FilledButton.styleFrom(
-                        backgroundColor: _welcomeBlue,
+                        backgroundColor: _welcomeButtonBlue,
                         foregroundColor: AppColors.white,
-                        shape: const StadiumBorder(),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                         textStyle: const TextStyle(
                           fontFamily: appFontFamily,
                           fontSize: 16,
@@ -159,10 +174,12 @@ class _WelcomeBody extends StatelessWidget {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: context.palette.ink,
                         side: BorderSide(
-                          color: context.palette.line,
+                          color: context.palette.ink,
                           width: 1.5,
                         ),
-                        shape: const StadiumBorder(),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                         textStyle: const TextStyle(
                           fontFamily: appFontFamily,
                           fontSize: 16,
@@ -200,8 +217,7 @@ class _WelcomeBody extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 12,
-                          color: context.palette.accent,
-                          fontWeight: FontWeight.w600,
+                          color: context.palette.inkMuted,
                         ),
                       ),
                     ],
@@ -446,6 +462,19 @@ class _FeatureIcon extends StatelessWidget {
   }
 }
 
+class _FeatureDivider extends StatelessWidget {
+  const _FeatureDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 1,
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      color: context.palette.line,
+    );
+  }
+}
+
 /// The logo and "UK" chip, as the shared header drew them before the
 /// screen-pack redesign.
 class _WelcomeHeader extends StatelessWidget {
@@ -483,8 +512,45 @@ class _WelcomeHeader extends StatelessWidget {
                   color: context.palette.ink,
                 ),
               ),
+              const SizedBox(width: 2),
+              Icon(
+                Icons.keyboard_arrow_down,
+                size: 18,
+                color: context.palette.ink,
+              ),
             ],
           ),
+        ),
+        const SizedBox(width: 10),
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: context.palette.surface,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.notifications_none,
+                size: 22,
+                color: context.palette.ink,
+              ),
+            ),
+            Positioned(
+              right: 2,
+              top: 2,
+              child: Container(
+                width: 9,
+                height: 9,
+                decoration: const BoxDecoration(
+                  color: _welcomeHeadlineBlue,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );
