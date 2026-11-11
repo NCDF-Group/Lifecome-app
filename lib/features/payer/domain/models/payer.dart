@@ -1,4 +1,4 @@
-/// A health plan (HMO / insurer) taking part in LifeCome Live, from the
+/// A health plan (HMO / insurer) taking part in LifeCome Health, from the
 /// backend's `/payers`. The list arrives in the order the business wants it
 /// shown, so nothing here re-sorts it.
 class Payer {

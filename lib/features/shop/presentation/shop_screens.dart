@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -351,7 +352,10 @@ class ShopBasketScreen extends ConsumerWidget {
                               IconButton(
                                 tooltip: 'Remove one ${line.product.name}',
                                 visualDensity: VisualDensity.compact,
-                                icon: Icon(Icons.remove, color: palette.accent),
+                                icon: Icon(
+                                  AppIcons.remove,
+                                  color: palette.accent,
+                                ),
                                 onPressed: () => notifier.setQuantity(
                                   line.product.id,
                                   line.quantity - 1,
@@ -368,7 +372,7 @@ class ShopBasketScreen extends ConsumerWidget {
                               IconButton(
                                 tooltip: 'Add one ${line.product.name}',
                                 visualDensity: VisualDensity.compact,
-                                icon: Icon(Icons.add, color: palette.accent),
+                                icon: Icon(AppIcons.add, color: palette.accent),
                                 onPressed: () => notifier.setQuantity(
                                   line.product.id,
                                   line.quantity + 1,
@@ -393,7 +397,7 @@ class ShopBasketScreen extends ConsumerWidget {
                       ),
                       IconButton(
                         tooltip: 'Remove ${line.product.name}',
-                        icon: Icon(Icons.close, color: palette.inkMuted),
+                        icon: Icon(AppIcons.close, color: palette.inkMuted),
                         onPressed: () =>
                             notifier.setQuantity(line.product.id, 0),
                       ),

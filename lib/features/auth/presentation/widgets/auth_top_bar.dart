@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 
 import '../../../../core/router/route_paths.dart';
 import '../../../../core/router/safe_back.dart';
@@ -46,7 +47,7 @@ class _CircleBackButton extends StatelessWidget {
         child: SizedBox(
           width: 44,
           height: 44,
-          child: Icon(Icons.arrow_back, color: context.palette.ink, size: 20),
+          child: Icon(AppIcons.arrowBack, color: context.palette.ink, size: 20),
         ),
       ),
     );

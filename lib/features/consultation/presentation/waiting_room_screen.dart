@@ -12,7 +12,7 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/feedback/error_state.dart';
-import '../../../core/widgets/feedback/loading_indicator.dart';
+import '../../../core/widgets/feedback/skeleton_loader.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../../core/widgets/buttons/ghost_button.dart';
 import '../../../core/widgets/layout/screen_title.dart';
@@ -100,7 +100,7 @@ class _WaitingRoomScreenState extends ConsumerState<WaitingRoomScreen> {
             ),
             const SizedBox(height: 18),
             session.when(
-              loading: () => const LoadingIndicator(),
+              loading: () => const SkeletonLoader(),
               error: (error, _) => ErrorState(
                 error: error,
                 onRetry: () =>

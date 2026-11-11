@@ -1,5 +1,5 @@
 name: lifecome_mobile
-description: "LifeCome Live patient app: online consultations, care plans and health records."
+description: "LifeCome Health patient app: online consultations, care plans and health records."
 publish_to: "none"
 version: 0.1.0+1
 
@@ -10,19 +10,23 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Consistent line-style icon system used across the app.
+  lucide_icons_flutter: ^4.0.2
+
   # Navigation
   go_router: ^18.0.1
 
   # State management
   flutter_riverpod: ^3.4.3
 
-  # SVG icon assets (bottom navigation)
-  flutter_svg: ^2.3.0
   local_auth: ^3.0.2
   shared_preferences: ^2.5.5
 
   # HTTP client for Lifecome-Backen (see core/network/api_client.dart)
   dio: ^5.9.0
+
+  # Native Daily video and audio calls
+  daily_flutter: ^0.41.0
 
   # Keeps the sign-in token in the iOS Keychain / Android Keystore
   flutter_secure_storage: ^9.2.4
@@ -41,7 +45,6 @@ flutter:
     - assets/images/welcome/
     - assets/images/home/
     - assets/images/wellbeing/
-    - assets/icons/lc/
 
   # Manrope, bundled so every weight is a real font file and the app never
   # waits on a font CDN. Static instances of Google Fonts' Manrope[wght].ttf

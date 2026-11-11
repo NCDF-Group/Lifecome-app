@@ -27,11 +27,11 @@ Future<void> _pumpApp(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [initialThemeModeProvider.overrideWithValue(saved)],
-      child: const LifeComeLiveApp(),
+      child: const LifeComeHealthApp(),
     ),
   );
   await tester.pump();
-  ProviderScope.containerOf(tester.element(find.byType(LifeComeLiveApp)))
+  ProviderScope.containerOf(tester.element(find.byType(LifeComeHealthApp)))
       .read(appRouterProvider)
       .go(location);
   await tester.pump(const Duration(milliseconds: 400));

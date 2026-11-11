@@ -8,7 +8,7 @@ import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/feedback/error_state.dart';
-import '../../../core/widgets/feedback/loading_indicator.dart';
+import '../../../core/widgets/feedback/skeleton_loader.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../../core/widgets/layout/screen_title.dart';
 import '../application/messaging_controller.dart';
@@ -82,7 +82,7 @@ class _ThreadDetailScreenState extends ConsumerState<ThreadDetailScreen> {
             Divider(height: 1, color: context.palette.line),
             Expanded(
               child: messages.when(
-                loading: () => const LoadingIndicator(),
+                loading: () => const SkeletonLoader(),
                 error: (error, _) => messages.hasValue
                     ? _list(messages.requireValue)
                     : ErrorState(

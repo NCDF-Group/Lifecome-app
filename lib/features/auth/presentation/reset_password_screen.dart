@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -162,7 +163,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                 const SizedBox(height: AppSpacing.lg),
                 PrimaryButton(
                   label: 'Verify code',
-                  icon: Icons.arrow_forward,
+                  icon: AppIcons.arrowForward,
                   loading: _loading,
                   onPressed: () => _submit(),
                 ),

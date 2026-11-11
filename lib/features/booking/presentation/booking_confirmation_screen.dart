@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -177,7 +178,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
             if (confirmed && appointment.mode.isOnline) ...[
               const SizedBox(height: 10),
               const InfoBanner(
-                icon: Icons.verified_user_outlined,
+                icon: AppIcons.verified,
                 title: 'Join from a private place',
                 message:
                     'Choose a quiet, private location with a stable '

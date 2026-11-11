@@ -17,7 +17,7 @@ const _sections = [
     'How we use your information',
     'We use your information to provide care (connecting you with doctors, scheduling visits, '
         'maintaining your health records) and to operate the app (account security, service '
-        'notifications, and improving LifeCome Live).',
+        'notifications, and improving LifeCome Health).',
   ),
   (
     'Who we share it with',
@@ -59,7 +59,7 @@ class PrivacyScreen extends StatelessWidget {
             const ScreenTitle(title: 'Privacy notice'),
             const SizedBox(height: 16),
             Text(
-              'This policy explains what information LifeCome Live collects, how we use it, and '
+              'This policy explains what information LifeCome Health collects, how we use it, and '
               'the choices you have.',
               style: TextStyle(
                 fontSize: 14,

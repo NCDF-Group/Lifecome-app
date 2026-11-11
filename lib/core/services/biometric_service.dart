@@ -20,7 +20,7 @@ class BiometricService {
   Future<bool> authenticate() async {
     try {
       return await _localAuth.authenticate(
-        localizedReason: 'Unlock LifeCome Live',
+        localizedReason: 'Unlock LifeCome Health',
         biometricOnly: true,
         persistAcrossBackgrounding: true,
       );

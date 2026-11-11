@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 
 import '../../../../core/animation/fade_in.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -50,7 +51,7 @@ class AuthSuccessView extends StatelessWidget {
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
-                            Icons.check_circle,
+                            AppIcons.checkCircle,
                             color: context.palette.positive,
                             size: 48,
                           ),

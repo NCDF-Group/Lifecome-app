@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
@@ -46,7 +47,7 @@ class ChooseAccessScreen extends StatelessWidget {
             _AccessRow(
               background: context.palette.tintGreen,
               iconColor: context.palette.positive,
-              icon: Icons.credit_card_outlined,
+              icon: AppIcons.creditCard,
               title: 'Pay per visit',
               subtitle: 'Pay for the care you need.',
               onTap: () => context.push(
@@ -58,7 +59,7 @@ class ChooseAccessScreen extends StatelessWidget {
             _AccessRow(
               background: context.palette.tintBlue,
               iconColor: context.palette.accent,
-              icon: Icons.landscape_outlined,
+              icon: AppIcons.landscape,
               title: 'Membership',
               subtitle: 'Explore individual or adult household options.',
               onTap: () => context.push(RoutePaths.membershipPlans),
@@ -67,7 +68,7 @@ class ChooseAccessScreen extends StatelessWidget {
             _AccessRow(
               background: context.palette.tintBlue,
               iconColor: context.palette.accent,
-              icon: Icons.apartment_outlined,
+              icon: AppIcons.clinic,
               title: 'Employer access',
               subtitle: 'Activate employer or sponsor access.',
               onTap: () => context.push(RoutePaths.activateAccess),
@@ -76,7 +77,7 @@ class ChooseAccessScreen extends StatelessWidget {
             _AccessRow(
               background: context.palette.tintGreen,
               iconColor: context.palette.positive,
-              icon: Icons.shield_outlined,
+              icon: AppIcons.shield,
               title: 'Health plan access',
               subtitle: 'Link LifeCome Benefits or a participating plan.',
               onTap: () => context.push(RoutePaths.linkHealthPlan),
@@ -146,7 +147,7 @@ class _AccessRow extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: context.palette.accent),
+              Icon(AppIcons.chevronRight, color: context.palette.accent),
             ],
           ),
         ),

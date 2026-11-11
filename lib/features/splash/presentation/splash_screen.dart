@@ -6,7 +6,7 @@ import '../../../core/providers/core_providers.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_palette.dart';
 
-/// The launch screen: the LifeCome Live mark, animating in, while
+/// The launch screen: the LifeCome Health mark, animating in, while
 /// [SessionStore] is checked in the background for a remembered session.
 /// [_holdDuration] is a floor on how long this screen stays up (so the logo
 /// animation is never cut short on a fast device), not the whole wait —

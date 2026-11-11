@@ -15,7 +15,7 @@ Future<void> main() async {
     ProviderScope(
       retry: noAutomaticRetry,
       overrides: [initialThemeModeProvider.overrideWithValue(themeMode)],
-      child: const LifeComeLiveApp(),
+      child: const LifeComeHealthApp(),
     ),
   );
 }

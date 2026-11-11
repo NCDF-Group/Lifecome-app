@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -139,10 +140,7 @@ class _VerifyHmoMembershipScreenState
                   CircleAvatar(
                     radius: 22,
                     backgroundColor: palette.elevated,
-                    child: Icon(
-                      Icons.health_and_safety_outlined,
-                      color: palette.positive,
-                    ),
+                    child: Icon(AppIcons.health, color: palette.positive),
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
@@ -232,7 +230,7 @@ class _VerifyHmoMembershipScreenState
                 children: [
                   Expanded(
                     child: _FallbackCard(
-                      icon: Icons.headset_mic_outlined,
+                      icon: AppIcons.headset,
                       background: palette.tintGreen,
                       iconColor: palette.positive,
                       title: 'Get help',
@@ -243,7 +241,7 @@ class _VerifyHmoMembershipScreenState
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: _FallbackCard(
-                      icon: Icons.sync_alt,
+                      icon: AppIcons.sync,
                       background: palette.tintBlue,
                       iconColor: palette.accent,
                       title: 'Choose another way',
@@ -296,7 +294,7 @@ class _FallbackCard extends StatelessWidget {
                 children: [
                   Icon(icon, color: iconColor, size: 20),
                   const Spacer(),
-                  Icon(Icons.chevron_right, color: iconColor, size: 18),
+                  Icon(AppIcons.chevronRight, color: iconColor, size: 18),
                 ],
               ),
               const SizedBox(height: AppSpacing.xs),

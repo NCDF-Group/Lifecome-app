@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 
 import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -55,7 +56,7 @@ class MessageBubble extends StatelessWidget {
           CircleAvatar(
             radius: 16,
             backgroundColor: palette.tintBlue,
-            child: Icon(Icons.support_agent, size: 16, color: palette.accent),
+            child: Icon(AppIcons.support, size: 16, color: palette.accent),
           ),
           const SizedBox(width: AppSpacing.xs),
           Flexible(

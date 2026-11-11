@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 
 import '../../network/api_exception.dart';
 import '../../theme/app_colors.dart';
@@ -20,13 +21,10 @@ class _KindStyle {
 }
 
 const _styles = {
-  AppPopupKind.info: _KindStyle(Icons.auto_awesome_rounded, AppColors.blue),
-  AppPopupKind.success: _KindStyle(
-    Icons.check_circle_rounded,
-    AppColors.greenStrong,
-  ),
-  AppPopupKind.error: _KindStyle(Icons.error_rounded, AppColors.error),
-  AppPopupKind.offline: _KindStyle(Icons.wifi_off_rounded, AppColors.gold),
+  AppPopupKind.info: _KindStyle(AppIcons.sparkle, AppColors.blue),
+  AppPopupKind.success: _KindStyle(AppIcons.checkCircle, AppColors.greenStrong),
+  AppPopupKind.error: _KindStyle(AppIcons.error, AppColors.error),
+  AppPopupKind.offline: _KindStyle(AppIcons.wifiOff, AppColors.gold),
 };
 
 /// Shows a popup and resolves to the value the tapped action popped with
@@ -107,7 +105,7 @@ Future<void> showErrorPopup(BuildContext context, String message) {
       kind: AppPopupKind.offline,
       title: "You're offline",
       message:
-          "We couldn't reach LifeCome Live. Check your Wi-Fi or mobile data, "
+          "We couldn't reach LifeCome Health. Check your Wi-Fi or mobile data, "
           'then try again.',
       primaryLabel: 'OK',
     );
@@ -156,7 +154,7 @@ Future<PhotoSource?> showUploadPhotoPopup(BuildContext context) {
         _OptionTile(
           value: PhotoSource.camera,
           leading: Icon(
-            Icons.photo_camera_rounded,
+            AppIcons.camera,
             color: context.palette.accent,
             size: 22,
           ),
@@ -166,7 +164,7 @@ Future<PhotoSource?> showUploadPhotoPopup(BuildContext context) {
         _OptionTile(
           value: PhotoSource.library,
           leading: Icon(
-            Icons.photo_library_rounded,
+            AppIcons.photos,
             color: context.palette.accent,
             size: 22,
           ),
@@ -195,20 +193,16 @@ Future<ThemeMode?> showAppearancePopup(
     kind: AppPopupKind.info,
     title: 'Appearance',
     message:
-        'Choose how LifeCome Live looks. System default follows your '
+        'Choose how LifeCome Health looks. System default follows your '
         "phone's light or dark setting.",
     primaryLabel: 'Cancel',
     body: Column(
       children: [
-        option(
-          ThemeMode.system,
-          Icons.brightness_auto_rounded,
-          'System default',
-        ),
+        option(ThemeMode.system, AppIcons.brightness, 'System default'),
         SizedBox(height: AppSpacing.xs),
-        option(ThemeMode.light, Icons.light_mode_rounded, 'Light'),
+        option(ThemeMode.light, AppIcons.lightMode, 'Light'),
         SizedBox(height: AppSpacing.xs),
-        option(ThemeMode.dark, Icons.dark_mode_rounded, 'Dark'),
+        option(ThemeMode.dark, AppIcons.darkMode, 'Dark'),
       ],
     ),
   );
@@ -399,9 +393,7 @@ class _OptionTile<T> extends StatelessWidget {
                 ),
               ),
               Icon(
-                selected
-                    ? Icons.check_circle_rounded
-                    : Icons.arrow_forward_ios_rounded,
+                selected ? AppIcons.checkCircle : AppIcons.arrowForward,
                 color: selected
                     ? context.palette.accent
                     : context.palette.inkMuted,

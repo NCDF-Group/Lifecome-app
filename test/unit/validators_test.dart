@@ -230,7 +230,7 @@ void main() {
       );
       expect(
         Validators.dateOfBirth(DateTime(2010, 1, 1), today: today),
-        'You must be 18 or over to use LifeCome Live.',
+        'You must be 18 or over to use LifeCome Health.',
       );
     });
 
@@ -241,7 +241,7 @@ void main() {
       );
       expect(
         Validators.dateOfBirth(DateTime(2008, 10, 15), today: today),
-        'You must be 18 or over to use LifeCome Live.',
+        'You must be 18 or over to use LifeCome Health.',
       );
     });
 

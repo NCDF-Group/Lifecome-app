@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'empty_state.dart';
 import 'error_state.dart';
-import 'loading_indicator.dart';
+import 'skeleton_loader.dart';
 
 /// Turns an [AsyncValue] into the three states every data screen needs: a
-/// spinner while it loads, an [ErrorState] with a retry button if it fails,
+/// skeleton while it loads, an [ErrorState] with a retry button if it fails,
 /// and the data itself — or [empty] when [isEmpty] says there is none.
 class AsyncValueView<T> extends StatelessWidget {
   const AsyncValueView({
@@ -30,7 +30,7 @@ class AsyncValueView<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return value.when(
-      loading: () => const LoadingIndicator(),
+      loading: () => const SkeletonLoader(),
       error: (error, _) => ErrorState(error: error, onRetry: onRetry),
       data: (loaded) {
         if (empty != null && (isEmpty?.call(loaded) ?? false)) return empty!;

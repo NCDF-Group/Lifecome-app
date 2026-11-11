@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>LifeCome Live</string>
+	<string>LifeCome Health</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -27,7 +27,11 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSFaceIDUsageDescription</key>
-	<string>LifeCome Live uses Face ID to unlock the app quickly and securely.</string>
+	<string>LifeCome Health uses Face ID to unlock the app quickly and securely.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>LifeCome Health uses your camera for video appointments with your clinician.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>LifeCome Health uses your microphone for appointments with your clinician.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

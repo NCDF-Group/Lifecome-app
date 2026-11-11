@@ -6,7 +6,7 @@ import 'app_radius.dart';
 import 'app_typography.dart';
 
 /// The app's theme for one brightness. [Brightness.light] is the original
-/// LifeCome Live look, unchanged; [Brightness.dark] is its dark counterpart.
+/// LifeCome Health look, unchanged; [Brightness.dark] is its dark counterpart.
 /// Both carry their [AppPalette] as a theme extension — read it with
 /// `context.palette` — and which one is shown follows the phone's setting
 /// unless the user picked one (see `themeModeProvider`).

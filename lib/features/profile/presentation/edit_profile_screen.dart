@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -13,7 +14,7 @@ import '../../../core/utils/validators.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/feedback/error_state.dart';
-import '../../../core/widgets/feedback/loading_indicator.dart';
+import '../../../core/widgets/feedback/skeleton_loader.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../../core/widgets/layout/screen_title.dart';
@@ -246,7 +247,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       error: me.error!,
                       onRetry: () => ref.read(meProvider.notifier).refresh(),
                     )
-                  : const LoadingIndicator())
+                  : const SkeletonLoader())
             : _form(context),
       ),
     );
@@ -280,7 +281,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: 18),
               _SectionCard(
                 background: context.palette.tintGreen,
-                icon: Icons.person_outline,
+                icon: AppIcons.person,
                 iconColor: context.palette.positive,
                 title: 'Personal details',
                 children: [
@@ -310,7 +311,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     onTap: _pickDateOfBirth,
                     errorText: _dobError,
                     suffixIcon: Icon(
-                      Icons.calendar_today_outlined,
+                      AppIcons.calendar,
                       size: 18,
                       color: context.palette.inkMuted,
                     ),
@@ -344,7 +345,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: AppSpacing.md),
               _SectionCard(
                 background: context.palette.tintBlue,
-                icon: Icons.home_outlined,
+                icon: AppIcons.home,
                 iconColor: context.palette.accent,
                 title: 'Where you live',
                 children: [
@@ -376,7 +377,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 child: Row(
                   children: [
                     Icon(
-                      Icons.shield_outlined,
+                      AppIcons.shield,
                       size: 18,
                       color: context.palette.accent,
                     ),

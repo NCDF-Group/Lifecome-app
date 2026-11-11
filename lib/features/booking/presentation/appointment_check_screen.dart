@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
@@ -93,7 +94,7 @@ class AppointmentCheckScreen extends StatelessWidget {
                       child: Row(
                         children: [
                           Icon(
-                            Icons.location_on_outlined,
+                            AppIcons.location,
                             size: 15,
                             color: palette.inkMuted,
                           ),
@@ -119,7 +120,7 @@ class AppointmentCheckScreen extends StatelessWidget {
                     children: [
                       Expanded(
                         child: _SummaryField(
-                          icon: Icons.calendar_today_outlined,
+                          icon: AppIcons.calendar,
                           label: 'DATE',
                           value: Formatters.date(uk),
                           second:
@@ -129,7 +130,7 @@ class AppointmentCheckScreen extends StatelessWidget {
                       ),
                       Expanded(
                         child: _SummaryField(
-                          icon: Icons.person_outline,
+                          icon: AppIcons.person,
                           label: 'WITH',
                           value: appointment.providerName,
                         ),
@@ -151,7 +152,7 @@ class AppointmentCheckScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
             _Section(
               background: palette.tintGreen,
-              icon: Icons.checklist_outlined,
+              icon: AppIcons.checklist,
               iconColor: palette.positive,
               title: 'Before you join',
               children: [
@@ -162,7 +163,7 @@ class AppointmentCheckScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(
-                          Icons.check_circle_outline,
+                          AppIcons.checkCircle,
                           size: 16,
                           color: palette.positive,
                         ),
@@ -185,7 +186,7 @@ class AppointmentCheckScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
             _Section(
               background: palette.surface,
-              icon: Icons.assignment_outlined,
+              icon: AppIcons.assignment,
               iconColor: palette.accent,
               title: 'What your clinician has been told',
               children: [
@@ -232,11 +233,7 @@ class AppointmentCheckScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(AppSpacing.md),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.warning_amber_rounded,
-                        color: palette.danger,
-                        size: 20,
-                      ),
+                      Icon(AppIcons.warning, color: palette.danger, size: 20),
                       const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: Column(
@@ -260,7 +257,7 @@ class AppointmentCheckScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Icon(Icons.chevron_right, color: palette.danger),
+                      Icon(AppIcons.chevronRight, color: palette.danger),
                     ],
                   ),
                 ),

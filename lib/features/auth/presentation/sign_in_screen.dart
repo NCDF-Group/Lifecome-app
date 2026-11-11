@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 
 import '../../../core/animation/fade_in.dart';
 import '../../../core/router/route_paths.dart';
@@ -31,6 +32,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _rememberMe = true;
   String? _emailError;
   String? _passwordError;
 
@@ -68,6 +70,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         .signIn(
           email: _emailController.text.trim(),
           password: _passwordController.text,
+          rememberMe: _rememberMe,
         );
 
     if (!mounted) return;
@@ -109,7 +112,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 FadeIn(
                   delay: const Duration(milliseconds: 80),
                   child: Text(
-                    'Welcome to LifeCome Live.',
+                    'Welcome to LifeCome Health.',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w600,
@@ -139,7 +142,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
                     autofillHints: const [AutofillHints.email],
-                    prefixIcon: Icons.mail_outline,
+                    prefixIcon: AppIcons.mail,
                     errorText: _emailError,
                     onChanged: (_) => _revalidate(),
                   ),
@@ -154,7 +157,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     obscureText: _obscurePassword,
                     textInputAction: TextInputAction.done,
                     autofillHints: const [AutofillHints.password],
-                    prefixIcon: Icons.lock_outline,
+                    prefixIcon: AppIcons.lock,
                     errorText: _passwordError,
                     onChanged: (_) => _revalidate(),
                     suffixIcon: IconButton(
@@ -163,8 +166,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                           : 'Hide password',
                       icon: Icon(
                         _obscurePassword
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
+                            ? AppIcons.visibility
+                            : AppIcons.visibilityOff,
                         size: 20,
                         color: context.palette.inkMuted,
                       ),
@@ -177,20 +180,83 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 const SizedBox(height: AppSpacing.xs),
                 FadeIn(
                   delay: const Duration(milliseconds: 220),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: _forgotPassword,
-                      style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                      child: Text(
-                        'Forgot password?',
-                        style: TextStyle(
-                          color: context.palette.accent,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final rememberMe = ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 180),
+                        child: MergeSemantics(
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(8),
+                            onTap: () =>
+                                setState(() => _rememberMe = !_rememberMe),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Checkbox(
+                                  value: _rememberMe,
+                                  onChanged: (value) => setState(
+                                    () => _rememberMe = value ?? false,
+                                  ),
+                                  visualDensity: VisualDensity.compact,
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                const SizedBox(width: AppSpacing.xxs),
+                                Flexible(
+                                  child: Text(
+                                    'Remember me',
+                                    maxLines: 2,
+                                    softWrap: true,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: context.palette.ink,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                      final forgotPassword = TextButton(
+                        onPressed: _forgotPassword,
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          minimumSize: const Size(0, 36),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: Text(
+                          'Forgot password?',
+                          style: TextStyle(
+                            color: context.palette.accent,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ),
+                      );
+
+                      if (constraints.maxWidth < 320) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            rememberMe,
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: forgotPassword,
+                            ),
+                          ],
+                        );
+                      }
+
+                      return Row(
+                        children: [
+                          Flexible(child: rememberMe),
+                          const Spacer(),
+                          forgotPassword,
+                        ],
+                      );
+                    },
                   ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
@@ -251,7 +317,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                       onPressed: () =>
                           showComingSoonPopup(context, feature: 'Get help'),
                       icon: Icon(
-                        Icons.forum_outlined,
+                        AppIcons.forum,
                         size: 16,
                         color: context.palette.accent,
                       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,7 +10,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/feedback/empty_state.dart';
 import '../../../core/widgets/feedback/error_state.dart';
-import '../../../core/widgets/feedback/loading_indicator.dart';
+import '../../../core/widgets/feedback/skeleton_loader.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../../core/widgets/layout/screen_title.dart';
 import '../../../core/widgets/layout/step_progress.dart';
@@ -61,7 +62,7 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
             ListTile(
               title: const Text('Any language'),
               trailing: _language == null
-                  ? Icon(Icons.check, color: context.palette.accent)
+                  ? Icon(AppIcons.check, color: context.palette.accent)
                   : null,
               onTap: () => Navigator.of(context).pop(''),
             ),
@@ -69,7 +70,7 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
               ListTile(
                 title: Text(language),
                 trailing: language == _language
-                    ? Icon(Icons.check, color: context.palette.accent)
+                    ? Icon(AppIcons.check, color: context.palette.accent)
                     : null,
                 onTap: () => Navigator.of(context).pop(language),
               ),
@@ -142,7 +143,7 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
                 children: [
                   Expanded(
                     child: _ModeButton(
-                      icon: Icons.desktop_windows_outlined,
+                      icon: AppIcons.monitor,
                       label: 'Video',
                       selected: _mode == ConsultationMode.video,
                       onTap: () =>
@@ -152,7 +153,7 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: _ModeButton(
-                      icon: Icons.call_outlined,
+                      icon: AppIcons.phone,
                       label: 'Telephone',
                       selected: _mode == ConsultationMode.audio,
                       onTap: () =>
@@ -166,14 +167,14 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
             Row(
               children: [
                 _FilterChip(
-                  icon: Icons.calendar_today_outlined,
+                  icon: AppIcons.calendar,
                   label: _day == null ? 'Date' : Formatters.shortDate(_day!),
                   active: _day != null,
                   onTap: _chooseDay,
                 ),
                 const SizedBox(width: AppSpacing.xs),
                 _FilterChip(
-                  icon: Icons.language,
+                  icon: AppIcons.language,
                   label: _language ?? 'Language',
                   active: _language != null,
                   onTap: languages.isEmpty
@@ -194,7 +195,7 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
             ),
             const SizedBox(height: AppSpacing.md),
             doctors.when(
-              loading: () => const LoadingIndicator(),
+              loading: () => const SkeletonLoader(),
               error: (error, _) => ErrorState(
                 error: error,
                 onRetry: () => ref.invalidate(doctorsProvider),
@@ -203,7 +204,7 @@ class _FindADoctorScreenState extends ConsumerState<FindADoctorScreen> {
                 final visible = _visible(all);
                 if (visible.isEmpty) {
                   return EmptyState(
-                    icon: Icons.person_search_outlined,
+                    icon: AppIcons.personSearch,
                     title: all.isEmpty
                         ? 'No clinicians are available yet'
                         : 'No clinicians match',
@@ -351,7 +352,7 @@ class _FilterChip extends StatelessWidget {
                 ),
               ),
               Icon(
-                Icons.keyboard_arrow_down,
+                AppIcons.chevronDown,
                 size: 16,
                 color: context.palette.inkMuted,
               ),
@@ -421,7 +422,7 @@ class _DoctorCard extends ConsumerWidget {
                         Row(
                           children: [
                             Icon(
-                              Icons.chat_bubble_outline,
+                              AppIcons.message,
                               size: 13,
                               color: palette.inkMuted,
                             ),
@@ -442,7 +443,7 @@ class _DoctorCard extends ConsumerWidget {
                         Row(
                           children: [
                             Icon(
-                              Icons.location_on_outlined,
+                              AppIcons.location,
                               size: 13,
                               color: palette.inkMuted,
                             ),
@@ -488,14 +489,7 @@ class _DoctorCard extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.xs),
           slots.when(
-            loading: () => const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              child: SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            ),
+            loading: () => const SkeletonLoader.inlineChips(),
             error: (error, _) => Row(
               children: [
                 Expanded(

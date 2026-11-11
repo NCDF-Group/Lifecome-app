@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -177,7 +178,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                     obscureText: _obscurePassword,
                     textInputAction: TextInputAction.done,
                     autofillHints: const [AutofillHints.password],
-                    prefixIcon: Icons.lock_outline,
+                    prefixIcon: AppIcons.lock,
                     errorText: _passwordError,
                     onChanged: (_) {
                       if (_passwordError != null) {
@@ -190,8 +191,8 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                           : 'Hide password',
                       icon: Icon(
                         _obscurePassword
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
+                            ? AppIcons.visibility
+                            : AppIcons.visibilityOff,
                         size: 20,
                         color: context.palette.inkMuted,
                       ),
@@ -261,8 +262,8 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
                                     )
                                   : Icon(
                                       _step == _UnlockStep.unlocked
-                                          ? Icons.check_circle
-                                          : Icons.face_retouching_natural,
+                                          ? AppIcons.checkCircle
+                                          : AppIcons.face,
                                       color: _step == _UnlockStep.unlocked
                                           ? context.palette.positive
                                           : context.palette.accent,

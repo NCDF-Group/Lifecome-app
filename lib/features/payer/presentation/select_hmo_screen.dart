@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -10,7 +11,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/feedback/empty_state.dart';
 import '../../../core/widgets/feedback/error_state.dart';
-import '../../../core/widgets/feedback/loading_indicator.dart';
+import '../../../core/widgets/feedback/skeleton_loader.dart';
 import '../../../core/widgets/layout/back_app_bar.dart';
 import '../../booking/domain/models/booking_selection.dart';
 import '../application/payer_controller.dart';
@@ -70,7 +71,7 @@ class _SelectHmoScreenState extends ConsumerState<SelectHmoScreen> {
               decoration: InputDecoration(
                 hintText: 'Search for your HMO',
                 errorText: searchError,
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(AppIcons.search),
               ),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -84,7 +85,7 @@ class _SelectHmoScreenState extends ConsumerState<SelectHmoScreen> {
             ),
             const SizedBox(height: AppSpacing.sm),
             payers.when(
-              loading: () => const LoadingIndicator(),
+              loading: () => const SkeletonLoader(),
               error: (error, _) => ErrorState(
                 error: error,
                 onRetry: () => ref.invalidate(payersProvider),
@@ -99,7 +100,7 @@ class _SelectHmoScreenState extends ConsumerState<SelectHmoScreen> {
                 ];
                 if (shown.isEmpty) {
                   return EmptyState(
-                    icon: Icons.health_and_safety_outlined,
+                    icon: AppIcons.health,
                     title: all.isEmpty
                         ? 'No health plans yet'
                         : 'No plans match your search',
@@ -131,7 +132,7 @@ class _SelectHmoScreenState extends ConsumerState<SelectHmoScreen> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: context.palette.accent),
+                  Icon(AppIcons.info, color: context.palette.accent),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
@@ -224,7 +225,7 @@ class _HmoTile extends StatelessWidget {
                   ),
                 )
               else
-                Icon(Icons.chevron_right, color: context.palette.inkMuted),
+                Icon(AppIcons.chevronRight, color: context.palette.inkMuted),
             ],
           ),
         ),

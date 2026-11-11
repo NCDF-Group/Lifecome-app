@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 
 import '../../router/route_paths.dart';
 import '../../router/safe_back.dart';
@@ -35,7 +36,7 @@ class AppBackButton extends StatelessWidget {
       alignment: Alignment.centerLeft,
       constraints: const BoxConstraints(minWidth: 40, minHeight: 44),
       icon: Icon(
-        Icons.arrow_back_ios_new,
+        AppIcons.arrowBack,
         size: 18,
         color: color ?? context.palette.ink,
       ),
@@ -66,7 +67,7 @@ class BackLink extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.arrow_back_ios_new, size: 14, color: color),
+                Icon(AppIcons.arrowBack, size: 14, color: color),
                 const SizedBox(width: 6),
                 Text(
                   'Back',

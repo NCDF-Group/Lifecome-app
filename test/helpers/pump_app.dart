@@ -24,12 +24,12 @@ Future<GoRouter> pumpAppAt(
     ProviderScope(
       retry: noAutomaticRetry,
       overrides: overrides,
-      child: const LifeComeLiveApp(),
+      child: const LifeComeHealthApp(),
     ),
   );
   await tester.pump();
   final router = ProviderScope.containerOf(
-    tester.element(find.byType(LifeComeLiveApp)),
+    tester.element(find.byType(LifeComeHealthApp)),
   ).read(appRouterProvider);
   router.go(location, extra: extra);
   await settle(tester);

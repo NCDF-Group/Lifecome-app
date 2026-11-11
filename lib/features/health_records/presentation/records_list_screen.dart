@@ -7,7 +7,7 @@ import '../../../core/theme/app_palette.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/feedback/error_state.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
-import '../../../core/widgets/feedback/loading_indicator.dart';
+import '../../../core/widgets/feedback/skeleton_loader.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../../core/widgets/layout/screen_title.dart';
 import '../../../core/widgets/lists/row_card.dart';
@@ -131,7 +131,7 @@ class RecordsListScreen extends ConsumerWidget {
             ScreenTitle(title: title, subtitle: subtitle),
             const SizedBox(height: 14),
             rows.when(
-              loading: () => const LoadingIndicator(),
+              loading: () => const SkeletonLoader(),
               error: (error, _) => ErrorState(
                 error: error,
                 onRetry: () => ref.invalidate(switch (kind) {

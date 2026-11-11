@@ -147,6 +147,15 @@ class HealthRecordsScreen extends ConsumerWidget {
                 onTap: () => context.push(RoutePaths.menopausePlan),
               ),
             ],
+            const SectionHeader(title: 'Professional updates'),
+            RowCard(
+              icon: LcIcons.download,
+              title: 'Professional record updates',
+              subtitle: 'Import information shared by another professional',
+              tone: RowCardTone.white,
+              onTap: () =>
+                  context.push(RoutePaths.professionalRecordUpdates),
+            ),
             const SectionHeader(title: 'Sharing'),
             RowCard(
               icon: LcIcons.people,

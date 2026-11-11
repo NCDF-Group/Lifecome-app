@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 
 import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_radius.dart';
@@ -16,11 +17,10 @@ class NotificationTile extends StatelessWidget {
   final VoidCallback onOpen;
 
   IconData get _icon => switch (item.kind) {
-    NotificationKind.booking => Icons.event_available_outlined,
-    NotificationKind.message ||
-    NotificationKind.support => Icons.chat_bubble_outline,
-    NotificationKind.record => Icons.description_outlined,
-    NotificationKind.other => Icons.notifications_none,
+    NotificationKind.booking => AppIcons.eventAvailable,
+    NotificationKind.message || NotificationKind.support => AppIcons.message,
+    NotificationKind.record => AppIcons.file,
+    NotificationKind.other => AppIcons.notification,
   };
 
   @override

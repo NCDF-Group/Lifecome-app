@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -181,9 +182,7 @@ class _ActivateAccessScreenState extends ConsumerState<ActivateAccessScreen> {
                     radius: 22,
                     backgroundColor: context.palette.elevated,
                     child: Icon(
-                      _isEmployer
-                          ? Icons.apartment_outlined
-                          : Icons.badge_outlined,
+                      _isEmployer ? AppIcons.clinic : AppIcons.badge,
                       color: _isEmployer
                           ? context.palette.positive
                           : context.palette.accent,
@@ -252,7 +251,7 @@ class _ActivateAccessScreenState extends ConsumerState<ActivateAccessScreen> {
             const SizedBox(height: AppSpacing.md),
             PrimaryButton(
               label: 'Send for activation',
-              icon: Icons.arrow_forward,
+              icon: AppIcons.arrowForward,
               loading: _loading,
               onPressed: _send,
             ),
@@ -275,7 +274,7 @@ class _ActivateAccessScreenState extends ConsumerState<ActivateAccessScreen> {
                     radius: 18,
                     backgroundColor: context.palette.elevated,
                     child: Icon(
-                      Icons.help_outline,
+                      AppIcons.help,
                       size: 18,
                       color: context.palette.accent,
                     ),
@@ -334,7 +333,7 @@ class _ActivateAccessScreenState extends ConsumerState<ActivateAccessScreen> {
                         radius: 18,
                         backgroundColor: context.palette.elevated,
                         child: Icon(
-                          Icons.person_outline,
+                          AppIcons.person,
                           size: 18,
                           color: context.palette.positive,
                         ),
@@ -367,7 +366,7 @@ class _ActivateAccessScreenState extends ConsumerState<ActivateAccessScreen> {
                         ),
                       ),
                       Icon(
-                        Icons.chevron_right,
+                        AppIcons.chevronRight,
                         color: context.palette.positive,
                       ),
                     ],

@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 
 import '../../../core/animation/fade_in.dart';
 import '../../../core/router/route_paths.dart';
@@ -18,7 +19,6 @@ import '../application/auth_controller.dart';
 import '../domain/models/auth_session.dart';
 import 'verify_mobile_screen.dart';
 import 'widgets/auth_header.dart';
-import 'widgets/password_rules_checklist.dart';
 
 /// View 01 (Create Account) — one page: name, email, mobile number and
 /// password together, matching the app's current single-step sign-up
@@ -41,7 +41,6 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
   final _confirmController = TextEditingController();
 
   String _phoneNumber = '';
-  String _password = '';
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   bool _agreedToTerms = false;
@@ -198,6 +197,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                 AppTextField(
                   label: 'First name',
                   controller: _firstNameController,
+                  hintText: 'Enter your first name',
                   textInputAction: TextInputAction.next,
                   autofillHints: const [AutofillHints.givenName],
                   errorText: _firstNameError,
@@ -207,6 +207,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                 AppTextField(
                   label: 'Last name',
                   controller: _lastNameController,
+                  hintText: 'Enter your last name',
                   textInputAction: TextInputAction.next,
                   autofillHints: const [AutofillHints.familyName],
                   errorText: _lastNameError,
@@ -216,6 +217,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                 AppTextField(
                   label: 'Personal email',
                   controller: _emailController,
+                  hintText: 'you@example.com',
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
                   autofillHints: const [AutofillHints.email],
@@ -235,22 +237,20 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                 AppTextField(
                   label: 'Password',
                   controller: _passwordController,
+                  hintText: 'Create a password',
                   obscureText: _obscurePassword,
                   textInputAction: TextInputAction.next,
                   autofillHints: const [AutofillHints.newPassword],
                   errorText: _passwordError,
-                  onChanged: (value) {
-                    setState(() => _password = value);
-                    _revalidate();
-                  },
+                  onChanged: (_) => _revalidate(),
                   suffixIcon: IconButton(
                     tooltip: _obscurePassword
                         ? 'Show password'
                         : 'Hide password',
                     icon: Icon(
                       _obscurePassword
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
+                          ? AppIcons.visibility
+                          : AppIcons.visibilityOff,
                       size: 20,
                       color: context.palette.inkMuted,
                     ),
@@ -258,12 +258,11 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                         setState(() => _obscurePassword = !_obscurePassword),
                   ),
                 ),
-                const SizedBox(height: AppSpacing.xs),
-                PasswordRulesChecklist(password: _password),
                 const SizedBox(height: AppSpacing.md),
                 AppTextField(
                   label: 'Confirm password',
                   controller: _confirmController,
+                  hintText: 'Re-enter your password',
                   obscureText: _obscureConfirm,
                   textInputAction: TextInputAction.done,
                   autofillHints: const [AutofillHints.newPassword],
@@ -276,8 +275,8 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                         : 'Hide password',
                     icon: Icon(
                       _obscureConfirm
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
+                          ? AppIcons.visibility
+                          : AppIcons.visibilityOff,
                       size: 20,
                       color: context.palette.inkMuted,
                     ),
@@ -368,7 +367,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                 FadeIn(
                   child: PrimaryButton(
                     label: 'Create account',
-                    icon: Icons.arrow_forward,
+                    icon: AppIcons.arrowForward,
                     loading: submitting,
                     onPressed: _submit,
                   ),
@@ -384,7 +383,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Icon(
-                        Icons.info_outline,
+                        AppIcons.info,
                         size: 18,
                         color: context.palette.positive,
                       ),

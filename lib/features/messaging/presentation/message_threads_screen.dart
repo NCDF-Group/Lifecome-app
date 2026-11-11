@@ -8,7 +8,7 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/buttons/secondary_button.dart';
 import '../../../core/widgets/feedback/error_state.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
-import '../../../core/widgets/feedback/loading_indicator.dart';
+import '../../../core/widgets/feedback/skeleton_loader.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../../core/widgets/layout/screen_title.dart';
 import '../../../core/widgets/lists/row_card.dart';
@@ -49,7 +49,7 @@ class MessageThreadsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 14),
               threads.when(
-                loading: () => const LoadingIndicator(),
+                loading: () => const SkeletonLoader(),
                 error: (error, _) => threads.hasValue
                     ? body(threads.requireValue)
                     : ErrorState(error: error, onRetry: notifier.refresh),

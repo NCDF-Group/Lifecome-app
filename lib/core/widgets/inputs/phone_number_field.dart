@@ -7,7 +7,7 @@ import '../../theme/app_radius.dart';
 const _ukDialCode = '+44';
 
 /// A phone number field with a static UK (+44) prefix ahead of the local
-/// number, matching the app's single bordered field look. LifeCome Live
+/// number, matching the app's single bordered field look. LifeCome Health
 /// serves the UK only, so there's no country selector here. What it reports
 /// is always `+44` followed by the number without its leading 0.
 class PhoneNumberField extends StatefulWidget {

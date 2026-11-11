@@ -10,8 +10,8 @@ import 'core/theme/app_palette.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_mode_controller.dart';
 
-class LifeComeLiveApp extends ConsumerWidget {
-  const LifeComeLiveApp({super.key});
+class LifeComeHealthApp extends ConsumerWidget {
+  const LifeComeHealthApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,17 +25,69 @@ class LifeComeLiveApp extends ConsumerWidget {
     });
 
     return MaterialApp.router(
-      title: 'LifeCome Live',
+      title: 'LifeCome Health',
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(),
       darkTheme: buildAppTheme(brightness: Brightness.dark),
       // System by default: the phone's light/dark setting decides, until the
       // user picks one on the Profile tab.
       themeMode: themeMode,
-      builder: (context, child) => _Accessibility(
-        child: _SystemUiStyle(child: child ?? const SizedBox.shrink()),
+      builder: (context, child) => _ResponsiveFrame(
+        child: _Accessibility(
+          child: _SystemUiStyle(child: child ?? const SizedBox.shrink()),
+        ),
       ),
       routerConfig: router,
+    );
+  }
+}
+
+/// Makes the app fit every screen: text shrinks a little on narrow phones so
+/// headlines and buttons keep to one or two lines, and on tablets, desktops
+/// and wide browser windows the content stays in a centred phone-width column
+/// instead of stretching edge to edge.
+class _ResponsiveFrame extends StatelessWidget {
+  const _ResponsiveFrame({required this.child});
+
+  final Widget child;
+
+  static const double _maxContentWidth = 720;
+
+  /// Text scale for a screen [width] in logical pixels.
+  static double textFactorFor(double width) {
+    if (width < 320) return 0.82;
+    if (width < 360) return 0.88;
+    if (width < 400) return 0.94;
+    return 1;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    final width = media.size.width;
+    final factor = textFactorFor(width);
+
+    Widget framed = child;
+    if (width > _maxContentWidth) {
+      framed = Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: _maxContentWidth),
+          child: MediaQuery(
+            data: media.copyWith(
+              size: Size(_maxContentWidth, media.size.height),
+            ),
+            child: child,
+          ),
+        ),
+      );
+    }
+    if (factor == 1) return framed;
+    return MediaQuery(
+      data: media.copyWith(
+        textScaler: TextScaler.linear(media.textScaler.scale(1) * factor),
+      ),
+      child: framed,
     );
   }
 }

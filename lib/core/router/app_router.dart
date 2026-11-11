@@ -30,6 +30,7 @@ import '../../features/health_records/domain/models/prescription.dart';
 import '../../features/health_records/domain/models/referral.dart';
 import '../../features/health_records/presentation/diagnostic_result_screen.dart';
 import '../../features/health_records/presentation/prescription_detail_screen.dart';
+import '../../features/health_records/presentation/professional_record_updates_screen.dart';
 import '../../features/health_records/presentation/record_detail_screen.dart';
 import '../../features/health_records/presentation/records_list_screen.dart';
 import '../../features/health_records/presentation/referral_detail_screen.dart';
@@ -38,6 +39,8 @@ import '../../features/menopause/presentation/menopause_booking_screen.dart';
 import '../../features/menopause/presentation/menopause_hub_screen.dart';
 import '../../features/menopause/presentation/menopause_plan_screen.dart';
 import '../../features/menopause/presentation/menopause_review_screen.dart';
+import '../../features/tests/presentation/test_journey_screens.dart';
+import '../../features/tests/presentation/tests_hub_screen.dart';
 import '../../features/gp/presentation/gp_eligibility_screen.dart';
 import '../../features/gp/presentation/gp_hub_screen.dart';
 import '../../features/auth/presentation/app_lock_screen.dart';
@@ -364,6 +367,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const InsuranceHubScreen(),
       ),
       GoRoute(
+        path: RoutePaths.insuranceReimbursement,
+        builder: (context, state) => const InsuranceReimbursementScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.insuranceSampleReceipt,
+        builder: (context, state) => const InsuranceSampleReceiptScreen(),
+      ),
+      GoRoute(
         path: RoutePaths.insuranceProducts,
         builder: (context, state) => const InsuranceProductsScreen(),
       ),
@@ -594,6 +605,84 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const MenopauseReviewScreen(),
       ),
       GoRoute(
+        path: RoutePaths.tests,
+        builder: (context, state) => const TestsHubScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.testService,
+        builder: (context, state) => TestServiceScreen(
+          serviceId: state.pathParameters['serviceId']!,
+        ),
+      ),
+      GoRoute(
+        path: RoutePaths.testSuitability,
+        builder: (context, state) => TestSuitabilityScreen(
+          serviceId: state.uri.queryParameters['service'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: RoutePaths.testContact,
+        builder: (context, state) => TestJourneyScreen(
+          serviceId: state.uri.queryParameters['service'] ?? '',
+          step: TestJourneyStep.contact,
+          selection: state.uri.queryParameters['contact'] ?? '',
+          contactSelection: state.uri.queryParameters['contact'] ?? '',
+          appointmentSelection:
+              state.uri.queryParameters['appointment'] ?? '',
+          paymentSelection: state.uri.queryParameters['payment'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: RoutePaths.testAppointment,
+        builder: (context, state) => TestJourneyScreen(
+          serviceId: state.uri.queryParameters['service'] ?? '',
+          step: TestJourneyStep.appointment,
+          selection: state.uri.queryParameters['appointment'] ?? '',
+          contactSelection: state.uri.queryParameters['contact'] ?? '',
+          appointmentSelection:
+              state.uri.queryParameters['appointment'] ?? '',
+          paymentSelection: state.uri.queryParameters['payment'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: RoutePaths.testPayment,
+        builder: (context, state) => TestJourneyScreen(
+          serviceId: state.uri.queryParameters['service'] ?? '',
+          step: TestJourneyStep.payment,
+          selection: state.uri.queryParameters['payment'] ?? '',
+          contactSelection: state.uri.queryParameters['contact'] ?? '',
+          appointmentSelection:
+              state.uri.queryParameters['appointment'] ?? '',
+          paymentSelection: state.uri.queryParameters['payment'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: RoutePaths.testReview,
+        builder: (context, state) => TestJourneyScreen(
+          serviceId: state.uri.queryParameters['service'] ?? '',
+          step: TestJourneyStep.review,
+          contactSelection: state.uri.queryParameters['contact'] ?? '',
+          appointmentSelection:
+              state.uri.queryParameters['appointment'] ?? '',
+          paymentSelection: state.uri.queryParameters['payment'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: RoutePaths.testConfirmation,
+        builder: (context, state) => TestJourneyScreen(
+          serviceId: state.uri.queryParameters['service'] ?? '',
+          step: TestJourneyStep.confirmation,
+          contactSelection: state.uri.queryParameters['contact'] ?? '',
+          appointmentSelection:
+              state.uri.queryParameters['appointment'] ?? '',
+          paymentSelection: state.uri.queryParameters['payment'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: RoutePaths.testResults,
+        builder: (context, state) => const TestResultsScreen(),
+      ),
+      GoRoute(
         path: RoutePaths.emergency,
         builder: (context, state) => const EmergencyGuidanceScreen(),
       ),
@@ -678,6 +767,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                         ),
                       ),
                     ],
+                  ),
+                  GoRoute(
+                    path: 'professional-record-updates',
+                    builder: (context, state) =>
+                        const ProfessionalRecordUpdatesScreen(),
                   ),
                   GoRoute(
                     path: 'health-profile',

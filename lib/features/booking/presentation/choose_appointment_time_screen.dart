@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,7 +13,7 @@ import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/feedback/recovery_view.dart';
 import '../../../core/widgets/feedback/error_state.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
-import '../../../core/widgets/feedback/loading_indicator.dart';
+import '../../../core/widgets/feedback/skeleton_loader.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../../core/widgets/inputs/choice_card.dart';
 import '../../../core/widgets/layout/screen_title.dart';
@@ -129,7 +130,7 @@ class _ChooseAppointmentTimeScreenState
                     const SizedBox(height: AppSpacing.md),
                   ],
                   slots.when(
-                    loading: () => const LoadingIndicator(),
+                    loading: () => const SkeletonLoader(),
                     error: (error, _) => ErrorState(
                       error: error,
                       onRetry: () =>
@@ -254,7 +255,7 @@ class _ChooseAppointmentTimeScreenState
           const SizedBox(height: AppSpacing.md),
           InfoBanner(
             tone: BannerTone.success,
-            icon: Icons.calendar_month_outlined,
+            icon: AppIcons.calendar,
             title: 'Selected appointment',
             message:
                 '${Formatters.appointmentWhen(chosen.startsAt)}\n'

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -13,7 +14,6 @@ import '../../../core/widgets/inputs/app_text_field.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
 import '../data/auth_repository.dart';
 import 'widgets/auth_header.dart';
-import 'widgets/password_rules_checklist.dart';
 
 /// What this screen needs to know: which email and (already-verified)
 /// reset code to submit alongside the new password.
@@ -40,7 +40,6 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
   bool _obscureConfirm = true;
   String? _passwordError;
   String? _confirmError;
-  String _password = '';
   bool _loading = false;
 
   /// Errors stay quiet until the first attempt to submit; after that each
@@ -147,18 +146,15 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
                   textInputAction: TextInputAction.next,
                   autofillHints: const [AutofillHints.newPassword],
                   errorText: _passwordError,
-                  onChanged: (value) {
-                    setState(() => _password = value);
-                    _revalidate();
-                  },
+                  onChanged: (_) => _revalidate(),
                   suffixIcon: IconButton(
                     tooltip: _obscurePassword
                         ? 'Show password'
                         : 'Hide password',
                     icon: Icon(
                       _obscurePassword
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
+                          ? AppIcons.visibility
+                          : AppIcons.visibilityOff,
                       size: 20,
                       color: context.palette.inkMuted,
                     ),
@@ -166,8 +162,6 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
                         setState(() => _obscurePassword = !_obscurePassword),
                   ),
                 ),
-                const SizedBox(height: AppSpacing.xs),
-                PasswordRulesChecklist(password: _password),
                 const SizedBox(height: AppSpacing.md),
                 AppTextField(
                   label: 'Confirm new password',
@@ -184,8 +178,8 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
                         : 'Hide password',
                     icon: Icon(
                       _obscureConfirm
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
+                          ? AppIcons.visibility
+                          : AppIcons.visibilityOff,
                       size: 20,
                       color: context.palette.inkMuted,
                     ),
@@ -196,7 +190,7 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
                 const SizedBox(height: AppSpacing.lg),
                 PrimaryButton(
                   label: 'Reset password',
-                  icon: Icons.arrow_forward,
+                  icon: AppIcons.arrowForward,
                   loading: _loading,
                   onPressed: _submit,
                 ),

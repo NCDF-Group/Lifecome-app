@@ -18,7 +18,7 @@ import '../../booking/domain/models/appointment.dart';
 import '../../profile/application/profile_controller.dart';
 
 /// The Home tab — the screen pack's "How can we help today?" (008): the
-/// four services (GP, Care, Wellbeing, Insurance), the next step (the next
+/// four services (GP, Care, Wellbeing, Tests), the next step (the next
 /// real visit, or booking one), shared shortcuts and urgent help.
 ///
 /// Each of the four service cards opens its hub.
@@ -92,7 +92,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               onGp: _openGp,
               onCare: () => context.push(RoutePaths.care),
               onWellbeing: () => context.push(RoutePaths.wellbeing),
-              onInsurance: () => context.push(RoutePaths.insurance),
+              onTests: () => context.push(RoutePaths.tests),
             ),
             if (next != null) ...[
               const SectionHeader(title: 'Your next visit'),
@@ -126,6 +126,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               tone: RowCardTone.mint,
               onTap: () => context.push(RoutePaths.myBenefits),
             ),
+            RowCard(
+              icon: LcIcons.card,
+              title: 'Payment & Cover',
+              subtitle: 'Self-pay, employer benefits and insurance',
+              onTap: () => context.push(RoutePaths.insurance),
+            ),
             const SizedBox(height: 13),
             UrgentHelpLink(onTap: () => context.push(RoutePaths.emergency)),
           ],
@@ -135,20 +141,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 }
 
-/// GP, Care, Wellbeing and Insurance as a two-by-two grid of [ServiceCard]s,
+/// GP, Care, Wellbeing and Tests as a two-by-two grid of [ServiceCard]s,
 /// each row as tall as its tallest card.
 class _ServiceGrid extends StatelessWidget {
   const _ServiceGrid({
     required this.onGp,
     required this.onCare,
     required this.onWellbeing,
-    required this.onInsurance,
+    required this.onTests,
   });
 
   final VoidCallback onGp;
   final VoidCallback onCare;
   final VoidCallback onWellbeing;
-  final VoidCallback onInsurance;
+  final VoidCallback onTests;
 
   @override
   Widget build(BuildContext context) {
@@ -189,11 +195,11 @@ class _ServiceGrid extends StatelessWidget {
             onTap: onWellbeing,
           ),
           ServiceCard(
-            icon: LcIcons.shield,
-            title: 'Insurance',
-            subtitle: 'Explore and manage your cover',
+            icon: LcIcons.heart,
+            title: 'Tests & Health Checks',
+            subtitle: 'Explore checks, tests and results',
             tone: RowCardTone.blue,
-            onTap: onInsurance,
+            onTap: onTests,
           ),
         ),
       ],

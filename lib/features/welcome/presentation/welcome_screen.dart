@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/animation/fade_in.dart';
@@ -97,7 +98,7 @@ class _WelcomeBody extends StatelessWidget {
                       children: [
                         Expanded(
                           child: _FeatureIcon(
-                            icon: Icons.videocam,
+                            icon: AppIcons.video,
                             background: context.palette.tintGreenFaint,
                             color: context.palette.positive,
                             label: 'GP',
@@ -106,7 +107,7 @@ class _WelcomeBody extends StatelessWidget {
                         const _FeatureDivider(),
                         Expanded(
                           child: _FeatureIcon(
-                            icon: Icons.monitor_heart,
+                            icon: AppIcons.health,
                             background: context.palette.tintBlue,
                             color: _welcomeHeadlineBlue,
                             label: 'Care',
@@ -115,7 +116,7 @@ class _WelcomeBody extends StatelessWidget {
                         const _FeatureDivider(),
                         Expanded(
                           child: _FeatureIcon(
-                            icon: Icons.spa,
+                            icon: AppIcons.spa,
                             background: context.palette.tintGreenFaint,
                             color: context.palette.positive,
                             label: 'Wellbeing',
@@ -124,7 +125,7 @@ class _WelcomeBody extends StatelessWidget {
                         const _FeatureDivider(),
                         Expanded(
                           child: _FeatureIcon(
-                            icon: Icons.verified_user,
+                            icon: AppIcons.verified,
                             background: context.palette.tintBlue,
                             color: _welcomeHeadlineBlue,
                             label: 'Insurance',
@@ -158,7 +159,7 @@ class _WelcomeBody extends StatelessWidget {
                         children: [
                           Text('Create an account'),
                           SizedBox(width: 8),
-                          Icon(Icons.arrow_forward, size: 20),
+                          Icon(AppIcons.arrowForward, size: 20),
                         ],
                       ),
                     ),
@@ -401,7 +402,7 @@ class _VideoBadge extends StatelessWidget {
         color: _welcomeBlue,
         shape: BoxShape.circle,
       ),
-      child: const Icon(Icons.videocam, color: AppColors.white, size: 16),
+      child: const Icon(AppIcons.video, color: AppColors.white, size: 16),
     );
   }
 }
@@ -419,7 +420,7 @@ class _PlusBadge extends StatelessWidget {
         shape: BoxShape.circle,
         border: Border.all(color: context.palette.background, width: 3),
       ),
-      child: const Icon(Icons.add, color: AppColors.white, size: 20),
+      child: const Icon(AppIcons.add, color: AppColors.white, size: 20),
     );
   }
 }
@@ -513,11 +514,7 @@ class _WelcomeHeader extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 2),
-              Icon(
-                Icons.keyboard_arrow_down,
-                size: 18,
-                color: context.palette.ink,
-              ),
+              Icon(AppIcons.chevronDown, size: 18, color: context.palette.ink),
             ],
           ),
         ),
@@ -533,7 +530,7 @@ class _WelcomeHeader extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.notifications_none,
+                AppIcons.notification,
                 size: 22,
                 color: context.palette.ink,
               ),

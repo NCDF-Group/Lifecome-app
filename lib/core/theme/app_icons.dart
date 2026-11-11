@@ -1,0 +1,82 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+
+/// The app's shared Lucide icon set.
+///
+/// Keep icon choices here so the visual language stays consistent across
+/// screens.
+abstract final class AppIcons {
+  static const add = LucideIcons.plus;
+  static const arrowBack = LucideIcons.arrowLeft;
+  static const arrowForward = LucideIcons.arrowRight;
+  static const arrowUp = LucideIcons.arrowUp;
+  static const assignment = LucideIcons.clipboardList;
+  static const badge = LucideIcons.badge;
+  static const badgeCheck = LucideIcons.badgeCheck;
+  static const brightness = LucideIcons.sunMoon;
+  static const calendar = LucideIcons.calendarDays;
+  static const camera = LucideIcons.camera;
+  static const care = LucideIcons.heartHandshake;
+  static const check = LucideIcons.check;
+  static const checkCircle = LucideIcons.circleCheck;
+  static const checklist = LucideIcons.listChecks;
+  static const chevronDown = LucideIcons.chevronDown;
+  static const chevronRight = LucideIcons.chevronRight;
+  static const clinic = LucideIcons.building2;
+  static const clock = LucideIcons.clock;
+  static const close = LucideIcons.x;
+  static const creditCard = LucideIcons.creditCard;
+  static const darkMode = LucideIcons.moon;
+  static const delete = LucideIcons.trash2;
+  static const download = LucideIcons.download;
+  static const error = LucideIcons.circleAlert;
+  static const eventAvailable = LucideIcons.calendarCheck2;
+  static const face = LucideIcons.scanFace;
+  static const file = LucideIcons.fileText;
+  static const flower = LucideIcons.flower2;
+  static const forum = LucideIcons.messagesSquare;
+  static const groups = LucideIcons.usersRound;
+  static const headset = LucideIcons.headset;
+  static const health = LucideIcons.heartPulse;
+  static const help = LucideIcons.circleHelp;
+  static const home = LucideIcons.house;
+  static const info = LucideIcons.info;
+  static const language = LucideIcons.languages;
+  static const landscape = LucideIcons.image;
+  static const leaf = LucideIcons.leaf;
+  static const lightMode = LucideIcons.sun;
+  static const location = LucideIcons.mapPin;
+  static const lock = LucideIcons.lockKeyhole;
+  static const mail = LucideIcons.mail;
+  static const medical = LucideIcons.stethoscope;
+  static const meetingRoom = LucideIcons.doorOpen;
+  static const message = LucideIcons.messageCircle;
+  static const mic = LucideIcons.mic;
+  static const micOff = LucideIcons.micOff;
+  static const monitor = LucideIcons.monitor;
+  static const notification = LucideIcons.bell;
+  static const people = LucideIcons.usersRound;
+  static const person = LucideIcons.userRound;
+  static const personSearch = LucideIcons.userRoundSearch;
+  static const phone = LucideIcons.phone;
+  static const phoneOff = LucideIcons.phoneOff;
+  static const photos = LucideIcons.images;
+  static const pin = LucideIcons.mapPin;
+  static const remove = LucideIcons.minus;
+  static const search = LucideIcons.search;
+  static const shield = LucideIcons.shield;
+  static const sparkle = LucideIcons.sparkles;
+  static const spa = LucideIcons.flower2;
+  static const support = LucideIcons.headset;
+  static const sync = LucideIcons.arrowLeftRight;
+  static const truck = LucideIcons.truck;
+  static const unlock = LucideIcons.lockKeyholeOpen;
+  static const user = LucideIcons.userRound;
+  static const verified = LucideIcons.badgeCheck;
+  static const video = LucideIcons.video;
+  static const videoOff = LucideIcons.videoOff;
+  static const visibility = LucideIcons.eye;
+  static const visibilityOff = LucideIcons.eyeOff;
+  static const wellbeing = LucideIcons.brain;
+  static const warning = LucideIcons.triangleAlert;
+  static const wifiOff = LucideIcons.wifiOff;
+}

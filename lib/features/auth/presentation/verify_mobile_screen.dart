@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -144,7 +145,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
                 const SizedBox(height: AppSpacing.lg),
                 PrimaryButton(
                   label: 'Verify and continue',
-                  icon: Icons.arrow_forward,
+                  icon: AppIcons.arrowForward,
                   loading: verifying,
                   onPressed: () => _submit(),
                 ),
@@ -169,7 +170,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
                 _InfoCard(
                   background: context.palette.tintGreen,
                   iconColor: context.palette.positive,
-                  icon: Icons.mail_outline,
+                  icon: AppIcons.mail,
                   title: 'Check your inbox',
                   subtitle: "Check your spam folder if the verification email doesn't arrive.",
                   onTap: _showVerificationHelp,
@@ -178,7 +179,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
                 _InfoCard(
                   background: context.palette.tintBlue,
                   iconColor: context.palette.accent,
-                  icon: Icons.lock_outline,
+                  icon: AppIcons.lock,
                   title: 'Never share your code',
                   subtitle: 'Never share your verification code with anyone.',
                 ),
@@ -258,7 +259,7 @@ class _InfoCard extends StatelessWidget {
             ),
           ),
           if (onTap != null)
-            Icon(Icons.chevron_right, size: 18, color: iconColor),
+            Icon(AppIcons.chevronRight, size: 18, color: iconColor),
         ],
       ),
     );

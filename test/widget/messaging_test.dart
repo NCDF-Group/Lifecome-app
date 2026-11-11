@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:lifecome_mobile/core/network/api_exception.dart';
 import 'package:lifecome_mobile/core/router/route_paths.dart';
 import 'package:lifecome_mobile/core/utils/formatters.dart';
@@ -28,7 +29,7 @@ void main() {
     backend = TestBackend();
   });
 
-  final sendButton = find.byIcon(Icons.arrow_upward_rounded);
+  final sendButton = find.byIcon(AppIcons.arrowUp);
 
   // Fixed instants, so the UK clock times and the day label are certain:
   // 9:00 and 9:30 UTC on 12 October 2026 are 10:00 and 10:30 BST.

@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:lifecome_mobile/core/router/route_paths.dart';
 import 'package:lifecome_mobile/features/care_plan/presentation/care_plan_screen.dart';
 import 'package:lifecome_mobile/features/consultation/domain/models/consultation_status.dart';
@@ -141,7 +141,7 @@ void main() {
         extra: appointment,
       );
 
-      await tester.tap(find.byIcon(Icons.call_end));
+      await tester.tap(find.byIcon(AppIcons.phoneOff));
       await settle(tester);
       // The confirmation popup repeats the label as its button.
       await tester.tap(find.text('End appointment').last);

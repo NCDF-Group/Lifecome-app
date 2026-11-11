@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/router/safe_back.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/buttons/secondary_button.dart';
@@ -25,7 +26,7 @@ import '../application/insurance_controller.dart';
 import '../domain/insurance_models.dart';
 import 'insurance_widgets.dart';
 
-/// "Cover with clarity" — the Insurance hub (screen pack 117).
+/// "Payment & Cover" — the funding and insurance hub from the refreshed demo.
 class InsuranceHubScreen extends ConsumerWidget {
   const InsuranceHubScreen({super.key});
 
@@ -36,32 +37,39 @@ class InsuranceHubScreen extends ConsumerWidget {
       backFallback: RoutePaths.home,
       children: [
         const ScreenTitle(
-          eyebrow: 'Insurance',
-          title: 'Cover with clarity',
-          subtitle: 'Understand your options and manage your policies.',
+          eyebrow: 'Payment & Cover',
+          title: 'How you pay for care',
+          subtitle:
+              'See your payment options, benefits and existing cover in one place.',
         ),
         const SizedBox(height: 14),
         RowCard(
-          icon: LcIcons.shield,
-          title: 'Explore insurance',
-          subtitle: 'The kinds of cover available',
-          onTap: () => context.push(RoutePaths.insuranceProducts),
+          icon: LcIcons.card,
+          title: 'Self-pay',
+          subtitle: 'Pay for a service directly',
+          onTap: () => context.push(RoutePaths.chooseAccess),
         ),
         RowCard(
-          icon: LcIcons.plus,
-          title: 'Link an existing policy',
+          icon: LcIcons.star,
+          title: 'Membership benefits',
+          subtitle: 'See what your plan includes',
+          tone: RowCardTone.mint,
+          onTap: () => context.push(RoutePaths.myBenefits),
+        ),
+        RowCard(
+          icon: LcIcons.people,
+          title: 'Employer benefits',
+          subtitle: 'Connect access provided through work',
+          onTap: () => context.push(RoutePaths.activateAccess),
+        ),
+        RowCard(
+          icon: LcIcons.shield,
+          title: 'Use existing insurance',
           subtitle: plans.isEmpty
-              ? 'Connect your health plan to your account'
-              : '${plans.length} linked · link another',
+              ? 'Link a health plan you already have'
+              : '${plans.length} linked plan${plans.length == 1 ? '' : 's'} · manage cover',
           tone: RowCardTone.mint,
           onTap: () => context.push(RoutePaths.linkHealthPlan),
-        ),
-        const SectionHeader(title: 'Your insurance'),
-        RowCard(
-          icon: LcIcons.file,
-          title: 'My policies',
-          subtitle: 'Policy details and documents',
-          onTap: () => context.push(RoutePaths.insurancePolicies),
         ),
         RowCard(
           icon: LcIcons.check,
@@ -70,23 +78,234 @@ class InsuranceHubScreen extends ConsumerWidget {
           onTap: () => context.push(RoutePaths.insuranceCover),
         ),
         RowCard(
+          icon: LcIcons.file,
+          title: 'Pay and claim back',
+          subtitle: 'What to check before paying for care',
+          onTap: () => context.push(RoutePaths.insuranceReimbursement),
+        ),
+        const SectionHeader(title: 'Manage insurance'),
+        RowCard(
+          icon: LcIcons.search,
+          title: 'Explore insurance',
+          subtitle: 'Learn about types of cover from providers',
+          onTap: () => context.push(RoutePaths.insuranceProducts),
+        ),
+        RowCard(
+          icon: LcIcons.plus,
+          title: 'Link an existing policy',
+          subtitle: plans.isEmpty
+              ? 'Connect your health plan to your account'
+              : '${plans.length} linked · link another',
+          onTap: () => context.push(RoutePaths.linkHealthPlan),
+        ),
+        RowCard(
+          icon: LcIcons.file,
+          title: 'My policies',
+          subtitle: 'Policy details and documents',
+          onTap: () => context.push(RoutePaths.insurancePolicies),
+        ),
+        RowCard(
           icon: LcIcons.clock,
-          title: 'Claims & support',
-          subtitle: 'Follow a claim or contact your provider',
+          title: 'Claims and support',
+          subtitle: 'Contact support about a policy or claim',
           tone: RowCardTone.mint,
           onTap: () => context.push(RoutePaths.insuranceClaims),
         ),
         const SizedBox(height: 10),
         const InfoBanner(
           message:
-              'Cover and claims depend on your policy terms and your insurer. '
-              'Linking a policy does not guarantee cover.',
+              'LifeCome does not sell insurance. Your insurer decides whether '
+              'a service is covered and whether a claim is reimbursed.',
         ),
         const SizedBox(height: 10),
         const InsurancePreviewNotice(),
       ],
     );
   }
+}
+
+/// Explains the pay-and-claim-back route without promising reimbursement.
+class InsuranceReimbursementScreen extends StatelessWidget {
+  const InsuranceReimbursementScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) => InsurancePage(
+    children: [
+      const ScreenTitle(
+        eyebrow: 'Payment & Cover',
+        title: 'Pay and claim back',
+        subtitle: 'Check your insurer’s rules before arranging care.',
+      ),
+      const SizedBox(height: 8),
+      const InfoBanner(
+        tone: BannerTone.warning,
+        message:
+            'Your insurer decides whether a claim is eligible. Reimbursement '
+            'is not guaranteed, even if you pay for the service yourself.',
+      ),
+      const SectionHeader(title: 'Before you pay'),
+      const _ReimbursementStep(
+        number: '1',
+        title: 'Check eligibility and limits',
+        detail:
+            'Review exclusions, excesses and any annual limits with your insurer.',
+      ),
+      const _ReimbursementStep(
+        number: '2',
+        title: 'Get authorisation if needed',
+        detail: 'Ask whether your insurer needs to approve the service first.',
+      ),
+      const _ReimbursementStep(
+        number: '3',
+        title: 'Pay the confirmed fee',
+        detail: 'Check the service fee and any extra costs before you proceed.',
+      ),
+      const _ReimbursementStep(
+        number: '4',
+        title: 'Request an itemised receipt',
+        detail:
+            'Keep the receipt and submit it through your insurer’s claims process.',
+      ),
+      const SizedBox(height: 12),
+      PrimaryButton(
+        label: 'View sample receipt',
+        onPressed: () => context.push(RoutePaths.insuranceSampleReceipt),
+      ),
+    ],
+  );
+}
+
+/// Example receipt layout, clearly marked as fictional and non-submittable.
+class InsuranceSampleReceiptScreen extends StatelessWidget {
+  const InsuranceSampleReceiptScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) => InsurancePage(
+    backFallback: RoutePaths.insuranceReimbursement,
+    children: [
+      const ScreenTitle(
+        eyebrow: 'Example only',
+        title: 'Itemised receipt',
+        subtitle: 'A guide to the details your insurer may ask you for.',
+      ),
+      const SizedBox(height: 8),
+      const InfoBanner(
+        tone: BannerTone.warning,
+        message:
+            'This is a fictional sample. It is not a real receipt and cannot '
+            'be used to make a claim.',
+      ),
+      const SizedBox(height: 14),
+      Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: context.palette.elevated,
+          border: Border.all(color: context.palette.line),
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'LIFECOME HEALTH · SAMPLE',
+              style: TextStyle(
+                color: context.palette.accent,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.4,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const _ReceiptLine(
+              label: 'Service',
+              value: 'Online GP consultation',
+            ),
+            const _ReceiptLine(label: 'Date', value: 'Example date'),
+            const _ReceiptLine(label: 'Provider', value: 'Example clinician'),
+            const _ReceiptLine(label: 'Amount paid', value: '£35.00'),
+            const Divider(height: 24),
+            const Text('Patient and provider details would appear here.'),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+class _ReimbursementStep extends StatelessWidget {
+  const _ReimbursementStep({
+    required this.number,
+    required this.title,
+    required this.detail,
+  });
+
+  final String number;
+  final String title;
+  final String detail;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 7),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CircleAvatar(
+          radius: 14,
+          backgroundColor: context.palette.tintBlueStrong,
+          child: Text(
+            number,
+            style: TextStyle(
+              color: context.palette.accent,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        const SizedBox(width: 11),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  color: context.palette.ink,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                detail,
+                style: TextStyle(
+                  color: context.palette.inkMuted,
+                  height: 1.45,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+class _ReceiptLine extends StatelessWidget {
+  const _ReceiptLine({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 6),
+    child: Row(
+      children: [
+        Expanded(
+          child: Text(label, style: TextStyle(color: context.palette.inkMuted)),
+        ),
+        Text(value, style: TextStyle(color: context.palette.ink)),
+      ],
+    ),
+  );
 }
 
 /// "Explore your cover options" (screen pack 118).

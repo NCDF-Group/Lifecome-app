@@ -19,10 +19,10 @@ Future<GoRouter> _pumpAt(WidgetTester tester, String location) async {
   tester.view.devicePixelRatio = 2.0;
   addTearDown(tester.view.reset);
 
-  await tester.pumpWidget(const ProviderScope(child: LifeComeLiveApp()));
+  await tester.pumpWidget(const ProviderScope(child: LifeComeHealthApp()));
   await tester.pump();
   final router = ProviderScope.containerOf(
-    tester.element(find.byType(LifeComeLiveApp)),
+    tester.element(find.byType(LifeComeHealthApp)),
   ).read(appRouterProvider);
   router.go(location);
   await tester.pump(const Duration(milliseconds: 400));

@@ -49,7 +49,7 @@ abstract final class RoutePaths {
   /// [AuthSuccessArgs] passed as `extra`.
   static const passwordChanged = '/password-changed';
 
-  /// The LifeCome Live Dashboard (blueprint view 04) — the Home tab of the
+  /// The LifeCome Health Dashboard (blueprint view 04) — the Home tab of the
   /// bottom-nav shell (see `AppShell`).
   static const home = '/home';
 
@@ -67,6 +67,17 @@ abstract final class RoutePaths {
   /// and that it is not an emergency. Reached with a `BookingStart` whose
   /// `mode` was chosen on the GP hub.
   static const gpEligibility = '/gp/eligibility';
+
+  /// Tests & Health Checks catalogue and preview booking journey.
+  static const tests = '/tests';
+  static const testService = '/tests/service/:serviceId';
+  static const testSuitability = '/tests/suitability';
+  static const testContact = '/tests/contact';
+  static const testAppointment = '/tests/appointment';
+  static const testPayment = '/tests/payment';
+  static const testReview = '/tests/review';
+  static const testConfirmation = '/tests/confirmation';
+  static const testResults = '/tests/results';
 
   /// Wellbeing hub (screen pack 091) and its screens (092-104). Sessions
   /// run on in-session preview data until they have a backend.
@@ -126,6 +137,10 @@ abstract final class RoutePaths {
 
   /// The support enquiry, with an `InsuranceSupportEnquiry` as `extra`.
   static const insuranceSupportSent = '/insurance/support-sent';
+
+  /// Reimbursement information and an illustrative itemised receipt.
+  static const insuranceReimbursement = '/insurance/reimbursement';
+  static const insuranceSampleReceipt = '/insurance/sample-receipt';
 
   /// Wellbeing Shop (screen pack 105-116). Preview data until it has a
   /// backend.
@@ -205,6 +220,8 @@ abstract final class RoutePaths {
   static const profile = '/profile';
 
   static const healthRecords = '/profile/health-records';
+  static const professionalRecordUpdates =
+      '/profile/professional-record-updates';
 
   /// One kind of record (notes, prescriptions, referrals, results), with a
   /// `RecordKind` passed as `extra`.

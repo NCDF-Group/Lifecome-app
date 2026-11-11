@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -126,7 +127,7 @@ class _MessageComposerState extends State<MessageComposer> {
                           ),
                         )
                       : const Icon(
-                          Icons.arrow_upward_rounded,
+                          AppIcons.arrowUp,
                           color: AppColors.white,
                           size: 20,
                         ),

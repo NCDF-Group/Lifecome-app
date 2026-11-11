@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,7 +8,7 @@ import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/feedback/empty_state.dart';
 import '../../../core/widgets/feedback/error_state.dart';
-import '../../../core/widgets/feedback/loading_indicator.dart';
+import '../../../core/widgets/feedback/skeleton_loader.dart';
 import '../../../core/widgets/layout/back_app_bar.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
 import '../application/notifications_controller.dart';
@@ -64,7 +65,7 @@ class NotificationsScreen extends ConsumerWidget {
       ),
       body: SafeArea(
         child: feed.when(
-          loading: () => const LoadingIndicator(),
+          loading: () => const SkeletonLoader(),
           error: (error, _) => feed.hasValue
               ? _list(context, ref, feed.requireValue)
               : ErrorState(error: error, onRetry: notifier.refresh),
@@ -85,7 +86,7 @@ class NotificationsScreen extends ConsumerWidget {
                 child: SizedBox(
                   height: constraints.maxHeight,
                   child: const EmptyState(
-                    icon: Icons.notifications_none,
+                    icon: AppIcons.notification,
                     title: "You're all caught up",
                     message:
                         'Booking updates and replies from your care team will '

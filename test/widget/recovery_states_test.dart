@@ -29,7 +29,7 @@ void main() {
     tester,
   ) async {
     await pumpAppAt(tester, RoutePaths.home, overrides: backend.overrides);
-    ProviderScope.containerOf(tester.element(find.byType(LifeComeLiveApp)))
+    ProviderScope.containerOf(tester.element(find.byType(LifeComeHealthApp)))
         .read(sessionExpiredProvider.notifier)
         .bump();
     await settle(tester);

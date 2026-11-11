@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -116,9 +117,9 @@ class _ManageAppointmentScreenState
                     radius: 22,
                     backgroundColor: context.palette.elevated,
                     child: Icon(switch (appointment.mode) {
-                      ConsultationMode.video => Icons.videocam_outlined,
-                      ConsultationMode.audio => Icons.call_outlined,
-                      ConsultationMode.inPerson => Icons.apartment_outlined,
+                      ConsultationMode.video => AppIcons.video,
+                      ConsultationMode.audio => AppIcons.phone,
+                      ConsultationMode.inPerson => AppIcons.clinic,
                     }, color: context.palette.accent),
                   ),
                   const SizedBox(width: AppSpacing.sm),
@@ -169,7 +170,7 @@ class _ManageAppointmentScreenState
             const SizedBox(height: AppSpacing.sm),
             if (canJoin) ...[
               _ActionRow(
-                icon: Icons.meeting_room_outlined,
+                icon: AppIcons.meetingRoom,
                 background: context.palette.tintGreen,
                 iconColor: context.palette.positive,
                 title: 'Go to your waiting room',
@@ -183,7 +184,7 @@ class _ManageAppointmentScreenState
             ],
             if (canCancel) ...[
               _ActionRow(
-                icon: Icons.calendar_month_outlined,
+                icon: AppIcons.calendar,
                 background: context.palette.tintGreen,
                 iconColor: context.palette.positive,
                 title: 'Reschedule appointment',
@@ -195,7 +196,7 @@ class _ManageAppointmentScreenState
               ),
               const SizedBox(height: AppSpacing.sm),
               _ActionRow(
-                icon: Icons.delete_outline,
+                icon: AppIcons.delete,
                 background: context.palette.tintRed,
                 iconColor: context.palette.danger,
                 title: 'Cancel appointment',
@@ -206,7 +207,7 @@ class _ManageAppointmentScreenState
               const SizedBox(height: AppSpacing.sm),
             ],
             _ActionRow(
-              icon: Icons.description_outlined,
+              icon: AppIcons.file,
               background: context.palette.tintBlue,
               iconColor: context.palette.accent,
               title: 'View receipt',
@@ -216,7 +217,7 @@ class _ManageAppointmentScreenState
             ),
             const SizedBox(height: AppSpacing.sm),
             _ActionRow(
-              icon: Icons.support_agent_outlined,
+              icon: AppIcons.support,
               background: context.palette.tintBlue,
               iconColor: context.palette.accent,
               title: 'Contact support',
@@ -236,7 +237,11 @@ class _ManageAppointmentScreenState
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.arrow_back, color: AppColors.white, size: 18),
+                      Icon(
+                        AppIcons.arrowBack,
+                        color: AppColors.white,
+                        size: 18,
+                      ),
                       SizedBox(width: 8),
                       Text(
                         'Back',
@@ -330,7 +335,7 @@ class _ActionRow extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: iconColor),
+              Icon(AppIcons.chevronRight, color: iconColor),
             ],
           ),
         ),

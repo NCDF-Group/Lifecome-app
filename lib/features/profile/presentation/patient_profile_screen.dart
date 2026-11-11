@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -131,6 +132,12 @@ class _PatientProfileScreenState extends ConsumerState<PatientProfileScreen> {
                 title: 'Health records',
                 subtitle: 'Notes, prescriptions, referrals and results',
                 onTap: () => context.push(RoutePaths.healthRecords),
+              ),
+              RowCard(
+                icon: LcIcons.card,
+                title: 'Payment & Cover',
+                subtitle: 'Self-pay, benefits and existing insurance',
+                onTap: () => context.push(RoutePaths.insurance),
               ),
               RowCard(
                 icon: LcIcons.shield,
@@ -297,7 +304,7 @@ class _ProfileNudge extends StatelessWidget {
           padding: const EdgeInsets.all(AppSpacing.md),
           child: Row(
             children: [
-              Icon(Icons.info_outline, color: context.palette.amber),
+              Icon(AppIcons.info, color: context.palette.amber),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
@@ -309,7 +316,7 @@ class _ProfileNudge extends StatelessWidget {
                   ),
                 ),
               ),
-              Icon(Icons.chevron_right, color: context.palette.inkMuted),
+              Icon(AppIcons.chevronRight, color: context.palette.inkMuted),
             ],
           ),
         ),
@@ -338,7 +345,7 @@ class _LoadFailed extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline, size: 18, color: context.palette.danger),
+          Icon(AppIcons.error, size: 18, color: context.palette.danger),
           const SizedBox(width: AppSpacing.xs),
           Expanded(
             child: Text(

@@ -178,7 +178,7 @@ abstract final class Validators {
     final day = DateTime(now.year, now.month, now.day);
     if (value.isAfter(day)) return "Your date of birth can't be in the future.";
     if (ageOn(value, day) < minimumAge) {
-      return 'You must be $minimumAge or over to use LifeCome Live.';
+      return 'You must be $minimumAge or over to use LifeCome Health.';
     }
     if (ageOn(value, day) > maximumAge) return 'Check your date of birth.';
     return null;

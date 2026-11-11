@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 
 import '../../theme/app_palette.dart';
 import '../../theme/app_radius.dart';
@@ -34,25 +35,25 @@ class InfoBanner extends StatelessWidget {
         palette.tintBlueFaint,
         palette.tintBlueLine,
         palette.accent,
-        Icons.info_outline,
+        AppIcons.info,
       ),
       BannerTone.success => (
         palette.tintGreenFaint,
         palette.tintGreenLine,
         palette.positive,
-        Icons.check_circle_outline,
+        AppIcons.checkCircle,
       ),
       BannerTone.warning => (
         palette.tintAmber,
         palette.amber.withValues(alpha: 0.3),
         palette.amber,
-        Icons.warning_amber_rounded,
+        AppIcons.warning,
       ),
       BannerTone.danger => (
         palette.tintRed,
         palette.tintRedLine,
         palette.danger,
-        Icons.error_outline,
+        AppIcons.error,
       ),
     };
 

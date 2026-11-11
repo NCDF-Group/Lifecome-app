@@ -24,7 +24,7 @@ class ClinicalService {
       durationMinutes: (json['defaultDurationMinutes'] as num?)?.toInt() ?? 30,
       // The backend names the column after Nigeria's currency (`basePriceKobo`)
       // but the amount is in the smallest unit of whatever currency the
-      // service is sold in; LifeCome Live UK sells in pounds.
+      // service is sold in; LifeCome Health UK sells in pounds.
       priceMinor: (json['basePriceKobo'] as num?)?.toInt() ?? 0,
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
@@ -15,7 +16,7 @@ import '../../../core/widgets/lists/timeline_item.dart';
 import '../../../core/widgets/media/lc_icons.dart';
 import '../../payer/presentation/activate_access_screen.dart';
 
-/// "Membership" — choose a LifeCome Live plan, or activate one already
+/// "Membership" — choose a LifeCome Health plan, or activate one already
 /// bought elsewhere. No membership backend exists yet, so choosing a plan
 /// opens a coming-soon popup rather than starting a real purchase; an
 /// existing member can send their code to the care team.
@@ -56,7 +57,7 @@ class MembershipPlansScreen extends StatelessWidget {
             _PlanCard(
               background: context.palette.tintGreen,
               accent: context.palette.positive,
-              icon: Icons.person_outline,
+              icon: AppIcons.person,
               title: 'Individual membership',
               subtitle: 'For your own care.',
               bullets: const [
@@ -72,7 +73,7 @@ class MembershipPlansScreen extends StatelessWidget {
             _PlanCard(
               background: context.palette.tintBlue,
               accent: context.palette.accent,
-              icon: Icons.people_outline,
+              icon: AppIcons.people,
               title: 'Adult household membership',
               subtitle: 'Separate accounts for each adult.',
               bullets: const [
@@ -163,7 +164,7 @@ class _PlanCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: accent),
+              Icon(AppIcons.chevronRight, color: accent),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -172,7 +173,7 @@ class _PlanCard extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 4),
               child: Row(
                 children: [
-                  Icon(Icons.check, size: 16, color: accent),
+                  Icon(AppIcons.check, size: 16, color: accent),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
@@ -208,7 +209,11 @@ class _PlanCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Icon(Icons.chevron_right, color: AppColors.white, size: 20),
+                    Icon(
+                      AppIcons.chevronRight,
+                      color: AppColors.white,
+                      size: 20,
+                    ),
                   ],
                 ),
               ),

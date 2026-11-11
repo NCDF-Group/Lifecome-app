@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -71,7 +72,7 @@ class MyBenefitsScreen extends ConsumerWidget {
             const SizedBox(height: 6),
             if (plans.isEmpty)
               EmptyState(
-                icon: Icons.shield_outlined,
+                icon: AppIcons.shield,
                 title: 'No health plan linked yet',
                 message:
                     'Link your health plan to see what it covers and to book '

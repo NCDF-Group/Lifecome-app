@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -10,7 +11,7 @@ import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/feedback/empty_state.dart';
 import '../../../core/widgets/feedback/error_state.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
-import '../../../core/widgets/feedback/loading_indicator.dart';
+import '../../../core/widgets/feedback/skeleton_loader.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../../core/widgets/layout/detail_list.dart';
 import '../../../core/widgets/layout/screen_title.dart';
@@ -125,7 +126,7 @@ class _FindSmartGpClinicScreenState
                     ? null
                     : IconButton(
                         tooltip: 'Clear',
-                        icon: const Icon(Icons.close),
+                        icon: const Icon(AppIcons.close),
                         onPressed: () {
                           _searchController.clear();
                           setState(() => _query = '');
@@ -135,7 +136,7 @@ class _FindSmartGpClinicScreenState
             ),
             const SizedBox(height: 10),
             doctors.when(
-              loading: () => const LoadingIndicator(),
+              loading: () => const SkeletonLoader(),
               error: (error, _) => ErrorState(
                 error: error,
                 onRetry: () => ref.invalidate(doctorsProvider),
@@ -152,7 +153,7 @@ class _FindSmartGpClinicScreenState
                     (doctor) => !doctor.offers(ConsultationMode.inPerson),
                   );
                   return EmptyState(
-                    icon: Icons.apartment_outlined,
+                    icon: AppIcons.clinic,
                     title: nothingYet
                         ? 'No clinics yet'
                         : 'No clinics match your search',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -149,7 +150,7 @@ class _BookingLocationScreenState extends ConsumerState<BookingLocationScreen> {
                 const SizedBox(height: AppSpacing.lg),
                 PrimaryButton(
                   label: 'Check availability',
-                  icon: Icons.arrow_forward,
+                  icon: AppIcons.arrowForward,
                   onPressed: _continue,
                 ),
               ],

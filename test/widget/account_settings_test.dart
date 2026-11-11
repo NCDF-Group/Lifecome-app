@@ -98,10 +98,11 @@ void main() {
     );
     final title = find.text('Make it yours');
     double scale() => MediaQuery.textScalerOf(tester.element(title)).scale(1);
-    expect(scale(), 1);
+    // Narrow screens already shrink text a little, so compare against that.
+    final base = scale();
 
     await tapText(tester, 'Larger text');
-    expect(scale(), closeTo(1.15, 0.001));
+    expect(scale(), closeTo(base * 1.15, 0.001));
     final prefs = await SharedPreferences.getInstance();
     expect(prefs.getBool('pref_larger_text'), isTrue);
 

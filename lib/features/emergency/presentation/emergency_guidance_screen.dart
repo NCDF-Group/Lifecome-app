@@ -10,7 +10,7 @@ import '../../../core/widgets/media/lc_icons.dart';
 import '../../../core/widgets/layout/max_content_width.dart';
 import '../../../core/widgets/layout/screen_title.dart';
 
-/// What to do in an emergency. LifeCome Live is not an emergency service, so
+/// What to do in an emergency. LifeCome Health is not an emergency service, so
 /// this is the first thing to read when something is seriously wrong.
 ///
 /// The wording is general UK public guidance; it should be reviewed and signed
@@ -37,7 +37,7 @@ class EmergencyGuidanceScreen extends StatelessWidget {
                   const ScreenTitle(
                     title: 'Need urgent help?',
                     subtitle:
-                        'LifeCome Live is not an emergency service. Please '
+                        'LifeCome Health is not an emergency service. Please '
                         "don't use the app, messages or a booked appointment "
                         'in an emergency.',
                   ),

@@ -8,13 +8,13 @@ import '../../../core/widgets/layout/screen_title.dart';
 
 const _sections = [
   (
-    'Using LifeCome Live',
-    'LifeCome Live connects you with licensed healthcare providers for online consultations. '
+    'Using LifeCome Health',
+    'LifeCome Health connects you with licensed healthcare providers for online consultations. '
         'You must provide accurate information about yourself and your health when using the app.',
   ),
   (
     'Medical emergencies',
-    'LifeCome Live is not an emergency service. If you are experiencing a medical emergency, '
+    'LifeCome Health is not an emergency service. If you are experiencing a medical emergency, '
         'seek immediate in-person care rather than waiting for a response in the app.',
   ),
   (
@@ -56,7 +56,7 @@ class TermsScreen extends StatelessWidget {
             const ScreenTitle(title: 'Terms of use'),
             const SizedBox(height: 16),
             Text(
-              'These terms govern your use of LifeCome Live. By creating an account, you agree '
+              'These terms govern your use of LifeCome Health. By creating an account, you agree '
               'to them.',
               style: TextStyle(
                 fontSize: 14,

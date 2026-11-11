@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// LifeCome Live serves the UK only. Kept as a single-value type (rather
+/// LifeCome Health serves the UK only. Kept as a single-value type (rather
 /// than a bare constant) so the handful of call sites that display a flag,
 /// name or dial code don't need special-casing.
 enum AppCountry {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,7 +13,7 @@ import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/feedback/empty_state.dart';
 import '../../../core/widgets/feedback/error_state.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
-import '../../../core/widgets/feedback/loading_indicator.dart';
+import '../../../core/widgets/feedback/skeleton_loader.dart';
 import '../../../core/widgets/layout/back_app_bar.dart';
 import '../../booking/application/booking_controller.dart';
 import '../../booking/domain/models/booking_selection.dart';
@@ -143,7 +144,7 @@ class HmoCoverageScreen extends ConsumerWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             coverage.when(
-              loading: () => const LoadingIndicator(),
+              loading: () => const SkeletonLoader(),
               error: (error, _) => ErrorState(
                 error: error,
                 onRetry: () {
@@ -153,7 +154,7 @@ class HmoCoverageScreen extends ConsumerWidget {
               ),
               data: (items) => items.isEmpty
                   ? const EmptyState(
-                      icon: Icons.medical_services_outlined,
+                      icon: AppIcons.medical,
                       title: 'No services to check yet',
                       message: 'Please check back soon.',
                     )
@@ -203,11 +204,7 @@ class _ServiceRow extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(
-            Icons.medical_services_outlined,
-            color: context.palette.positive,
-            size: 22,
-          ),
+          Icon(AppIcons.medical, color: context.palette.positive, size: 22),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Column(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -10,7 +11,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/feedback/error_state.dart';
-import '../../../core/widgets/feedback/loading_indicator.dart';
+import '../../../core/widgets/feedback/skeleton_loader.dart';
 import '../../../core/widgets/layout/back_app_bar.dart';
 import '../application/booking_controller.dart';
 import '../domain/models/appointment.dart';
@@ -33,7 +34,7 @@ class MyVisitsScreen extends ConsumerWidget {
       appBar: const BackAppBar(title: 'My visits'),
       body: SafeArea(
         child: all.when(
-          loading: () => const LoadingIndicator(),
+          loading: () => const SkeletonLoader(),
           error: (error, _) => all.hasValue
               ? _content(context, ref)
               : ErrorState(error: error, onRetry: notifier.refresh),
@@ -82,7 +83,7 @@ class MyVisitsScreen extends ConsumerWidget {
           Center(
             child: TextButton.icon(
               onPressed: () => context.push(RoutePaths.findSmartGpClinic),
-              icon: const Icon(Icons.apartment_outlined),
+              icon: const Icon(AppIcons.clinic),
               label: const Text('Find a Smart GP clinic'),
             ),
           ),
@@ -109,7 +110,7 @@ class _NoVisits extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              Icons.calendar_today_outlined,
+              AppIcons.calendar,
               color: context.palette.accent,
               size: 36,
             ),
@@ -187,9 +188,9 @@ class _VisitCard extends StatelessWidget {
                 radius: 22,
                 backgroundColor: palette.elevated,
                 child: Icon(switch (appointment.mode) {
-                  ConsultationMode.video => Icons.videocam_outlined,
-                  ConsultationMode.audio => Icons.call_outlined,
-                  ConsultationMode.inPerson => Icons.apartment_outlined,
+                  ConsultationMode.video => AppIcons.video,
+                  ConsultationMode.audio => AppIcons.phone,
+                  ConsultationMode.inPerson => AppIcons.clinic,
                 }, color: palette.accent),
               ),
               const SizedBox(width: AppSpacing.sm),
@@ -234,7 +235,7 @@ class _VisitCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: palette.accent),
+              Icon(AppIcons.chevronRight, color: palette.accent),
             ],
           ),
         ),

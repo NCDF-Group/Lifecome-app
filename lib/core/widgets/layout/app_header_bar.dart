@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 
 import '../../../features/notifications/presentation/widgets/notifications_bell.dart';
 import '../../country/app_country.dart';
@@ -59,7 +60,7 @@ class AppHeaderBar extends StatelessWidget {
         ],
         Image.asset(
           context.palette.logoAsset,
-          height: 28,
+          height: 20,
           semanticLabel: 'LifeCome Health',
         ),
         const Spacer(),
@@ -103,11 +104,7 @@ class _CountryChip extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 2),
-            Icon(
-              Icons.keyboard_arrow_down,
-              size: 18,
-              color: context.palette.ink,
-            ),
+            Icon(AppIcons.chevronDown, size: 18, color: context.palette.ink),
           ],
         ),
       ),

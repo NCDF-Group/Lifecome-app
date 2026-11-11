@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -14,7 +15,7 @@ import '../../../core/widgets/feedback/app_popup.dart';
 import '../../../core/widgets/feedback/empty_state.dart';
 import '../../../core/widgets/feedback/error_state.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
-import '../../../core/widgets/feedback/loading_indicator.dart';
+import '../../../core/widgets/feedback/skeleton_loader.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../../core/widgets/layout/screen_title.dart';
@@ -140,7 +141,7 @@ class _LinkHealthPlanScreenState extends ConsumerState<LinkHealthPlanScreen> {
             ),
             const SizedBox(height: AppSpacing.md),
             payers.when(
-              loading: () => const LoadingIndicator(),
+              loading: () => const SkeletonLoader(),
               error: (error, _) => ErrorState(
                 error: error,
                 onRetry: () => ref.invalidate(payersProvider),
@@ -149,7 +150,7 @@ class _LinkHealthPlanScreenState extends ConsumerState<LinkHealthPlanScreen> {
                 final payer = _selected(all);
                 if (payer == null) {
                   return EmptyState(
-                    icon: Icons.health_and_safety_outlined,
+                    icon: AppIcons.health,
                     title: 'No health plans yet',
                     message:
                         'No plans are connected yet. You can still pay '
@@ -166,7 +167,7 @@ class _LinkHealthPlanScreenState extends ConsumerState<LinkHealthPlanScreen> {
             ),
             const SizedBox(height: AppSpacing.sm),
             const InfoBanner(
-              icon: Icons.lock_open_outlined,
+              icon: AppIcons.unlock,
               title: 'Your information stays private',
               message:
                   "We only check your cover. We don't share your records "
@@ -187,7 +188,7 @@ class _LinkHealthPlanScreenState extends ConsumerState<LinkHealthPlanScreen> {
                         radius: 18,
                         backgroundColor: palette.elevated,
                         child: Icon(
-                          Icons.help_outline,
+                          AppIcons.help,
                           size: 18,
                           color: palette.accent,
                         ),
@@ -215,7 +216,7 @@ class _LinkHealthPlanScreenState extends ConsumerState<LinkHealthPlanScreen> {
                           ],
                         ),
                       ),
-                      Icon(Icons.chevron_right, color: palette.accent),
+                      Icon(AppIcons.chevronRight, color: palette.accent),
                     ],
                   ),
                 ),
@@ -258,7 +259,7 @@ class _LinkHealthPlanScreenState extends ConsumerState<LinkHealthPlanScreen> {
               child: DropdownButton<String>(
                 value: payer.id,
                 isExpanded: true,
-                icon: Icon(Icons.keyboard_arrow_down, color: palette.inkMuted),
+                icon: Icon(AppIcons.chevronDown, color: palette.inkMuted),
                 items: [
                   for (final option in all)
                     DropdownMenuItem(
@@ -266,7 +267,7 @@ class _LinkHealthPlanScreenState extends ConsumerState<LinkHealthPlanScreen> {
                       child: Row(
                         children: [
                           Icon(
-                            Icons.apartment_outlined,
+                            AppIcons.clinic,
                             size: 18,
                             color: palette.positive,
                           ),
@@ -303,7 +304,7 @@ class _LinkHealthPlanScreenState extends ConsumerState<LinkHealthPlanScreen> {
           const SizedBox(height: AppSpacing.md),
           PrimaryButton(
             label: 'Check my cover',
-            icon: Icons.chevron_right,
+            icon: AppIcons.chevronRight,
             loading: _loading,
             onPressed: () => _checkCover(payer),
           ),

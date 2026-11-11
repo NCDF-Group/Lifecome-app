@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons_500.dart';
 
+import '../../theme/app_icons.dart';
 import '../../theme/app_palette.dart';
 
-/// Names of the line icons in assets/icons/lc: the LifeCome Live screen
-/// pack's own icon set (24x24, 1.8 stroke), drawn with [LcIcon].
+/// Stable names used by existing screens, mapped to the shared Lucide set.
 abstract final class LcIcons {
   static const arrow = 'arrow';
   static const back = 'back';
@@ -44,8 +45,7 @@ abstract final class LcIcons {
 }
 
 /// One of the [LcIcons], tinted to [color] (the ambient icon colour when
-/// null). [bold] draws the heavier 2.5 stroke the screen pack uses for the
-/// selected bottom-nav tab; only home, calendar, message and user have it.
+/// null). [bold] uses a heavier Lucide stroke for selected bottom-nav icons.
 class LcIcon extends StatelessWidget {
   const LcIcon(
     this.name, {
@@ -65,13 +65,53 @@ class LcIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tint = color ?? IconTheme.of(context).color ?? context.palette.ink;
-    return SvgPicture.asset(
-      'assets/icons/lc/$name${bold ? '-bold' : ''}.svg',
-      width: size,
-      height: size,
-      colorFilter: ColorFilter.mode(tint, BlendMode.srcIn),
-      semanticsLabel: semanticLabel,
-      excludeFromSemantics: semanticLabel == null,
-    );
+    final icon = switch ((name, bold)) {
+      (LcIcons.home, true) => LucideIcons500.house,
+      (LcIcons.calendar, true) => LucideIcons500.calendarDays,
+      (LcIcons.message, true) => LucideIcons500.messageCircle,
+      (LcIcons.user, true) => LucideIcons500.userRound,
+      _ => _iconForName(name),
+    };
+
+    return Icon(icon, size: size, color: tint, semanticLabel: semanticLabel);
   }
+
+  IconData _iconForName(String name) => switch (name) {
+    LcIcons.arrow => AppIcons.arrowForward,
+    LcIcons.back => AppIcons.arrowBack,
+    LcIcons.bag => LucideIcons.shoppingBag,
+    LcIcons.bell => AppIcons.notification,
+    LcIcons.calendar => AppIcons.calendar,
+    LcIcons.card => AppIcons.creditCard,
+    LcIcons.care => AppIcons.care,
+    LcIcons.check => AppIcons.check,
+    LcIcons.chevron => AppIcons.chevronRight,
+    LcIcons.clinic => AppIcons.clinic,
+    LcIcons.clock => AppIcons.clock,
+    LcIcons.close => AppIcons.close,
+    LcIcons.download => AppIcons.download,
+    LcIcons.file => AppIcons.file,
+    LcIcons.gp => AppIcons.medical,
+    LcIcons.heart => LucideIcons.heart,
+    LcIcons.home => AppIcons.home,
+    LcIcons.info => AppIcons.info,
+    LcIcons.leaf => AppIcons.leaf,
+    LcIcons.lock => AppIcons.lock,
+    LcIcons.mail => AppIcons.mail,
+    LcIcons.message => AppIcons.message,
+    LcIcons.mic => AppIcons.mic,
+    LcIcons.people => AppIcons.people,
+    LcIcons.phone => AppIcons.phone,
+    LcIcons.pin => AppIcons.pin,
+    LcIcons.plus => AppIcons.add,
+    LcIcons.search => AppIcons.search,
+    LcIcons.settings => LucideIcons.settings,
+    LcIcons.shield => AppIcons.shield,
+    LcIcons.star => LucideIcons.star,
+    LcIcons.truck => AppIcons.truck,
+    LcIcons.user => AppIcons.user,
+    LcIcons.video => AppIcons.video,
+    LcIcons.wellbeing => AppIcons.wellbeing,
+    _ => AppIcons.help,
+  };
 }

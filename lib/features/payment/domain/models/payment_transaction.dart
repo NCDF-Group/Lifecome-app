@@ -18,7 +18,7 @@ class PaymentTransaction {
         id: json['id'] as String,
         appointmentId: json['appointmentId'] as String,
         // The backend's column is named for Nigeria's currency, but it holds
-        // the smallest unit (pence for LifeCome Live UK).
+        // the smallest unit (pence for LifeCome Health UK).
         amountMinor: (json['amountKobo'] as num?)?.toInt() ?? 0,
         gateway: json['gateway'] as String? ?? '',
         status: PaymentStatus.parse(json['status']),

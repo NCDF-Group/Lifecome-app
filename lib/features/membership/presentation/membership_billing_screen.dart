@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifecome_mobile/core/theme/app_icons.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_paths.dart';
@@ -36,7 +37,7 @@ class MembershipBillingScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             EmptyState(
-              icon: Icons.groups_outlined,
+              icon: AppIcons.groups,
               title: 'Nothing to show yet',
               message:
                   'Your membership, household members and billing will '

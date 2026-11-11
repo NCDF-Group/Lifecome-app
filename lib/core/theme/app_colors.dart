@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-/// The LifeCome Live brand palette. [blue], [greenStrong], [ink],
-/// [inkMuted], [surface] and [line] follow the LifeCome Live complete screen
+/// The LifeCome Health brand palette. [blue], [greenStrong], [ink],
+/// [inkMuted], [surface] and [line] follow the LifeCome Health complete screen
 /// pack (its app.css tokens); [lime], [cyan], [green] and [gold] are the
 /// logo's own colours. Values are exact;
 /// [lime], [cyan] and [gold] do not carry enough contrast for text on a
