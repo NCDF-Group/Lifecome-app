@@ -365,7 +365,9 @@ class ShopConfirmedScreen extends ConsumerWidget {
       children: [
         const SuccessIcon(),
         ScreenTitle(
-          title: first == null || first.isEmpty ? 'Order updated' : 'Thank you, $first',
+          title: first == null || first.isEmpty
+              ? 'Order updated'
+              : 'Thank you, $first',
           subtitle: 'Your order information is from your account.',
         ),
         const SizedBox(height: 12),
