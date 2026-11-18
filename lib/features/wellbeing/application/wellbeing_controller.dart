@@ -1,85 +1,164 @@
-import 'dart:math';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/core_providers.dart';
+import '../../doctors/application/doctor_search_controller.dart';
+import '../../doctors/domain/models/doctor.dart';
+import '../data/wellbeing_repository.dart';
 import '../domain/wellbeing_models.dart';
 
-/// The person's wellbeing session, plan focus and check-ins.
-///
-/// Wellbeing sessions have no backend yet, so this is preview data kept in
-/// memory for the session (signing out clears it). Nothing is booked with a
-/// practitioner and nothing is charged.
-class WellbeingState {
-  const WellbeingState({this.session, this.checkIns = const []});
+final wellbeingRepositoryProvider = Provider<WellbeingRepository>((ref) {
+  return DioWellbeingRepository(ref.watch(apiClientProvider));
+});
 
-  final WellbeingSession? session;
+class WellbeingState {
+  const WellbeingState({
+    this.offers = const [],
+    this.sessions = const [],
+    this.plan,
+    this.checkIns = const [],
+  });
+
+  final List<WellbeingOffer> offers;
+  final List<WellbeingSession> sessions;
+  final WellbeingPlan? plan;
   final List<WellbeingCheckIn> checkIns;
 
+  WellbeingSession? get latestSession {
+    final sorted = [...sessions]..sort((a, b) => b.startsAt.compareTo(a.startsAt));
+    return sorted.where((item) => item.isUpcoming).firstOrNull ?? sorted.firstOrNull;
+  }
+
   WellbeingCheckIn? get latestCheckIn =>
-      checkIns.isEmpty ? null : checkIns.last;
+      checkIns.isEmpty ? null : checkIns.first;
+
+  WellbeingSession? get latestSession {
+    final sorted = [...sessions]..sort((a, b) => b.startsAt.compareTo(a.startsAt));
+    for (final session in sorted) {
+      if (session.isUpcoming) return session;
+    }
+    return sorted.isEmpty ? null : sorted.first;
+  }
+
+  WellbeingState copyWith({
+    List<WellbeingOffer>? offers,
+    List<WellbeingSession>? sessions,
+    WellbeingPlan? plan,
+    bool clearPlan = false,
+    List<WellbeingCheckIn>? checkIns,
+  }) => WellbeingState(
+    offers: offers ?? this.offers,
+    sessions: sessions ?? this.sessions,
+    plan: clearPlan ? null : plan ?? this.plan,
+    checkIns: checkIns ?? this.checkIns,
+  );
 }
 
-class WellbeingController extends Notifier<WellbeingState> {
+/// Wellbeing services, sessions, plans, and check-ins from the authenticated API.
+class WellbeingController extends AsyncNotifier<WellbeingState> {
   @override
-  WellbeingState build() {
+  Future<WellbeingState> build() async {
     ref.watch(sessionEpochProvider);
-    return const WellbeingState();
+    return _load(ref.watch(wellbeingRepositoryProvider));
   }
 
-  void book({
+  Future<WellbeingState> _load(WellbeingRepository repository) async {
+    final offers = await repository.listOffers();
+    final results = await Future.wait<Object?>([
+      repository.listSessions(offers),
+      repository.getPlan(),
+      repository.listCheckIns(),
+    ]);
+    return WellbeingState(
+      offers: offers,
+      sessions: results[0]! as List<WellbeingSession>,
+      plan: results[1] as WellbeingPlan?,
+      checkIns: results[2]! as List<WellbeingCheckIn>,
+    );
+  }
+
+  Future<void> refresh() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => _load(ref.read(wellbeingRepositoryProvider)),
+    );
+  }
+
+  Future<WellbeingSession> book({
     required WellbeingOffer offer,
+    required String practitionerName,
     required DateTime startsAt,
-    required String goal,
-  }) => state = WellbeingState(
-    session: WellbeingSession(
+    required String notes,
+  }) async {
+    final current = state.requireValue;
+    final session = await ref.read(wellbeingRepositoryProvider).bookSession(
+      offers: current.offers,
       offer: offer,
+      practitionerName: practitionerName,
       startsAt: startsAt,
-      goal: goal,
-      reference: 'LC-WB-${1000 + Random().nextInt(9000)}',
-    ),
-    checkIns: state.checkIns,
-  );
-
-  void reschedule(DateTime startsAt) {
-    final session = state.session;
-    if (session == null) return;
-    state = WellbeingState(
-      session: session.copyWith(startsAt: startsAt),
-      checkIns: state.checkIns,
+      notes: notes,
     );
+    state = AsyncData(current.copyWith(sessions: [session, ...current.sessions]));
+    return session;
   }
 
-  void cancel(String reason) {
-    final session = state.session;
-    if (session == null) return;
-    state = WellbeingState(
-      session: session.copyWith(cancelled: true, cancelReason: reason),
-      checkIns: state.checkIns,
-    );
+  Future<void> cancel(String id) async {
+    final current = state.requireValue;
+    final cancelled = await ref
+        .read(wellbeingRepositoryProvider)
+        .cancelSession(id, current.offers);
+    state = AsyncData(current.copyWith(
+      sessions: [
+        for (final session in current.sessions)
+          if (session.id == id) cancelled else session,
+      ],
+    ));
   }
 
-  void checkIn(WellbeingCheckIn checkIn) => state = WellbeingState(
-    session: state.session,
-    checkIns: [...state.checkIns, checkIn],
-  );
+  Future<void> savePlan(String goal) async {
+    final current = state.requireValue;
+    final plan = await ref.read(wellbeingRepositoryProvider).savePlan(goal);
+    state = AsyncData(current.copyWith(plan: plan, clearPlan: plan == null));
+  }
+
+  Future<void> setStepCompleted(String id, bool completed) async {
+    final current = state.requireValue;
+    final plan = await ref
+        .read(wellbeingRepositoryProvider)
+        .setStepCompleted(id, completed);
+    state = AsyncData(current.copyWith(plan: plan, clearPlan: plan == null));
+  }
+
+  Future<void> submitCheckIn({
+    required int rating,
+    required String wentWell,
+  }) async {
+    final current = state.requireValue;
+    final checkIn = await ref.read(wellbeingRepositoryProvider).submitCheckIn(
+      rating: rating,
+      wentWell: wentWell,
+    );
+    final checkIns = [checkIn, ...current.checkIns];
+    final plan = await ref.read(wellbeingRepositoryProvider).getPlan();
+    state = AsyncData(current.copyWith(
+      checkIns: checkIns,
+      plan: plan,
+      clearPlan: plan == null,
+    ));
+  }
 }
 
-final wellbeingProvider = NotifierProvider<WellbeingController, WellbeingState>(
+final wellbeingProvider = AsyncNotifierProvider<WellbeingController, WellbeingState>(
   WellbeingController.new,
 );
 
-/// Example session times: the next four weekdays, six times a day.
-List<DateTime> wellbeingSlots({DateTime? from}) {
-  final now = from ?? DateTime.now();
-  final days = <DateTime>[];
-  for (var d = 1; days.length < 4; d++) {
-    final day = DateTime(now.year, now.month, now.day + d);
-    if (day.weekday <= 5) days.add(day);
-  }
-  const times = [(9, 0), (10, 30), (12, 15), (14, 0), (16, 30), (18, 0)];
+/// Active wellbeing practitioners currently listed by the backend directory.
+final wellbeingPractitionersProvider = FutureProvider<List<Doctor>>((ref) async {
+  ref.watch(sessionEpochProvider);
+  final providers = await ref.watch(doctorRepositoryProvider).listDoctors();
   return [
-    for (final day in days)
-      for (final (h, m) in times) DateTime(day.year, day.month, day.day, h, m),
+    for (final provider in providers)
+      if (provider.specialty.toLowerCase().contains('wellbeing') &&
+          provider.modes.any((mode) => mode.isOnline))
+        provider,
   ];
-}
+});

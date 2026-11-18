@@ -321,8 +321,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: RoutePaths.wellbeingSlots,
+        redirect: _requires<WellbeingPractitionerSelection>(RoutePaths.wellbeing),
         builder: (context, state) =>
-            WellbeingSlotsScreen(offer: state.extra as WellbeingOffer?),
+            WellbeingSlotsScreen(
+              selection: state.extra! as WellbeingPractitionerSelection,
+            ),
       ),
       GoRoute(
         path: RoutePaths.wellbeingReview,

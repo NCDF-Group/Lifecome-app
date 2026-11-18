@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/network/api_exception.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/router/safe_back.dart';
 import '../../../core/theme/app_palette.dart';
@@ -9,42 +10,59 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/buttons/secondary_button.dart';
+import '../../../core/widgets/feedback/error_state.dart';
+import '../../../core/widgets/feedback/skeleton_loader.dart';
 import '../../../core/widgets/feedback/status_chip.dart';
-import '../../../core/widgets/inputs/choice_card.dart';
 import '../../../core/widgets/inputs/form_fields.dart';
 import '../../../core/widgets/inputs/slot_picker.dart';
 import '../../../core/widgets/layout/detail_list.dart';
 import '../../../core/widgets/layout/screen_title.dart';
+import '../../booking/application/booking_controller.dart';
+import '../../booking/domain/models/availability_slot.dart';
+import '../../doctors/domain/models/doctor.dart';
 import '../application/wellbeing_controller.dart';
 import '../domain/wellbeing_models.dart';
 import 'wellbeing_widgets.dart';
 
-/// An offer and a chosen time, on their way to the review screen.
-class WellbeingBookingDraft {
-  const WellbeingBookingDraft({required this.offer, required this.startsAt});
+class WellbeingPractitionerSelection {
+  const WellbeingPractitionerSelection({
+    required this.offer,
+    required this.practitioner,
+  });
 
   final WellbeingOffer offer;
-  final DateTime startsAt;
+  final Doctor practitioner;
 }
 
-/// The session's offer, practitioner and time, as detail rows.
-List<(String, String)> wellbeingDetails(
-  WellbeingOffer offer,
-  DateTime startsAt,
-) => [
-  ('Session', offer.title),
-  ('Practitioner', WellbeingPractitioner.name),
-  ('Date', Formatters.longDate(startsAt)),
-  ('Time', '${Formatters.time(startsAt)} · UK time'),
-  ('Format', 'Online · ${WellbeingOffer.durationMinutes} minutes'),
+class WellbeingBookingDraft {
+  const WellbeingBookingDraft({
+    required this.offer,
+    required this.practitioner,
+    required this.slot,
+  });
+
+  final WellbeingOffer offer;
+  final Doctor practitioner;
+  final AvailabilitySlot slot;
+}
+
+List<(String, String)> wellbeingDetails(WellbeingBookingDraft draft) => [
+  ('Session', draft.offer.title),
+  ('Practitioner', draft.practitioner.name),
+  ('Date', Formatters.longDate(draft.slot.startsAt.toLocal())),
+  ('Time', '${Formatters.time(draft.slot.startsAt.toLocal())} · local time'),
+  ('Format', 'Online · ${draft.offer.durationMinutes} minutes'),
+  ('Fee', Formatters.money(draft.offer.pricePence)),
 ];
 
-/// "Find time for yourself" (screen pack 096), or "Choose another time"
-/// for the booked session (100) when [offer] is null.
+/// Choose an actual open slot returned by the scheduling API.
 class WellbeingSlotsScreen extends ConsumerStatefulWidget {
-  const WellbeingSlotsScreen({super.key, this.offer});
+  const WellbeingSlotsScreen({
+    super.key,
+    required this.selection,
+  });
 
-  final WellbeingOffer? offer;
+  final WellbeingPractitionerSelection selection;
 
   @override
   ConsumerState<WellbeingSlotsScreen> createState() =>
@@ -52,57 +70,68 @@ class WellbeingSlotsScreen extends ConsumerStatefulWidget {
 }
 
 class _WellbeingSlotsScreenState extends ConsumerState<WellbeingSlotsScreen> {
-  final _slots = wellbeingSlots();
-  DateTime? _chosen;
-
-  bool get _rescheduling => widget.offer == null;
-
-  void _continue() {
-    final chosen = _chosen;
-    if (chosen == null) return;
-    if (_rescheduling) {
-      ref.read(wellbeingProvider.notifier).reschedule(chosen);
-      context.goBack(fallback: RoutePaths.wellbeingSession);
-    } else {
-      context.push(
-        RoutePaths.wellbeingReview,
-        extra: WellbeingBookingDraft(offer: widget.offer!, startsAt: chosen),
-      );
-    }
-  }
+  AvailabilitySlot? _chosen;
 
   @override
   Widget build(BuildContext context) {
-    final offer = widget.offer ?? ref.watch(wellbeingProvider).session?.offer;
+    final selection = widget.selection;
+    final availability = ref.watch(
+      availabilityProvider(selection.practitioner.id),
+    );
     return WellbeingPage(
       children: [
         ScreenTitle(
-          title: _rescheduling
-              ? 'Choose another time'
-              : 'Find time for yourself',
-          subtitle: _rescheduling
-              ? 'Your session moves when you confirm the new time.'
-              : '${offer?.title ?? 'Wellbeing session'} · '
-                    '${WellbeingPractitioner.name}',
+          title: 'Choose a time',
+          subtitle: '${selection.offer.title} · ${selection.practitioner.name}',
         ),
         const SizedBox(height: 10),
-        SlotPicker(
-          slots: _slots,
-          selected: _chosen,
-          onSelected: (slot) => setState(() => _chosen = slot),
-        ),
-        const SizedBox(height: 18),
-        PrimaryButton(
-          label: _rescheduling ? 'Confirm new time' : 'Continue',
-          onPressed: _chosen == null ? null : _continue,
+        availability.when(
+          loading: () => const SkeletonLoader(),
+          error: (error, _) => ErrorState(
+            error: error,
+            onRetry: () => ref.invalidate(
+              availabilityProvider(selection.practitioner.id),
+            ),
+          ),
+          data: (slots) {
+            if (slots.isEmpty) {
+              return const Text('No available times right now. Please check again later.');
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SlotPicker(
+                  slots: [for (final slot in slots) slot.startsAt.toLocal()],
+                  selected: _chosen?.startsAt.toLocal(),
+                  onSelected: (picked) {
+                    final match = slots.where((slot) =>
+                        slot.startsAt.toLocal().isAtSameMomentAs(picked));
+                    if (match.isNotEmpty) setState(() => _chosen = match.first);
+                  },
+                ),
+                const SizedBox(height: 18),
+                PrimaryButton(
+                  label: 'Continue',
+                  onPressed: _chosen == null
+                      ? null
+                      : () => context.push(
+                          RoutePaths.wellbeingReview,
+                          extra: WellbeingBookingDraft(
+                            offer: selection.offer,
+                            practitioner: selection.practitioner,
+                            slot: _chosen!,
+                          ),
+                        ),
+                ),
+              ],
+            );
+          },
         ),
       ],
     );
   }
 }
 
-/// "Review your session" (screen pack 097): goal, details and how it is
-/// paid for, then confirmation.
 class WellbeingReviewScreen extends ConsumerStatefulWidget {
   const WellbeingReviewScreen({super.key, required this.draft});
 
@@ -114,39 +143,52 @@ class WellbeingReviewScreen extends ConsumerStatefulWidget {
 }
 
 class _WellbeingReviewScreenState extends ConsumerState<WellbeingReviewScreen> {
-  final _goal = TextEditingController();
-  String? _goalError;
+  final _notes = TextEditingController();
+  String? _notesError;
   bool _agreed = false;
   bool _showAgreeError = false;
+  bool _submitting = false;
 
   @override
   void dispose() {
-    _goal.dispose();
+    _notes.dispose();
     super.dispose();
   }
 
-  void _confirm() {
-    final goalError = Validators.text(
-      _goal.text,
+  Future<void> _confirm() async {
+    setState(() => _notesError = Validators.text(
+      _notes.text,
       label: 'what you would like to focus on',
       required: true,
       minLength: 5,
-    );
-    setState(() {
-      _goalError = goalError;
-      _showAgreeError = !_agreed;
-    });
-    if (goalError != null || !_agreed) return;
-    ref
-        .read(wellbeingProvider.notifier)
-        .book(
-          offer: widget.draft.offer,
-          startsAt: widget.draft.startsAt,
-          goal: _goal.text.trim(),
-        );
-    context.go(RoutePaths.home);
-    context.push(RoutePaths.wellbeing);
-    context.push(RoutePaths.wellbeingConfirmed);
+    ));
+    if (_notesError != null || !_agreed) {
+      setState(() => _showAgreeError = !_agreed);
+      return;
+    }
+    setState(() => _submitting = true);
+    try {
+      await ref.read(wellbeingProvider.notifier).book(
+        offer: widget.draft.offer,
+        practitionerName: widget.draft.practitioner.name,
+        startsAt: widget.draft.slot.startsAt,
+        notes: _notes.text.trim(),
+      );
+      if (!mounted) return;
+      context.go(RoutePaths.home);
+      context.push(RoutePaths.wellbeing);
+      context.push(RoutePaths.wellbeingConfirmed);
+    } catch (error) {
+      if (!mounted) return;
+      final message = error is ApiException
+          ? error.message
+          : 'We could not book this session. Please try again.';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
   }
 
   @override
@@ -156,34 +198,23 @@ class _WellbeingReviewScreenState extends ConsumerState<WellbeingReviewScreen> {
       children: [
         const ScreenTitle(
           title: 'Review your session',
-          subtitle: 'Check your details and tell us your goal.',
+          subtitle: 'Check your details and tell us what you would like to focus on.',
         ),
         const SizedBox(height: 10),
-        DetailList(rows: wellbeingDetails(draft.offer, draft.startsAt)),
+        DetailList(rows: wellbeingDetails(draft)),
         TextAreaField(
           label: 'What would you like to focus on?',
-          controller: _goal,
-          hintText: 'For example, build a realistic routine that fits my week',
-          errorText: _goalError,
-        ),
-        PanelCard(
-          title: 'Payment',
-          child: DetailList(
-            rows: [
-              ('Example fee', Formatters.money(draft.offer.pricePence)),
-              ('Charged today', 'Nothing · preview'),
-            ],
-          ),
+          controller: _notes,
+          hintText: 'Add a note for your practitioner',
+          errorText: _notesError,
         ),
         CheckRow(
           value: _agreed,
-          onChanged: (v) => setState(() {
-            _agreed = v;
-            if (v) _showAgreeError = false;
+          onChanged: (value) => setState(() {
+            _agreed = value;
+            if (value) _showAgreeError = false;
           }),
-          label:
-              'I have reviewed the session details and understand this is a '
-              'preview booking.',
+          label: 'I have reviewed and agree to these session details.',
         ),
         if (_showAgreeError)
           Padding(
@@ -194,32 +225,42 @@ class _WellbeingReviewScreenState extends ConsumerState<WellbeingReviewScreen> {
             ),
           ),
         const SizedBox(height: 16),
-        PrimaryButton(label: 'Confirm session', onPressed: _confirm),
-        const SizedBox(height: 12),
-        const WellbeingPreviewNotice(),
+        PrimaryButton(
+          label: _submitting ? 'Booking…' : 'Confirm session',
+          onPressed: _submitting ? null : _confirm,
+        ),
       ],
     );
   }
 }
 
-/// "A little time for you" (screen pack 098).
 class WellbeingConfirmedScreen extends ConsumerWidget {
   const WellbeingConfirmedScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final session = ref.watch(wellbeingProvider).session;
+    final state = ref.watch(wellbeingProvider);
+    final session = state.valueOrNull?.sessions.isNotEmpty == true
+        ? state.valueOrNull!.sessions.first
+        : null;
     return WellbeingPage(
       children: [
         const SuccessIcon(),
         const ScreenTitle(
-          title: 'A little time for you',
-          subtitle: 'Your wellbeing session is booked.',
+          title: 'Session booked',
+          subtitle: 'Your wellbeing session has been saved.',
         ),
         const SizedBox(height: 12),
         const StatusBadge('Confirmed'),
         if (session != null)
-          DetailList(rows: wellbeingDetails(session.offer, session.startsAt)),
+          DetailList(
+            rows: [
+              ('Session', session.offer.title),
+              ('Practitioner', session.practitionerName),
+              ('Date', Formatters.longDate(session.startsAt.toLocal())),
+              ('Time', Formatters.time(session.startsAt.toLocal())),
+            ],
+          ),
         const SizedBox(height: 16),
         PrimaryButton(
           label: 'View your session',
