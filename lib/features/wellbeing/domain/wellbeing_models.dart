@@ -19,10 +19,22 @@ class WellbeingOffer {
     final id = json['id'] as String? ?? '';
     final type = json['sessionType'] as String? ?? id;
     final art = switch (id) {
-      'lifestyle-coaching' => ('assets/images/wellbeing/lifestyle-coaching.webp', LcIcons.wellbeing),
-      'healthy-eating' => ('assets/images/wellbeing/healthy-eating.webp', LcIcons.leaf),
-      'stress-management' => ('assets/images/wellbeing/stress-management.webp', LcIcons.care),
-      _ => ('assets/images/wellbeing/lifestyle-coaching.webp', LcIcons.wellbeing),
+      'lifestyle-coaching' => (
+        'assets/images/wellbeing/lifestyle-coaching.webp',
+        LcIcons.wellbeing,
+      ),
+      'healthy-eating' => (
+        'assets/images/wellbeing/healthy-eating.webp',
+        LcIcons.leaf,
+      ),
+      'stress-management' => (
+        'assets/images/wellbeing/stress-management.webp',
+        LcIcons.care,
+      ),
+      _ => (
+        'assets/images/wellbeing/lifestyle-coaching.webp',
+        LcIcons.wellbeing,
+      ),
     };
     return WellbeingOffer(
       id: id,
@@ -35,7 +47,8 @@ class WellbeingOffer {
       durationMinutes: (json['durationMinutes'] as num?)?.toInt() ?? 30,
       pricePence: (json['pricePence'] as num?)?.toInt() ?? 0,
       availableCoaches: [
-        for (final coach in json['availableCoaches'] as List<dynamic>? ?? const [])
+        for (final coach
+            in json['availableCoaches'] as List<dynamic>? ?? const [])
           if (coach is String && coach.trim().isNotEmpty) coach.trim(),
       ],
     );
@@ -79,16 +92,18 @@ class WellbeingSession {
     }
     return WellbeingSession(
       id: json['id'] as String? ?? '',
-      offer: offer ?? WellbeingOffer.fromJson({
-        'id': sessionType,
-        'sessionType': sessionType,
-        'title': json['title'] as String? ?? '',
-        'headline': '',
-        'description': '',
-        'durationMinutes': json['durationMinutes'],
-        'pricePence': 0,
-        'availableCoaches': const <String>[],
-      }),
+      offer:
+          offer ??
+          WellbeingOffer.fromJson({
+            'id': sessionType,
+            'sessionType': sessionType,
+            'title': json['title'] as String? ?? '',
+            'headline': '',
+            'description': '',
+            'durationMinutes': json['durationMinutes'],
+            'pricePence': 0,
+            'availableCoaches': const <String>[],
+          }),
       startsAt: DateTime.parse(json['scheduledAt'] as String).toUtc(),
       practitionerName: (json['coachName'] as String? ?? '').trim(),
       status: (json['status'] as String? ?? '').trim(),
@@ -110,7 +125,11 @@ class WellbeingSession {
 }
 
 class WellbeingPlan {
-  const WellbeingPlan({required this.id, required this.goal, required this.steps});
+  const WellbeingPlan({
+    required this.id,
+    required this.goal,
+    required this.steps,
+  });
 
   factory WellbeingPlan.fromJson(Map<String, dynamic> json) => WellbeingPlan(
     id: json['id'] as String? ?? '',
@@ -134,12 +153,13 @@ class WellbeingPlanStep {
     required this.completed,
   });
 
-  factory WellbeingPlanStep.fromJson(Map<String, dynamic> json) => WellbeingPlanStep(
-    id: json['id'] as String? ?? '',
-    title: json['title'] as String? ?? '',
-    description: json['description'] as String? ?? '',
-    completed: json['completedAt'] != null,
-  );
+  factory WellbeingPlanStep.fromJson(Map<String, dynamic> json) =>
+      WellbeingPlanStep(
+        id: json['id'] as String? ?? '',
+        title: json['title'] as String? ?? '',
+        description: json['description'] as String? ?? '',
+        completed: json['completedAt'] != null,
+      );
 
   final String id;
   final String title;
@@ -156,13 +176,14 @@ class WellbeingCheckIn {
     this.helpWith,
   });
 
-  factory WellbeingCheckIn.fromJson(Map<String, dynamic> json) => WellbeingCheckIn(
-    id: json['id'] as String? ?? '',
-    score: (json['rating'] as num?)?.toInt() ?? 0,
-    at: DateTime.parse(json['createdAt'] as String).toUtc(),
-    wentWell: json['wentWell'] as String?,
-    helpWith: json['helpWith'] as String?,
-  );
+  factory WellbeingCheckIn.fromJson(Map<String, dynamic> json) =>
+      WellbeingCheckIn(
+        id: json['id'] as String? ?? '',
+        score: (json['rating'] as num?)?.toInt() ?? 0,
+        at: DateTime.parse(json['createdAt'] as String).toUtc(),
+        wentWell: json['wentWell'] as String?,
+        helpWith: json['helpWith'] as String?,
+      );
 
   final String id;
   final int score;

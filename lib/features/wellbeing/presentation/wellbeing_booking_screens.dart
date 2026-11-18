@@ -13,6 +13,7 @@ import '../../../core/widgets/buttons/secondary_button.dart';
 import '../../../core/widgets/feedback/error_state.dart';
 import '../../../core/widgets/feedback/skeleton_loader.dart';
 import '../../../core/widgets/feedback/status_chip.dart';
+import '../../../core/widgets/inputs/choice_card.dart';
 import '../../../core/widgets/inputs/form_fields.dart';
 import '../../../core/widgets/inputs/slot_picker.dart';
 import '../../../core/widgets/layout/detail_list.dart';
@@ -57,10 +58,7 @@ List<(String, String)> wellbeingDetails(WellbeingBookingDraft draft) => [
 
 /// Choose an actual open slot returned by the scheduling API.
 class WellbeingSlotsScreen extends ConsumerStatefulWidget {
-  const WellbeingSlotsScreen({
-    super.key,
-    required this.selection,
-  });
+  const WellbeingSlotsScreen({super.key, required this.selection});
 
   final WellbeingPractitionerSelection selection;
 
@@ -89,13 +87,14 @@ class _WellbeingSlotsScreenState extends ConsumerState<WellbeingSlotsScreen> {
           loading: () => const SkeletonLoader(),
           error: (error, _) => ErrorState(
             error: error,
-            onRetry: () => ref.invalidate(
-              availabilityProvider(selection.practitioner.id),
-            ),
+            onRetry: () =>
+                ref.invalidate(availabilityProvider(selection.practitioner.id)),
           ),
           data: (slots) {
             if (slots.isEmpty) {
-              return const Text('No available times right now. Please check again later.');
+              return const Text(
+                'No available times right now. Please check again later.',
+              );
             }
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -104,8 +103,10 @@ class _WellbeingSlotsScreenState extends ConsumerState<WellbeingSlotsScreen> {
                   slots: [for (final slot in slots) slot.startsAt.toLocal()],
                   selected: _chosen?.startsAt.toLocal(),
                   onSelected: (picked) {
-                    final match = slots.where((slot) =>
-                        slot.startsAt.toLocal().isAtSameMomentAs(picked));
+                    final match = slots.where(
+                      (slot) =>
+                          slot.startsAt.toLocal().isAtSameMomentAs(picked),
+                    );
                     if (match.isNotEmpty) setState(() => _chosen = match.first);
                   },
                 ),
@@ -156,24 +157,28 @@ class _WellbeingReviewScreenState extends ConsumerState<WellbeingReviewScreen> {
   }
 
   Future<void> _confirm() async {
-    setState(() => _notesError = Validators.text(
-      _notes.text,
-      label: 'what you would like to focus on',
-      required: true,
-      minLength: 5,
-    ));
+    setState(
+      () => _notesError = Validators.text(
+        _notes.text,
+        label: 'what you would like to focus on',
+        required: true,
+        minLength: 5,
+      ),
+    );
     if (_notesError != null || !_agreed) {
       setState(() => _showAgreeError = !_agreed);
       return;
     }
     setState(() => _submitting = true);
     try {
-      await ref.read(wellbeingProvider.notifier).book(
-        offer: widget.draft.offer,
-        practitionerName: widget.draft.practitioner.name,
-        startsAt: widget.draft.slot.startsAt,
-        notes: _notes.text.trim(),
-      );
+      await ref
+          .read(wellbeingProvider.notifier)
+          .book(
+            offer: widget.draft.offer,
+            practitionerName: widget.draft.practitioner.name,
+            startsAt: widget.draft.slot.startsAt,
+            notes: _notes.text.trim(),
+          );
       if (!mounted) return;
       context.go(RoutePaths.home);
       context.push(RoutePaths.wellbeing);
@@ -183,9 +188,8 @@ class _WellbeingReviewScreenState extends ConsumerState<WellbeingReviewScreen> {
       final message = error is ApiException
           ? error.message
           : 'We could not book this session. Please try again.';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -198,7 +202,8 @@ class _WellbeingReviewScreenState extends ConsumerState<WellbeingReviewScreen> {
       children: [
         const ScreenTitle(
           title: 'Review your session',
-          subtitle: 'Check your details and tell us what you would like to focus on.',
+          subtitle:
+              'Check your details and tell us what you would like to focus on.',
         ),
         const SizedBox(height: 10),
         DetailList(rows: wellbeingDetails(draft)),
@@ -240,8 +245,9 @@ class WellbeingConfirmedScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(wellbeingProvider);
-    final session = state.valueOrNull?.sessions.isNotEmpty == true
-        ? state.valueOrNull!.sessions.first
+    final current = state.asData?.value;
+    final session = current != null && current.sessions.isNotEmpty
+        ? current.sessions.first
         : null;
     return WellbeingPage(
       children: [

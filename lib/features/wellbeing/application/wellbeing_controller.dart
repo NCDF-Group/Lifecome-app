@@ -24,7 +24,8 @@ class WellbeingState {
   final List<WellbeingCheckIn> checkIns;
 
   WellbeingSession? get latestSession {
-    final sorted = [...sessions]..sort((a, b) => a.startsAt.compareTo(b.startsAt));
+    final sorted = [...sessions]
+      ..sort((a, b) => a.startsAt.compareTo(b.startsAt));
     for (final session in sorted) {
       if (session.isUpcoming) return session;
     }
@@ -85,14 +86,18 @@ class WellbeingController extends AsyncNotifier<WellbeingState> {
     required String notes,
   }) async {
     final current = state.requireValue;
-    final session = await ref.read(wellbeingRepositoryProvider).bookSession(
-      offers: current.offers,
-      offer: offer,
-      practitionerName: practitionerName,
-      startsAt: startsAt,
-      notes: notes,
+    final session = await ref
+        .read(wellbeingRepositoryProvider)
+        .bookSession(
+          offers: current.offers,
+          offer: offer,
+          practitionerName: practitionerName,
+          startsAt: startsAt,
+          notes: notes,
+        );
+    state = AsyncData(
+      current.copyWith(sessions: [session, ...current.sessions]),
     );
-    state = AsyncData(current.copyWith(sessions: [session, ...current.sessions]));
     return session;
   }
 
@@ -101,12 +106,14 @@ class WellbeingController extends AsyncNotifier<WellbeingState> {
     final cancelled = await ref
         .read(wellbeingRepositoryProvider)
         .cancelSession(id, current.offers);
-    state = AsyncData(current.copyWith(
-      sessions: [
-        for (final session in current.sessions)
-          if (session.id == id) cancelled else session,
-      ],
-    ));
+    state = AsyncData(
+      current.copyWith(
+        sessions: [
+          for (final session in current.sessions)
+            if (session.id == id) cancelled else session,
+        ],
+      ),
+    );
   }
 
   Future<void> savePlan(String goal) async {
@@ -128,26 +135,26 @@ class WellbeingController extends AsyncNotifier<WellbeingState> {
     required String wentWell,
   }) async {
     final current = state.requireValue;
-    final checkIn = await ref.read(wellbeingRepositoryProvider).submitCheckIn(
-      rating: rating,
-      wentWell: wentWell,
-    );
+    final checkIn = await ref
+        .read(wellbeingRepositoryProvider)
+        .submitCheckIn(rating: rating, wentWell: wentWell);
     final checkIns = [checkIn, ...current.checkIns];
     final plan = await ref.read(wellbeingRepositoryProvider).getPlan();
-    state = AsyncData(current.copyWith(
-      checkIns: checkIns,
-      plan: plan,
-      clearPlan: plan == null,
-    ));
+    state = AsyncData(
+      current.copyWith(checkIns: checkIns, plan: plan, clearPlan: plan == null),
+    );
   }
 }
 
-final wellbeingProvider = AsyncNotifierProvider<WellbeingController, WellbeingState>(
-  WellbeingController.new,
-);
+final wellbeingProvider =
+    AsyncNotifierProvider<WellbeingController, WellbeingState>(
+      WellbeingController.new,
+    );
 
 /// Active wellbeing practitioners currently listed by the backend directory.
-final wellbeingPractitionersProvider = FutureProvider<List<Doctor>>((ref) async {
+final wellbeingPractitionersProvider = FutureProvider<List<Doctor>>((
+  ref,
+) async {
   ref.watch(sessionEpochProvider);
   final providers = await ref.watch(doctorRepositoryProvider).listDoctors();
   return [

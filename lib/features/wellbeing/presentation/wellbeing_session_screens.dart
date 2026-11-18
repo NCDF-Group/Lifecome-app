@@ -23,7 +23,6 @@ import '../../../core/widgets/media/lc_icons.dart';
 import '../../consultation/presentation/widgets/video_stage.dart';
 import '../application/wellbeing_controller.dart';
 import '../domain/wellbeing_models.dart';
-import 'wellbeing_booking_screens.dart';
 import 'wellbeing_widgets.dart';
 
 class _NoSession extends StatelessWidget {
@@ -40,7 +39,11 @@ class _NoSession extends StatelessWidget {
         Text(
           'No wellbeing sessions yet',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: palette.ink),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: palette.ink,
+          ),
         ),
         const SizedBox(height: 6),
         Text(
@@ -66,20 +69,28 @@ class WellbeingSessionScreen extends ConsumerWidget {
     final data = ref.watch(wellbeingProvider);
     return WellbeingPage(
       children: data.when(
-        loading: () => [const ScreenTitle(title: 'Your wellbeing sessions'), const SkeletonLoader()],
+        loading: () => [
+          const ScreenTitle(title: 'Your wellbeing sessions'),
+          const SkeletonLoader(),
+        ],
         error: (error, _) => [
-          ErrorState(error: error, onRetry: () => ref.read(wellbeingProvider.notifier).refresh()),
+          ErrorState(
+            error: error,
+            onRetry: () => ref.read(wellbeingProvider.notifier).refresh(),
+          ),
         ],
         data: (state) {
           final sessions = [...state.sessions]
             ..sort((a, b) => b.startsAt.compareTo(a.startsAt));
           return [
             const ScreenTitle(title: 'Your wellbeing sessions'),
-            if (sessions.isEmpty) const _NoSession()
-            else for (final session in sessions) ...[
-              const SizedBox(height: 12),
-              _SessionCard(session: session),
-            ],
+            if (sessions.isEmpty)
+              const _NoSession()
+            else
+              for (final session in sessions) ...[
+                const SizedBox(height: 12),
+                _SessionCard(session: session),
+              ],
           ];
         },
       ),
@@ -156,7 +167,8 @@ class _WellbeingCancelScreenState extends ConsumerState<WellbeingCancelScreen> {
       final message = error is ApiException
           ? error.message
           : 'We could not cancel this session. Please try again.';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -170,7 +182,10 @@ class _WellbeingCancelScreenState extends ConsumerState<WellbeingCancelScreen> {
       children: data.when(
         loading: () => [const SkeletonLoader()],
         error: (error, _) => [
-          ErrorState(error: error, onRetry: () => ref.read(wellbeingProvider.notifier).refresh()),
+          ErrorState(
+            error: error,
+            onRetry: () => ref.read(wellbeingProvider.notifier).refresh(),
+          ),
         ],
         data: (state) {
           WellbeingSession? session;
@@ -180,19 +195,25 @@ class _WellbeingCancelScreenState extends ConsumerState<WellbeingCancelScreen> {
               break;
             }
           }
-          if (session == null) return [const _NoSession()];
+          final selectedSession = session;
+          if (selectedSession == null) return [const _NoSession()];
           return [
             const ScreenTitle(
               title: 'Cancel your session?',
               subtitle: 'Please confirm you want to cancel this booking.',
             ),
             const SizedBox(height: 10),
-            DetailList(rows: [
-              ('Session', session.offer.title),
-              ('Practitioner', session.practitionerName),
-              ('Date', Formatters.longDate(session.startsAt.toLocal())),
-              ('Time', Formatters.time(session.startsAt.toLocal())),
-            ]),
+            DetailList(
+              rows: [
+                ('Session', selectedSession.offer.title),
+                ('Practitioner', selectedSession.practitionerName),
+                (
+                  'Date',
+                  Formatters.longDate(selectedSession.startsAt.toLocal()),
+                ),
+                ('Time', Formatters.time(selectedSession.startsAt.toLocal())),
+              ],
+            ),
             CheckRow(
               value: _confirmed,
               onChanged: (value) => setState(() => _confirmed = value),
@@ -201,7 +222,7 @@ class _WellbeingCancelScreenState extends ConsumerState<WellbeingCancelScreen> {
             const SizedBox(height: 16),
             PrimaryButton(
               label: _submitting ? 'Cancelling…' : 'Confirm cancellation',
-              onPressed: _submitting ? null : () => _cancel(session),
+              onPressed: _submitting ? null : () => _cancel(selectedSession),
             ),
           ];
         },
@@ -232,7 +253,8 @@ class WellbeingCallScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 14),
           const InfoBanner(
-            message: 'Your practitioner will share call details before the session.',
+            message:
+                'Your practitioner will share call details before the session.',
           ),
         ],
         const SizedBox(height: 16),
@@ -249,7 +271,8 @@ class WellbeingPlanScreen extends ConsumerStatefulWidget {
   const WellbeingPlanScreen({super.key});
 
   @override
-  ConsumerState<WellbeingPlanScreen> createState() => _WellbeingPlanScreenState();
+  ConsumerState<WellbeingPlanScreen> createState() =>
+      _WellbeingPlanScreenState();
 }
 
 class _WellbeingPlanScreenState extends ConsumerState<WellbeingPlanScreen> {
@@ -270,8 +293,11 @@ class _WellbeingPlanScreenState extends ConsumerState<WellbeingPlanScreen> {
       await ref.read(wellbeingProvider.notifier).savePlan(goal);
     } catch (error) {
       if (mounted) {
-        final message = error is ApiException ? error.message : 'We could not save your plan.';
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+        final message = error is ApiException
+            ? error.message
+            : 'We could not save your plan.';
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(message)));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -285,7 +311,10 @@ class _WellbeingPlanScreenState extends ConsumerState<WellbeingPlanScreen> {
       children: data.when(
         loading: () => [const SkeletonLoader()],
         error: (error, _) => [
-          ErrorState(error: error, onRetry: () => ref.read(wellbeingProvider.notifier).refresh()),
+          ErrorState(
+            error: error,
+            onRetry: () => ref.read(wellbeingProvider.notifier).refresh(),
+          ),
         ],
         data: (state) {
           final plan = state.plan;
@@ -307,23 +336,31 @@ class _WellbeingPlanScreenState extends ConsumerState<WellbeingPlanScreen> {
                 onPressed: _saving ? null : _save,
               ),
             ] else ...[
-              PanelCard(title: 'Your focus', body: plan.goal, tone: PanelTone.mint),
+              PanelCard(
+                title: 'Your focus',
+                body: plan.goal,
+                tone: PanelTone.mint,
+              ),
               for (final step in plan.steps)
                 CheckboxListTile(
                   value: step.completed,
                   contentPadding: EdgeInsets.zero,
                   title: Text(step.title),
-                  subtitle: step.description.isEmpty ? null : Text(step.description),
+                  subtitle: step.description.isEmpty
+                      ? null
+                      : Text(step.description),
                   onChanged: (value) async {
                     try {
-                      await ref.read(wellbeingProvider.notifier).setStepCompleted(
-                        step.id,
-                        value ?? false,
-                      );
+                      await ref
+                          .read(wellbeingProvider.notifier)
+                          .setStepCompleted(step.id, value ?? false);
                     } catch (error) {
                       if (context.mounted) {
-                        final message = error is ApiException ? error.message : 'Could not update this step.';
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+                        final message = error is ApiException
+                            ? error.message
+                            : 'Could not update this step.';
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(SnackBar(content: Text(message)));
                       }
                     }
                   },
@@ -360,10 +397,12 @@ class WellbeingCheckInScreen extends ConsumerStatefulWidget {
   const WellbeingCheckInScreen({super.key});
 
   @override
-  ConsumerState<WellbeingCheckInScreen> createState() => _WellbeingCheckInScreenState();
+  ConsumerState<WellbeingCheckInScreen> createState() =>
+      _WellbeingCheckInScreenState();
 }
 
-class _WellbeingCheckInScreenState extends ConsumerState<WellbeingCheckInScreen> {
+class _WellbeingCheckInScreenState
+    extends ConsumerState<WellbeingCheckInScreen> {
   int _score = 3;
   final _reflection = TextEditingController();
   bool _submitting = false;
@@ -377,15 +416,17 @@ class _WellbeingCheckInScreenState extends ConsumerState<WellbeingCheckInScreen>
   Future<void> _submit() async {
     setState(() => _submitting = true);
     try {
-      await ref.read(wellbeingProvider.notifier).submitCheckIn(
-        rating: _score,
-        wentWell: _reflection.text.trim(),
-      );
+      await ref
+          .read(wellbeingProvider.notifier)
+          .submitCheckIn(rating: _score, wentWell: _reflection.text.trim());
       if (mounted) context.goBack(fallback: RoutePaths.wellbeingPlan);
     } catch (error) {
       if (mounted) {
-        final message = error is ApiException ? error.message : 'We could not save your check-in.';
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+        final message = error is ApiException
+            ? error.message
+            : 'We could not save your check-in.';
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(message)));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -414,10 +455,14 @@ class _WellbeingCheckInScreenState extends ConsumerState<WellbeingCheckInScreen>
                   selected: n == _score,
                   button: true,
                   child: Material(
-                    color: n == _score ? palette.tintGreenStrong : palette.surface,
+                    color: n == _score
+                        ? palette.tintGreenStrong
+                        : palette.surface,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
-                      side: BorderSide(color: n == _score ? palette.positive : palette.line),
+                      side: BorderSide(
+                        color: n == _score ? palette.positive : palette.line,
+                      ),
                     ),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(10),
@@ -430,7 +475,9 @@ class _WellbeingCheckInScreenState extends ConsumerState<WellbeingCheckInScreen>
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
-                              color: n == _score ? palette.positive : palette.ink,
+                              color: n == _score
+                                  ? palette.positive
+                                  : palette.ink,
                             ),
                           ),
                         ),

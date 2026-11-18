@@ -321,11 +321,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: RoutePaths.wellbeingSlots,
-        redirect: _requires<WellbeingPractitionerSelection>(RoutePaths.wellbeing),
-        builder: (context, state) =>
-            WellbeingSlotsScreen(
-              selection: state.extra! as WellbeingPractitionerSelection,
-            ),
+        redirect: _requires<WellbeingPractitionerSelection>(
+          RoutePaths.wellbeing,
+        ),
+        builder: (context, state) => WellbeingSlotsScreen(
+          selection: state.extra! as WellbeingPractitionerSelection,
+        ),
       ),
       GoRoute(
         path: RoutePaths.wellbeingReview,
@@ -613,9 +614,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: RoutePaths.testService,
-        builder: (context, state) => TestServiceScreen(
-          serviceId: state.pathParameters['serviceId']!,
-        ),
+        builder: (context, state) =>
+            TestServiceScreen(serviceId: state.pathParameters['serviceId']!),
       ),
       GoRoute(
         path: RoutePaths.testSuitability,
@@ -630,8 +630,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           step: TestJourneyStep.contact,
           selection: state.uri.queryParameters['contact'] ?? '',
           contactSelection: state.uri.queryParameters['contact'] ?? '',
-          appointmentSelection:
-              state.uri.queryParameters['appointment'] ?? '',
+          appointmentSelection: state.uri.queryParameters['appointment'] ?? '',
           paymentSelection: state.uri.queryParameters['payment'] ?? '',
         ),
       ),
@@ -642,8 +641,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           step: TestJourneyStep.appointment,
           selection: state.uri.queryParameters['appointment'] ?? '',
           contactSelection: state.uri.queryParameters['contact'] ?? '',
-          appointmentSelection:
-              state.uri.queryParameters['appointment'] ?? '',
+          appointmentSelection: state.uri.queryParameters['appointment'] ?? '',
           paymentSelection: state.uri.queryParameters['payment'] ?? '',
         ),
       ),
@@ -654,8 +652,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           step: TestJourneyStep.payment,
           selection: state.uri.queryParameters['payment'] ?? '',
           contactSelection: state.uri.queryParameters['contact'] ?? '',
-          appointmentSelection:
-              state.uri.queryParameters['appointment'] ?? '',
+          appointmentSelection: state.uri.queryParameters['appointment'] ?? '',
           paymentSelection: state.uri.queryParameters['payment'] ?? '',
         ),
       ),
@@ -665,8 +662,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           serviceId: state.uri.queryParameters['service'] ?? '',
           step: TestJourneyStep.review,
           contactSelection: state.uri.queryParameters['contact'] ?? '',
-          appointmentSelection:
-              state.uri.queryParameters['appointment'] ?? '',
+          appointmentSelection: state.uri.queryParameters['appointment'] ?? '',
           paymentSelection: state.uri.queryParameters['payment'] ?? '',
         ),
       ),
@@ -676,8 +672,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           serviceId: state.uri.queryParameters['service'] ?? '',
           step: TestJourneyStep.confirmation,
           contactSelection: state.uri.queryParameters['contact'] ?? '',
-          appointmentSelection:
-              state.uri.queryParameters['appointment'] ?? '',
+          appointmentSelection: state.uri.queryParameters['appointment'] ?? '',
           paymentSelection: state.uri.queryParameters['payment'] ?? '',
         ),
       ),

@@ -91,10 +91,7 @@ class DioWellbeingRepository implements WellbeingRepository {
   }
 
   @override
-  Future<WellbeingPlan?> setStepCompleted(
-    String stepId,
-    bool completed,
-  ) async {
+  Future<WellbeingPlan?> setStepCompleted(String stepId, bool completed) async {
     final json = await _client.patch(
       '/wellbeing/plan/steps/$stepId',
       data: {'completed': completed},
@@ -116,7 +113,10 @@ class DioWellbeingRepository implements WellbeingRepository {
   }) async => WellbeingCheckIn.fromJson(
     await _client.post(
       '/wellbeing/check-ins',
-      data: {'rating': rating, if (wentWell.trim().isNotEmpty) 'wentWell': wentWell.trim()},
+      data: {
+        'rating': rating,
+        if (wentWell.trim().isNotEmpty) 'wentWell': wentWell.trim(),
+      },
     ),
   );
 }

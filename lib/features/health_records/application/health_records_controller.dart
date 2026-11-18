@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/core_providers.dart';
+import '../../../core/network/api_client.dart';
 import '../data/health_records_repository.dart';
 import '../domain/models/clinical_note.dart';
 import '../domain/models/diagnostic_result.dart';
@@ -8,7 +9,7 @@ import '../domain/models/prescription.dart';
 import '../domain/models/referral.dart';
 
 final healthRecordsRepositoryProvider = Provider<HealthRecordsRepository>(
-  (ref) => const PendingHealthRecordsRepository(),
+  (ref) => DioHealthRecordsRepository(ref.watch(apiClientProvider)),
 );
 
 // Each list watches the session epoch, so signing in as someone else never

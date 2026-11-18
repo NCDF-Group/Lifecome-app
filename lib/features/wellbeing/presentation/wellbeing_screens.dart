@@ -17,7 +17,6 @@ import '../../../core/widgets/lists/row_card.dart';
 import '../../../core/widgets/media/avatar.dart';
 import '../../../core/widgets/media/lc_icons.dart';
 import '../../booking/application/booking_controller.dart';
-import '../../booking/domain/models/availability_slot.dart';
 import '../../doctors/domain/models/doctor.dart';
 import '../application/wellbeing_controller.dart';
 import '../domain/wellbeing_models.dart';
@@ -56,14 +55,17 @@ class WellbeingHubScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 14),
           if (state.offers.isEmpty)
-            const _WellbeingEmpty(message: 'No wellbeing services are available right now.'),
+            const _WellbeingEmpty(
+              message: 'No wellbeing services are available right now.',
+            ),
           for (final (index, offer) in state.offers.indexed)
             RowCard(
               icon: offer.icon,
               title: offer.title,
               subtitle: offer.summary,
               tone: index == 0 ? RowCardTone.mint : RowCardTone.blue,
-              onTap: () => context.push(RoutePaths.wellbeingOffer, extra: offer),
+              onTap: () =>
+                  context.push(RoutePaths.wellbeingOffer, extra: offer),
             ),
           RowCard(
             icon: LcIcons.bag,
@@ -243,7 +245,10 @@ class _WellbeingPractitionerCard extends ConsumerWidget {
               children: [
                 Text(
                   practitioner.name,
-                  style: TextStyle(fontWeight: FontWeight.w700, color: palette.ink),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: palette.ink,
+                  ),
                 ),
                 Text(
                   practitioner.specialty,
@@ -264,7 +269,9 @@ class _WellbeingPractitionerCard extends ConsumerWidget {
                         : '${slots.length} available time${slots.length == 1 ? '' : 's'}',
                     style: TextStyle(
                       fontSize: 12,
-                      color: slots.isEmpty ? palette.inkMuted : palette.positive,
+                      color: slots.isEmpty
+                          ? palette.inkMuted
+                          : palette.positive,
                     ),
                   ),
                 ),
