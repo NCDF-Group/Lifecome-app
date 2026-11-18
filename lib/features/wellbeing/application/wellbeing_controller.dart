@@ -24,20 +24,15 @@ class WellbeingState {
   final List<WellbeingCheckIn> checkIns;
 
   WellbeingSession? get latestSession {
-    final sorted = [...sessions]..sort((a, b) => b.startsAt.compareTo(a.startsAt));
-    return sorted.where((item) => item.isUpcoming).firstOrNull ?? sorted.firstOrNull;
+    final sorted = [...sessions]..sort((a, b) => a.startsAt.compareTo(b.startsAt));
+    for (final session in sorted) {
+      if (session.isUpcoming) return session;
+    }
+    return sorted.isEmpty ? null : sorted.last;
   }
 
   WellbeingCheckIn? get latestCheckIn =>
       checkIns.isEmpty ? null : checkIns.first;
-
-  WellbeingSession? get latestSession {
-    final sorted = [...sessions]..sort((a, b) => b.startsAt.compareTo(a.startsAt));
-    for (final session in sorted) {
-      if (session.isUpcoming) return session;
-    }
-    return sorted.isEmpty ? null : sorted.first;
-  }
 
   WellbeingState copyWith({
     List<WellbeingOffer>? offers,

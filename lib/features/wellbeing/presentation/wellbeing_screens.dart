@@ -18,6 +18,7 @@ import '../../../core/widgets/media/avatar.dart';
 import '../../../core/widgets/media/lc_icons.dart';
 import '../../booking/application/booking_controller.dart';
 import '../../booking/domain/models/availability_slot.dart';
+import '../../doctors/domain/models/doctor.dart';
 import '../application/wellbeing_controller.dart';
 import '../domain/wellbeing_models.dart';
 import 'wellbeing_booking_screens.dart';
