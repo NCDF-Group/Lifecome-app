@@ -28,16 +28,22 @@ class DioHealthRecordsRepository implements HealthRecordsRepository {
     final encounters = await _client.getList('/me/encounters');
     final details = await Future.wait([
       for (final row in encounters)
-        if (row is Map<String, dynamic>) _client.get('/me/encounters/${row['id']}'),
+        if (row is Map<String, dynamic>)
+          _client.get('/me/encounters/${row['id']}'),
     ]);
     return [
       for (final detailValue in details)
-        for (final noteValue in _map(detailValue)['notes'] as List<dynamic>? ?? const [])
-          if (noteValue is Map<String, dynamic> && noteValue['status'] == 'signed')
+        for (final noteValue
+            in _map(detailValue)['notes'] as List<dynamic>? ?? const [])
+          if (noteValue is Map<String, dynamic> &&
+              noteValue['status'] == 'signed')
             ClinicalNote(
               id: noteValue['id'] as String? ?? '',
               title: 'Consultation note',
-              clinician: _map(_map(detailValue)['encounter'])['providerName'] as String? ?? '',
+              clinician:
+                  _map(_map(detailValue)['encounter'])['providerName']
+                      as String? ??
+                  '',
               date: _date(noteValue['signedAt'] ?? noteValue['createdAt']),
               summary: noteValue['body'] as String? ?? '',
             ),
@@ -67,7 +73,10 @@ class DioHealthRecordsRepository implements HealthRecordsRepository {
         Referral(
           id: value['id'] as String? ?? '',
           reference: value['reference'] as String? ?? '',
-          specialty: value['specialty'] as String? ?? value['referredToDescription'] as String? ?? '',
+          specialty:
+              value['specialty'] as String? ??
+              value['referredToDescription'] as String? ??
+              '',
           status: value['status'] as String? ?? '',
           createdOn: _date(value['createdAt']),
           nextStep: value['nextStep'] as String?,
@@ -82,7 +91,10 @@ class DioHealthRecordsRepository implements HealthRecordsRepository {
         DiagnosticResult(
           id: value['id'] as String? ?? '',
           title: value['testName'] as String? ?? '',
-          reviewedBy: value['reviewedByName'] as String? ?? value['originatingProviderName'] as String? ?? '',
+          reviewedBy:
+              value['reviewedByName'] as String? ??
+              value['originatingProviderName'] as String? ??
+              '',
           date: _date(value['reviewedAt'] ?? value['receivedAt']),
           report: value['resultSummary'] as String? ?? '',
         ),

@@ -39,7 +39,7 @@ class ShopProduct {
     final sku = (json['sku'] as String? ?? '').trim();
     final category = ShopCategory.fromApi(json['category']);
     return ShopProduct(
-      id: json['id'] as String? ?? json['productId'] as String? ?? '',
+      id: json['productId'] as String? ?? json['id'] as String? ?? '',
       sku: sku,
       name: name,
       subtitle: [json['packSize'], json['productType']]
@@ -115,7 +115,11 @@ class ShopDelivery {
 }
 
 class ShopOrderLine {
-  const ShopOrderLine({required this.id, required this.product, required this.quantity});
+  const ShopOrderLine({
+    required this.id,
+    required this.product,
+    required this.quantity,
+  });
 
   factory ShopOrderLine.fromJson(Map<String, dynamic> json) => ShopOrderLine(
     id: json['id'] as String? ?? json['orderItemId'] as String? ?? '',
@@ -286,7 +290,8 @@ class ShopBasket {
     subtotalPence: (json['subtotalPence'] as num?)?.toInt() ?? 0,
     deliveryPence: (json['deliveryPence'] as num?)?.toInt() ?? 0,
     totalPence: (json['totalPence'] as num?)?.toInt() ?? 0,
-    freeDeliveryFromPence: (json['freeDeliveryFromPence'] as num?)?.toInt() ?? 0,
+    freeDeliveryFromPence:
+        (json['freeDeliveryFromPence'] as num?)?.toInt() ?? 0,
   );
 
   final List<ShopBasketLine> lines;

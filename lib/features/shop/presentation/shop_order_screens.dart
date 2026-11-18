@@ -17,7 +17,6 @@ import '../../../core/widgets/inputs/form_fields.dart';
 import '../../../core/widgets/layout/detail_list.dart';
 import '../../../core/widgets/layout/screen_title.dart';
 import '../../../core/widgets/lists/row_card.dart';
-import '../../../core/widgets/lists/timeline_item.dart';
 import '../../../core/widgets/media/lc_icons.dart';
 import '../application/shop_controller.dart';
 import '../domain/shop_models.dart';
@@ -115,7 +114,10 @@ class ShopOrderScreen extends ConsumerWidget {
           subtitle: 'Placed ${Formatters.longDate(order.placedAt)}',
         ),
         const SizedBox(height: 12),
-        StatusBadge(_titleCase(order.status), tone: _shopStatusTone(order.status)),
+        StatusBadge(
+          _titleCase(order.status),
+          tone: _shopStatusTone(order.status),
+        ),
         DetailList(
           rows: [
             for (final line in order.lines)
@@ -152,7 +154,8 @@ class ShopOrderScreen extends ConsumerWidget {
         if (order.status == 'dispatched' || order.status == 'delivered') ...[
           PrimaryButton(
             label: 'Track delivery',
-            onPressed: () => context.push(RoutePaths.shopTracking, extra: order),
+            onPressed: () =>
+                context.push(RoutePaths.shopTracking, extra: order),
           ),
           const SizedBox(height: 10),
           SecondaryButton(
@@ -187,16 +190,21 @@ class ShopTrackingScreen extends StatelessWidget {
           title: 'On its way to you',
           subtitle: 'Order ${order.reference}',
         ),
-        DetailList(rows: [
-          ('Status', _titleCase(order.status)),
-          if (order.trackingCarrier?.isNotEmpty == true)
-            ('Carrier', order.trackingCarrier!),
-          if (order.trackingNumber?.isNotEmpty == true)
-            ('Tracking number', order.trackingNumber!),
-        ]),
+        DetailList(
+          rows: [
+            ('Status', _titleCase(order.status)),
+            if (order.trackingCarrier?.isNotEmpty == true)
+              ('Carrier', order.trackingCarrier!),
+            if (order.trackingNumber?.isNotEmpty == true)
+              ('Tracking number', order.trackingNumber!),
+          ],
+        ),
         PanelCard(title: 'Delivery address', body: order.delivery.oneLine),
         if (order.trackingNumber?.isEmpty != false)
-          const InfoBanner(message: 'Tracking details will appear when the order is dispatched.'),
+          const InfoBanner(
+            message:
+                'Tracking details will appear when the order is dispatched.',
+          ),
         const SizedBox(height: 16),
         SecondaryButton(
           label: 'Get order support',
@@ -238,20 +246,21 @@ class _ShopReturnScreenState extends ConsumerState<ShopReturnScreen> {
     }
     setState(() => _submitting = true);
     try {
-      final request = await ref.read(shopProvider.notifier).requestReturn(
-        order: widget.order,
-        line: _line,
-        reason: _reason,
-        details: _detail.text.trim(),
-      );
+      final request = await ref
+          .read(shopProvider.notifier)
+          .requestReturn(
+            order: widget.order,
+            line: _line,
+            reason: _reason,
+            details: _detail.text.trim(),
+          );
       if (mounted) {
         context.pushReplacement(RoutePaths.shopReturnSent, extra: request);
       }
     } catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$error')),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('$error')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);

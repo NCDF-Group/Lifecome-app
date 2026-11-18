@@ -59,73 +59,74 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
             onRetry: () => ref.read(shopProvider.notifier).refresh(),
           )
         else ...[
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              for (final category in ShopCategory.values) ...[
-                ChoiceChip(
-                  label: Text(category.label),
-                  selected: category == _category,
-                  showCheckmark: false,
-                  onSelected: (_) => setState(() => _category = category),
-                  selectedColor: palette.accent,
-                  backgroundColor: palette.elevated,
-                  side: BorderSide(
-                    color: category == _category
-                        ? palette.accent
-                        : palette.line,
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                for (final category in ShopCategory.values) ...[
+                  ChoiceChip(
+                    label: Text(category.label),
+                    selected: category == _category,
+                    showCheckmark: false,
+                    onSelected: (_) => setState(() => _category = category),
+                    selectedColor: palette.accent,
+                    backgroundColor: palette.elevated,
+                    side: BorderSide(
+                      color: category == _category
+                          ? palette.accent
+                          : palette.line,
+                    ),
+                    shape: const StadiumBorder(),
+                    labelStyle: TextStyle(
+                      fontSize: 13,
+                      color: category == _category
+                          ? Colors.white
+                          : palette.inkMuted,
+                    ),
                   ),
-                  shape: const StadiumBorder(),
-                  labelStyle: TextStyle(
-                    fontSize: 13,
-                    color: category == _category
-                        ? Colors.white
-                        : palette.inkMuted,
-                  ),
-                ),
-                const SizedBox(width: 7),
+                  const SizedBox(width: 7),
+                ],
               ],
-            ],
-          ),
-        ),
-        const SizedBox(height: 14),
-        if (products.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 28),
-            child: Text(
-              'No products are available in this category right now.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: palette.inkMuted),
             ),
-          )
-        else GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 11,
-          crossAxisSpacing: 11,
-          childAspectRatio: 0.66,
-          children: [for (final p in products) _ProductCard(product: p)],
-        ),
-        const SizedBox(height: 14),
-        PrimaryButton(
-          label: 'View basket ($count)',
-          onPressed: () => context.push(RoutePaths.shopBasket),
-        ),
-        const SizedBox(height: 4),
-        RowCard(
-          icon: LcIcons.truck,
-          title: 'My orders',
-          subtitle: 'Track deliveries and manage returns',
-          onTap: () => context.push(RoutePaths.shopOrders),
-        ),
-        const SizedBox(height: 8),
-        const InfoBanner(
-          message:
-              'Supplements are not a substitute for a balanced diet or '
-              'clinical care.',
-        ),
+          ),
+          const SizedBox(height: 14),
+          if (products.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 28),
+              child: Text(
+                'No products are available in this category right now.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: palette.inkMuted),
+              ),
+            )
+          else
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: 11,
+              crossAxisSpacing: 11,
+              childAspectRatio: 0.66,
+              children: [for (final p in products) _ProductCard(product: p)],
+            ),
+          const SizedBox(height: 14),
+          PrimaryButton(
+            label: 'View basket ($count)',
+            onPressed: () => context.push(RoutePaths.shopBasket),
+          ),
+          const SizedBox(height: 4),
+          RowCard(
+            icon: LcIcons.truck,
+            title: 'My orders',
+            subtitle: 'Track deliveries and manage returns',
+            onTap: () => context.push(RoutePaths.shopOrders),
+          ),
+          const SizedBox(height: 8),
+          const InfoBanner(
+            message:
+                'Supplements are not a substitute for a balanced diet or '
+                'clinical care.',
+          ),
         ],
       ],
     );
@@ -252,9 +253,8 @@ class ShopProductScreen extends ConsumerWidget {
                     }
                   } catch (error) {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('$error')),
-                      );
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text('$error')));
                     }
                   }
                 }
@@ -317,10 +317,7 @@ class ShopBasketScreen extends ConsumerWidget {
         if (shop.loading)
           const SkeletonLoader()
         else if (shop.error != null)
-          ErrorState(
-            error: shop.error!,
-            onRetry: () => notifier.refresh(),
-          )
+          ErrorState(error: shop.error!, onRetry: () => notifier.refresh())
         else if (shop.itemCount == 0) ...[
           const SizedBox(height: 16),
           Center(child: LcIcon(LcIcons.bag, size: 44, color: palette.accent)),

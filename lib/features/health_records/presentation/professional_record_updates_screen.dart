@@ -26,12 +26,16 @@ class ProfessionalRecordUpdatesScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 25),
           children: [
-            const AppHeaderBar(showBack: true, backFallback: RoutePaths.healthRecords),
+            const AppHeaderBar(
+              showBack: true,
+              backFallback: RoutePaths.healthRecords,
+            ),
             const SizedBox(height: 4),
             const ScreenTitle(
               eyebrow: 'Health records',
               title: 'Professional record updates',
-              subtitle: 'Clinical notes shared by your healthcare professionals.',
+              subtitle:
+                  'Clinical notes shared by your healthcare professionals.',
             ),
             const SizedBox(height: 12),
             notes.when(
@@ -55,7 +59,8 @@ class ProfessionalRecordUpdatesScreen extends ConsumerWidget {
                           RowCard(
                             icon: LcIcons.file,
                             title: item.title,
-                            subtitle: '${item.clinician} · ${Formatters.date(item.date)}',
+                            subtitle:
+                                '${item.clinician} · ${Formatters.date(item.date)}',
                             onTap: () => context.push(
                               RoutePaths.clinicalNote,
                               extra: item,

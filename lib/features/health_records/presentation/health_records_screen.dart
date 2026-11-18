@@ -153,8 +153,7 @@ class HealthRecordsScreen extends ConsumerWidget {
               title: 'Professional record updates',
               subtitle: 'Import information shared by another professional',
               tone: RowCardTone.white,
-              onTap: () =>
-                  context.push(RoutePaths.professionalRecordUpdates),
+              onTap: () => context.push(RoutePaths.professionalRecordUpdates),
             ),
             const SectionHeader(title: 'Sharing'),
             RowCard(

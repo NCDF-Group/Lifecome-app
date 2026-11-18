@@ -2,7 +2,11 @@ import '../../../core/network/api_client.dart';
 import '../domain/shop_models.dart';
 
 class ShopCheckout {
-  const ShopCheckout({required this.orderId, required this.orderNumber, required this.checkoutUrl});
+  const ShopCheckout({
+    required this.orderId,
+    required this.orderNumber,
+    required this.checkoutUrl,
+  });
 
   factory ShopCheckout.fromJson(Map<String, dynamic> json) {
     final order = json['order'] as Map<String, dynamic>? ?? const {};
@@ -56,10 +60,12 @@ class DioShopRepository implements ShopRepository {
 
   @override
   Future<ShopBasket> addItem(String productId, int quantity) async =>
-      ShopBasket.fromJson(await _client.post(
-        '/shop/basket/items',
-        data: {'productId': productId, 'quantity': quantity},
-      ));
+      ShopBasket.fromJson(
+        await _client.post(
+          '/shop/basket/items',
+          data: {'productId': productId, 'quantity': quantity},
+        ),
+      );
 
   @override
   Future<ShopBasket> setQuantity(String productId, int quantity) async {
@@ -67,10 +73,12 @@ class DioShopRepository implements ShopRepository {
       await _client.delete('/shop/basket/items/$productId');
       return getBasket();
     }
-    return ShopBasket.fromJson(await _client.patch(
-      '/shop/basket/items/$productId',
-      data: {'quantity': quantity},
-    ));
+    return ShopBasket.fromJson(
+      await _client.patch(
+        '/shop/basket/items/$productId',
+        data: {'quantity': quantity},
+      ),
+    );
   }
 
   @override
@@ -88,18 +96,21 @@ class DioShopRepository implements ShopRepository {
     required ShopDelivery delivery,
     required String email,
     required bool acceptTerms,
-  }) async => ShopCheckout.fromJson(await _client.post(
-    '/shop/orders',
-    data: {
-      'shippingAddress': delivery.toApiJson(),
-      'contactEmail': email,
-      'acceptTerms': acceptTerms,
-    },
-  ));
+  }) async => ShopCheckout.fromJson(
+    await _client.post(
+      '/shop/orders',
+      data: {
+        'shippingAddress': delivery.toApiJson(),
+        'contactEmail': email,
+        'acceptTerms': acceptTerms,
+      },
+    ),
+  );
 
   @override
-  Future<ShopOrder> confirmPayment(String orderId) async =>
-      ShopOrder.fromJson(await _client.post('/shop/orders/$orderId/confirm-payment'));
+  Future<ShopOrder> confirmPayment(String orderId) async => ShopOrder.fromJson(
+    await _client.post('/shop/orders/$orderId/confirm-payment'),
+  );
 
   @override
   Future<ShopReturnRequest> requestReturn({
@@ -107,15 +118,17 @@ class DioShopRepository implements ShopRepository {
     required ShopOrderLine line,
     required String reason,
     required String details,
-  }) async => ShopReturnRequest.fromJson(await _client.post(
-    '/shop/orders/${order.id}/returns',
-    data: {
-      'items': [
-        {'orderItemId': line.id, 'quantity': line.quantity},
-      ],
-      'reason': ShopReturnRequest.reasonToApi(reason),
-      if (details.trim().isNotEmpty) 'details': details.trim(),
-      'acceptTerms': true,
-    },
-  ));
+  }) async => ShopReturnRequest.fromJson(
+    await _client.post(
+      '/shop/orders/${order.id}/returns',
+      data: {
+        'items': [
+          {'orderItemId': line.id, 'quantity': line.quantity},
+        ],
+        'reason': ShopReturnRequest.reasonToApi(reason),
+        if (details.trim().isNotEmpty) 'details': details.trim(),
+        'acceptTerms': true,
+      },
+    ),
+  );
 }

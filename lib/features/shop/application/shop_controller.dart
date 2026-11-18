@@ -90,7 +90,9 @@ class ShopController extends Notifier<ShopState> {
 
   Future<void> add(ShopProduct product) async {
     try {
-      final basket = await ref.read(shopRepositoryProvider).addItem(product.id, 1);
+      final basket = await ref
+          .read(shopRepositoryProvider)
+          .addItem(product.id, 1);
       state = state.copyWith(basket: basket, clearError: true);
     } catch (error) {
       state = state.copyWith(error: error);
@@ -113,15 +115,16 @@ class ShopController extends Notifier<ShopState> {
   void setDelivery(ShopDelivery delivery) =>
       state = state.copyWith(delivery: delivery, clearCheckout: true);
 
-  Future<ShopCheckout> checkout({required String email, required bool acceptTerms}) async {
+  Future<ShopCheckout> checkout({
+    required String email,
+    required bool acceptTerms,
+  }) async {
     final delivery = state.delivery;
     if (delivery == null) throw StateError('Add a delivery address first.');
     try {
-      final result = await ref.read(shopRepositoryProvider).checkout(
-        delivery: delivery,
-        email: email,
-        acceptTerms: acceptTerms,
-      );
+      final result = await ref
+          .read(shopRepositoryProvider)
+          .checkout(delivery: delivery, email: email, acceptTerms: acceptTerms);
       state = state.copyWith(checkout: result, clearError: true);
       return result;
     } catch (error) {
@@ -131,7 +134,9 @@ class ShopController extends Notifier<ShopState> {
   }
 
   Future<ShopOrder> confirmPayment(String orderId) async {
-    final order = await ref.read(shopRepositoryProvider).confirmPayment(orderId);
+    final order = await ref
+        .read(shopRepositoryProvider)
+        .confirmPayment(orderId);
     await refresh();
     return order;
   }
@@ -142,15 +147,19 @@ class ShopController extends Notifier<ShopState> {
     required String reason,
     required String details,
   }) async {
-    final response = await ref.read(shopRepositoryProvider).requestReturn(
-      order: order,
-      line: line,
-      reason: reason,
-      details: details,
-    );
+    final response = await ref
+        .read(shopRepositoryProvider)
+        .requestReturn(
+          order: order,
+          line: line,
+          reason: reason,
+          details: details,
+        );
     final updated = await ref.read(shopRepositoryProvider).getOrder(order.id);
     state = state.copyWith(
-      orders: [for (final item in state.orders) item.id == updated.id ? updated : item],
+      orders: [
+        for (final item in state.orders) item.id == updated.id ? updated : item,
+      ],
     );
     return ShopReturnRequest(
       id: response.id,

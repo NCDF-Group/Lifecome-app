@@ -4,13 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/router/route_paths.dart';
-import '../../../core/theme/app_palette.dart';
 import '../../../core/network/api_exception.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/buttons/secondary_button.dart';
-import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/feedback/status_chip.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
 import '../../../core/widgets/inputs/choice_card.dart';
@@ -196,6 +195,8 @@ class _ShopReviewScreenState extends ConsumerState<ShopReviewScreen> {
   bool _agreed = false;
   bool _showError = false;
   bool _submitting = false;
+  String? _checkoutOrderId;
+  String? _checkoutUrl;
 
   Future<void> _placeOrder(ShopState shop) async {
     if (!_agreed) {
@@ -205,27 +206,36 @@ class _ShopReviewScreenState extends ConsumerState<ShopReviewScreen> {
     final email = ref.read(meProvider).asData?.value.account.email;
     if (email == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Your account email could not be loaded.')),
+        const SnackBar(
+          content: Text('Your account email could not be loaded.'),
+        ),
       );
       return;
     }
     setState(() => _submitting = true);
     try {
-      final checkout = await ref.read(shopProvider.notifier).checkout(
-        email: email,
-        acceptTerms: true,
-      );
-      final uri = Uri.tryParse(checkout.checkoutUrl);
-      if (uri == null || !uri.hasScheme || !await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      )) {
-        throw const ApiException('The secure checkout page could not be opened.');
+      if (_checkoutUrl == null) {
+        final checkout = await ref
+            .read(shopProvider.notifier)
+            .checkout(email: email, acceptTerms: true);
+        _checkoutOrderId = checkout.orderId;
+        _checkoutUrl = checkout.checkoutUrl;
+      }
+      final uri = Uri.tryParse(_checkoutUrl!);
+      if (uri == null ||
+          !uri.hasScheme ||
+          !await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+        throw const ApiException(
+          'The secure checkout page could not be opened.',
+        );
       }
       if (!mounted) return;
+      setState(() {});
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Secure checkout opened. After payment, return and refresh My orders.'),
+          content: Text(
+            'Secure checkout opened. After payment, return and refresh My orders.',
+          ),
           duration: Duration(seconds: 6),
         ),
       );
@@ -234,7 +244,37 @@ class _ShopReviewScreenState extends ConsumerState<ShopReviewScreen> {
       final message = error is ApiException
           ? error.message
           : 'We could not start checkout. Please try again.';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
+
+  Future<void> _checkPayment() async {
+    final id = _checkoutOrderId;
+    if (id == null || _submitting) return;
+    setState(() => _submitting = true);
+    try {
+      final order = await ref.read(shopProvider.notifier).confirmPayment(id);
+      if (!mounted) return;
+      if (order.paymentStatus == 'paid') {
+        context.go(RoutePaths.home);
+        context.push(RoutePaths.shop);
+        context.push(RoutePaths.shopOrder, extra: order);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Payment has not been confirmed yet.')),
+        );
+      }
+    } catch (error) {
+      if (mounted) {
+        final message = error is ApiException
+            ? error.message
+            : 'We could not refresh the payment status.';
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(message)));
+      }
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -292,11 +332,20 @@ class _ShopReviewScreenState extends ConsumerState<ShopReviewScreen> {
           ),
         const SizedBox(height: 16),
         PrimaryButton(
-          label: _submitting ? 'Opening secure checkout…' : 'Continue to secure payment',
+          label: _submitting
+              ? 'Opening secure checkout…'
+              : 'Continue to secure payment',
           onPressed: shop.itemCount == 0 || delivery == null || _submitting
               ? null
               : () => _placeOrder(shop),
         ),
+        if (_checkoutOrderId != null) ...[
+          const SizedBox(height: 10),
+          SecondaryButton(
+            label: 'I have paid — check order status',
+            onPressed: _submitting ? null : _checkPayment,
+          ),
+        ],
       ],
     );
   }
@@ -316,7 +365,8 @@ class ShopConfirmedScreen extends ConsumerWidget {
         const SuccessIcon(),
         ScreenTitle(
           title: 'Thank you, $first',
-          subtitle: 'Your order status and payment confirmation are up to date.',
+          subtitle:
+              'Your order status and payment confirmation are up to date.',
         ),
         const SizedBox(height: 12),
         const StatusBadge('Confirmed', tone: BadgeTone.blue),
