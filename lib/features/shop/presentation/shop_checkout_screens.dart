@@ -359,23 +359,24 @@ class ShopConfirmedScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final first = order.delivery.recipient.split(' ').first;
+    final recipient = order.delivery.recipient.trim();
+    final first = recipient.isEmpty ? null : recipient.split(' ').first;
     return ShopPage(
       children: [
         const SuccessIcon(),
         ScreenTitle(
-          title: 'Thank you, $first',
-          subtitle:
-              'Your order status and payment confirmation are up to date.',
+          title: first == null || first.isEmpty ? 'Order updated' : 'Thank you, $first',
+          subtitle: 'Your order information is from your account.',
         ),
         const SizedBox(height: 12),
-        const StatusBadge('Confirmed', tone: BadgeTone.blue),
+        StatusBadge(_shopOrderStatusLabel(order.status), tone: BadgeTone.blue),
         DetailList(
           rows: [
             ('Order', order.reference),
             ('Total', Formatters.money(order.totalPence)),
-            ('Delivery', '3 to 5 working days'),
-            ('Status', 'Confirmed'),
+            ('Payment', _shopOrderStatusLabel(order.paymentStatus)),
+            ('Delivery', order.trackingCarrier ?? 'Standard delivery'),
+            ('Status', _shopOrderStatusLabel(order.status)),
           ],
         ),
         const SizedBox(height: 16),
@@ -393,3 +394,9 @@ class ShopConfirmedScreen extends ConsumerWidget {
     );
   }
 }
+
+String _shopOrderStatusLabel(String value) => value
+    .split(RegExp(r'[_\s]+'))
+    .where((part) => part.isNotEmpty)
+    .map((part) => '${part[0].toUpperCase()}${part.substring(1)}')
+    .join(' ');
