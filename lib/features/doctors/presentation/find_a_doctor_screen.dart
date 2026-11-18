@@ -23,12 +23,10 @@ import '../../booking/domain/models/consultation_mode.dart';
 import '../application/doctor_search_controller.dart';
 import '../domain/models/doctor.dart';
 
-/// How many times each clinician's card previews.
-const _previewSlots = 4;
+/// Maximum number of live available times shown on each clinician card.
+const _availabilitySlotsShown = 4;
 
-/// Blueprint view 11 — Find a Doctor ("Find an appointment"). The clinicians
-/// come from the backend's directory and each card previews their next free
-/// times; nothing here is sample data.
+/// Clinicians and available times come from the backend directory and schedule.
 class FindADoctorScreen extends ConsumerStatefulWidget {
   const FindADoctorScreen({super.key, required this.selection});
 
@@ -513,7 +511,7 @@ class _DoctorCard extends ConsumerWidget {
                           slot.ukDay.month == day!.month &&
                           slot.ukDay.day == day!.day))
                     slot,
-              ].take(_previewSlots).toList();
+              ].take(_availabilitySlotsShown).toList();
               if (shown.isEmpty) {
                 return Text(
                   day == null
@@ -526,7 +524,7 @@ class _DoctorCard extends ConsumerWidget {
               // a bar across the card.
               return Row(
                 children: [
-                  for (var i = 0; i < _previewSlots; i++) ...[
+                  for (var i = 0; i < _availabilitySlotsShown; i++) ...[
                     Expanded(
                       child: i < shown.length
                           ? _SlotPill(
@@ -536,7 +534,8 @@ class _DoctorCard extends ConsumerWidget {
                             )
                           : const SizedBox.shrink(),
                     ),
-                    if (i != _previewSlots - 1) const SizedBox(width: 6),
+                    if (i != _availabilitySlotsShown - 1)
+                      const SizedBox(width: 6),
                   ],
                 ],
               );

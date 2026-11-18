@@ -24,6 +24,7 @@ dependencies:
 
   # HTTP client for Lifecome-Backen (see core/network/api_client.dart)
   dio: ^5.9.0
+  url_launcher: ^6.3.3
 
   # Native Daily video and audio calls
   daily_flutter: ^0.41.0

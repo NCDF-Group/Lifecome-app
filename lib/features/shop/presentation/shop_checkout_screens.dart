@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_palette.dart';
+import '../../../core/network/api_exception.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
@@ -151,8 +153,7 @@ class _ShopDeliveryScreenState extends ConsumerState<ShopDeliveryScreen> {
   }
 }
 
-/// "Your payment method" — checkout step 2 (screen pack 109). The preview
-/// collects no card details.
+/// Secure payment is handled by the backend's configured payment provider.
 class ShopPaymentScreen extends StatelessWidget {
   const ShopPaymentScreen({super.key});
 
@@ -172,13 +173,6 @@ class ShopPaymentScreen extends StatelessWidget {
           subtitle: 'Handled securely by our payment provider',
           selected: true,
           onTap: () {},
-        ),
-        const SizedBox(height: 8),
-        const InfoBanner(
-          tone: BannerTone.warning,
-          message:
-              'No card details are collected or charged while the shop is in '
-              'preview.',
         ),
         const SizedBox(height: 16),
         PrimaryButton(
@@ -201,6 +195,50 @@ class ShopReviewScreen extends ConsumerStatefulWidget {
 class _ShopReviewScreenState extends ConsumerState<ShopReviewScreen> {
   bool _agreed = false;
   bool _showError = false;
+  bool _submitting = false;
+
+  Future<void> _placeOrder(ShopState shop) async {
+    if (!_agreed) {
+      setState(() => _showError = true);
+      return;
+    }
+    final email = ref.read(meProvider).asData?.value.account.email;
+    if (email == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Your account email could not be loaded.')),
+      );
+      return;
+    }
+    setState(() => _submitting = true);
+    try {
+      final checkout = await ref.read(shopProvider.notifier).checkout(
+        email: email,
+        acceptTerms: true,
+      );
+      final uri = Uri.tryParse(checkout.checkoutUrl);
+      if (uri == null || !uri.hasScheme || !await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      )) {
+        throw const ApiException('The secure checkout page could not be opened.');
+      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Secure checkout opened. After payment, return and refresh My orders.'),
+          duration: Duration(seconds: 6),
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      final message = error is ApiException
+          ? error.message
+          : 'We could not start checkout. Please try again.';
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -242,9 +280,7 @@ class _ShopReviewScreenState extends ConsumerState<ShopReviewScreen> {
             _agreed = v;
             if (v) _showError = false;
           }),
-          label:
-              'I have reviewed my order and understand that, while the shop '
-              'is in preview, nothing will be charged or shipped.',
+          label: 'I agree to the order and delivery terms.',
         ),
         if (_showError)
           Padding(
@@ -256,19 +292,10 @@ class _ShopReviewScreenState extends ConsumerState<ShopReviewScreen> {
           ),
         const SizedBox(height: 16),
         PrimaryButton(
-          label: 'Place order',
-          onPressed: shop.itemCount == 0 || delivery == null
+          label: _submitting ? 'Opening secure checkout…' : 'Continue to secure payment',
+          onPressed: shop.itemCount == 0 || delivery == null || _submitting
               ? null
-              : () {
-                  if (!_agreed) {
-                    setState(() => _showError = true);
-                    return;
-                  }
-                  final order = ref.read(shopProvider.notifier).placeOrder();
-                  context.go(RoutePaths.home);
-                  context.push(RoutePaths.shop);
-                  context.push(RoutePaths.shopConfirmed, extra: order);
-                },
+              : () => _placeOrder(shop),
         ),
       ],
     );
@@ -289,9 +316,7 @@ class ShopConfirmedScreen extends ConsumerWidget {
         const SuccessIcon(),
         ScreenTitle(
           title: 'Thank you, $first',
-          subtitle:
-              'Your order is placed. While the shop is in preview, no payment '
-              'is taken and nothing will be shipped.',
+          subtitle: 'Your order status and payment confirmation are up to date.',
         ),
         const SizedBox(height: 12),
         const StatusBadge('Confirmed', tone: BadgeTone.blue),

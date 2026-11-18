@@ -8,7 +8,9 @@ import '../../../core/theme/app_palette.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/buttons/secondary_button.dart';
+import '../../../core/widgets/feedback/error_state.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
+import '../../../core/widgets/feedback/skeleton_loader.dart';
 import '../../../core/widgets/feedback/status_chip.dart';
 import '../../../core/widgets/inputs/choice_card.dart';
 import '../../../core/widgets/inputs/form_fields.dart';
@@ -21,6 +23,18 @@ import '../application/shop_controller.dart';
 import '../domain/shop_models.dart';
 import 'shop_widgets.dart';
 
+String _titleCase(String value) => value
+    .split(RegExp(r'[_\s]+'))
+    .where((part) => part.isNotEmpty)
+    .map((part) => '${part[0].toUpperCase()}${part.substring(1)}')
+    .join(' ');
+
+BadgeTone _shopStatusTone(String status) => switch (status) {
+  'dispatched' || 'delivered' => BadgeTone.green,
+  'cancelled' => BadgeTone.gray,
+  _ => BadgeTone.blue,
+};
+
 /// "Your orders" (screen pack 112).
 class ShopOrdersScreen extends ConsumerWidget {
   const ShopOrdersScreen({super.key});
@@ -28,7 +42,8 @@ class ShopOrdersScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final palette = context.palette;
-    final orders = ref.watch(shopProvider).orders;
+    final shop = ref.watch(shopProvider);
+    final orders = shop.orders;
     return ShopPage(
       children: [
         const ScreenTitle(
@@ -36,7 +51,14 @@ class ShopOrdersScreen extends ConsumerWidget {
           subtitle: 'Keep track of your wellbeing essentials.',
         ),
         const SizedBox(height: 14),
-        if (orders.isEmpty)
+        if (shop.loading)
+          const SkeletonLoader()
+        else if (shop.error != null)
+          ErrorState(
+            error: shop.error!,
+            onRetry: () => ref.read(shopProvider.notifier).refresh(),
+          )
+        else if (orders.isEmpty)
           Container(
             padding: const EdgeInsets.symmetric(vertical: 26, horizontal: 16),
             decoration: BoxDecoration(
@@ -84,11 +106,7 @@ class ShopOrderScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final returned = ref
-        .watch(shopProvider)
-        .returns
-        .where((r) => r.orderReference == order.reference)
-        .toList();
+    final returned = order.returns;
     return ShopPage(
       backFallback: RoutePaths.shopOrders,
       children: [
@@ -97,7 +115,7 @@ class ShopOrderScreen extends ConsumerWidget {
           subtitle: 'Placed ${Formatters.longDate(order.placedAt)}',
         ),
         const SizedBox(height: 12),
-        const StatusBadge('Confirmed', tone: BadgeTone.blue),
+        StatusBadge(_titleCase(order.status), tone: _shopStatusTone(order.status)),
         DetailList(
           rows: [
             for (final line in order.lines)
@@ -115,9 +133,11 @@ class ShopOrderScreen extends ConsumerWidget {
         ),
         DetailList(
           rows: [
-            ('Payment', 'Not charged · preview'),
-            ('Delivery', 'Standard · 3 to 5 working days'),
+            ('Payment', _titleCase(order.paymentStatus)),
+            ('Delivery', order.trackingCarrier ?? 'Standard delivery'),
             ('Address', order.delivery.oneLine),
+            if (order.trackingNumber?.isNotEmpty == true)
+              ('Tracking number', order.trackingNumber!),
           ],
         ),
         if (returned.isNotEmpty) ...[
@@ -129,15 +149,17 @@ class ShopOrderScreen extends ConsumerWidget {
           ),
         ],
         const SizedBox(height: 16),
-        PrimaryButton(
-          label: 'Track delivery',
-          onPressed: () => context.push(RoutePaths.shopTracking, extra: order),
-        ),
-        const SizedBox(height: 10),
-        SecondaryButton(
-          label: 'Request a return',
-          onPressed: () => context.push(RoutePaths.shopReturn, extra: order),
-        ),
+        if (order.status == 'dispatched' || order.status == 'delivered') ...[
+          PrimaryButton(
+            label: 'Track delivery',
+            onPressed: () => context.push(RoutePaths.shopTracking, extra: order),
+          ),
+          const SizedBox(height: 10),
+          SecondaryButton(
+            label: 'Request a return',
+            onPressed: () => context.push(RoutePaths.shopReturn, extra: order),
+          ),
+        ],
         const SizedBox(height: 6),
         RowCard(
           icon: LcIcons.message,
@@ -165,21 +187,16 @@ class ShopTrackingScreen extends StatelessWidget {
           title: 'On its way to you',
           subtitle: 'Order ${order.reference}',
         ),
-        const StepTimeline(
-          items: [
-            ('Order confirmed', 'Your order details are ready.'),
-            ('Preparing your items', 'The team prepares your package.'),
-            ('Dispatched', 'Tracking appears when available.'),
-            ('Delivered', 'Your order reaches its destination.'),
-          ],
-        ),
+        DetailList(rows: [
+          ('Status', _titleCase(order.status)),
+          if (order.trackingCarrier?.isNotEmpty == true)
+            ('Carrier', order.trackingCarrier!),
+          if (order.trackingNumber?.isNotEmpty == true)
+            ('Tracking number', order.trackingNumber!),
+        ]),
         PanelCard(title: 'Delivery address', body: order.delivery.oneLine),
-        const InfoBanner(
-          tone: BannerTone.warning,
-          message:
-              'While the shop is in preview, orders are not shipped, so there '
-              'is no parcel to track.',
-        ),
+        if (order.trackingNumber?.isEmpty != false)
+          const InfoBanner(message: 'Tracking details will appear when the order is dispatched.'),
         const SizedBox(height: 16),
         SecondaryButton(
           label: 'Get order support',
@@ -201,16 +218,44 @@ class ShopReturnScreen extends ConsumerStatefulWidget {
 }
 
 class _ShopReturnScreenState extends ConsumerState<ShopReturnScreen> {
-  late String _item = widget.order.lines.first.product.name;
+  late ShopOrderLine _line = widget.order.lines.first;
   String _reason = ShopReturnRequest.reasons.first;
   final _detail = TextEditingController();
   bool _understood = false;
   bool _showError = false;
+  bool _submitting = false;
 
   @override
   void dispose() {
     _detail.dispose();
     super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (!_understood) {
+      setState(() => _showError = true);
+      return;
+    }
+    setState(() => _submitting = true);
+    try {
+      final request = await ref.read(shopProvider.notifier).requestReturn(
+        order: widget.order,
+        line: _line,
+        reason: _reason,
+        details: _detail.text.trim(),
+      );
+      if (mounted) {
+        context.pushReplacement(RoutePaths.shopReturnSent, extra: request);
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('$error')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
   }
 
   @override
@@ -223,12 +268,12 @@ class _ShopReturnScreenState extends ConsumerState<ShopReturnScreen> {
           subtitle: 'The shop team will review eligibility and next steps.',
         ),
         const SizedBox(height: 10),
-        SelectField(
-          label: 'Item',
-          options: [for (final l in widget.order.lines) l.product.name],
-          value: _item,
-          onChanged: (v) => setState(() => _item = v),
-        ),
+        for (final line in widget.order.lines)
+          ChoiceCard(
+            title: '${line.product.name} × ${line.quantity}',
+            selected: line.id == _line.id,
+            onTap: () => setState(() => _line = line),
+          ),
         SelectField(
           label: 'Reason',
           options: ShopReturnRequest.reasons,
@@ -261,23 +306,8 @@ class _ShopReturnScreenState extends ConsumerState<ShopReturnScreen> {
           ),
         const SizedBox(height: 16),
         PrimaryButton(
-          label: 'Send return request',
-          onPressed: () {
-            if (!_understood) {
-              setState(() => _showError = true);
-              return;
-            }
-            final detail = _detail.text.trim();
-            final request = ref
-                .read(shopProvider.notifier)
-                .requestReturn(
-                  order: widget.order,
-                  item: _item,
-                  reason: _reason,
-                  detail: detail.isEmpty ? null : detail,
-                );
-            context.pushReplacement(RoutePaths.shopReturnSent, extra: request);
-          },
+          label: _submitting ? 'Sending…' : 'Send return request',
+          onPressed: _submitting ? null : _submit,
         ),
       ],
     );

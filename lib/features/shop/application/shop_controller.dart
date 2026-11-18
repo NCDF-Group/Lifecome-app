@@ -1,110 +1,165 @@
-import 'dart:math';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/core_providers.dart';
+import '../data/shop_repository.dart';
 import '../domain/shop_models.dart';
 
-/// The basket, checkout details and orders.
-///
-/// The Wellbeing Shop has no backend yet, so this is preview data kept in
-/// memory for the session (signing out clears it): no payment is taken and
-/// nothing is shipped.
+final shopRepositoryProvider = Provider<ShopRepository>((ref) {
+  return DioShopRepository(ref.watch(apiClientProvider));
+});
+
 class ShopState {
   const ShopState({
-    this.basket = const {},
+    this.products = const [],
+    this.basket = const ShopBasket(),
     this.delivery,
     this.orders = const [],
-    this.returns = const [],
+    this.checkout,
+    this.loading = true,
+    this.error,
   });
 
-  /// Product id to quantity.
-  final Map<String, int> basket;
+  final List<ShopProduct> products;
+  final ShopBasket basket;
   final ShopDelivery? delivery;
-
-  /// Newest first.
   final List<ShopOrder> orders;
-  final List<ShopReturnRequest> returns;
+  final ShopCheckout? checkout;
+  final bool loading;
+  final Object? error;
 
-  List<ShopOrderLine> get lines => [
-    for (final entry in basket.entries)
-      ShopOrderLine(
-        product: ShopProduct.byId(entry.key),
-        quantity: entry.value,
-      ),
-  ];
-
-  int get itemCount => basket.values.fold(0, (a, b) => a + b);
-  int get subtotalPence => lines.fold(0, (sum, l) => sum + l.totalPence);
-  int get deliveryPence => ShopPricing.deliveryFor(subtotalPence);
-  int get totalPence => subtotalPence + deliveryPence;
+  List<ShopBasketLine> get lines => basket.lines;
+  int get itemCount => basket.itemCount;
+  int get subtotalPence => basket.subtotalPence;
+  int get deliveryPence => basket.deliveryPence;
+  int get totalPence => basket.totalPence;
 
   ShopState copyWith({
-    Map<String, int>? basket,
+    List<ShopProduct>? products,
+    ShopBasket? basket,
     ShopDelivery? delivery,
+    bool clearDelivery = false,
     List<ShopOrder>? orders,
-    List<ShopReturnRequest>? returns,
+    ShopCheckout? checkout,
+    bool clearCheckout = false,
+    bool? loading,
+    Object? error,
+    bool clearError = false,
   }) => ShopState(
+    products: products ?? this.products,
     basket: basket ?? this.basket,
-    delivery: delivery ?? this.delivery,
+    delivery: clearDelivery ? null : delivery ?? this.delivery,
     orders: orders ?? this.orders,
-    returns: returns ?? this.returns,
+    checkout: clearCheckout ? null : checkout ?? this.checkout,
+    loading: loading ?? this.loading,
+    error: clearError ? null : error ?? this.error,
   );
 }
 
+/// Shop catalogue, persistent basket, orders and returns from the backend.
 class ShopController extends Notifier<ShopState> {
-  final _random = Random();
-
   @override
   ShopState build() {
     ref.watch(sessionEpochProvider);
+    final repository = ref.watch(shopRepositoryProvider);
+    Future.microtask(() => _load(repository));
     return const ShopState();
   }
 
-  void add(ShopProduct product) =>
-      setQuantity(product.id, (state.basket[product.id] ?? 0) + 1);
-
-  /// Sets a basket quantity, removing the line at zero.
-  void setQuantity(String productId, int quantity) {
-    final basket = {...state.basket};
-    if (quantity <= 0) {
-      basket.remove(productId);
-    } else {
-      basket[productId] = quantity.clamp(1, 20);
+  Future<void> _load(ShopRepository repository) async {
+    try {
+      final values = await Future.wait<Object>([
+        repository.listProducts(),
+        repository.getBasket(),
+        repository.listOrders(),
+      ]);
+      state = ShopState(
+        products: values[0] as List<ShopProduct>,
+        basket: values[1] as ShopBasket,
+        orders: values[2] as List<ShopOrder>,
+        loading: false,
+      );
+    } catch (error) {
+      state = state.copyWith(loading: false, error: error);
     }
-    state = state.copyWith(basket: basket);
+  }
+
+  Future<void> refresh() async {
+    state = state.copyWith(loading: true, clearError: true);
+    await _load(ref.read(shopRepositoryProvider));
+  }
+
+  Future<void> add(ShopProduct product) async {
+    try {
+      final basket = await ref.read(shopRepositoryProvider).addItem(product.id, 1);
+      state = state.copyWith(basket: basket, clearError: true);
+    } catch (error) {
+      state = state.copyWith(error: error);
+      rethrow;
+    }
+  }
+
+  Future<void> setQuantity(String productId, int quantity) async {
+    try {
+      final basket = await ref
+          .read(shopRepositoryProvider)
+          .setQuantity(productId, quantity.clamp(0, 99));
+      state = state.copyWith(basket: basket, clearError: true);
+    } catch (error) {
+      state = state.copyWith(error: error);
+      rethrow;
+    }
   }
 
   void setDelivery(ShopDelivery delivery) =>
-      state = state.copyWith(delivery: delivery);
+      state = state.copyWith(delivery: delivery, clearCheckout: true);
 
-  /// Turns the basket into an order and empties it.
-  ShopOrder placeOrder() {
-    final order = ShopOrder(
-      reference: 'LC-SHOP-${1000 + _random.nextInt(9000)}',
-      placedAt: DateTime.now(),
-      lines: state.lines,
-      delivery: state.delivery!,
-    );
-    state = state.copyWith(basket: const {}, orders: [order, ...state.orders]);
+  Future<ShopCheckout> checkout({required String email, required bool acceptTerms}) async {
+    final delivery = state.delivery;
+    if (delivery == null) throw StateError('Add a delivery address first.');
+    try {
+      final result = await ref.read(shopRepositoryProvider).checkout(
+        delivery: delivery,
+        email: email,
+        acceptTerms: acceptTerms,
+      );
+      state = state.copyWith(checkout: result, clearError: true);
+      return result;
+    } catch (error) {
+      state = state.copyWith(error: error);
+      rethrow;
+    }
+  }
+
+  Future<ShopOrder> confirmPayment(String orderId) async {
+    final order = await ref.read(shopRepositoryProvider).confirmPayment(orderId);
+    await refresh();
     return order;
   }
 
-  ShopReturnRequest requestReturn({
+  Future<ShopReturnRequest> requestReturn({
     required ShopOrder order,
-    required String item,
+    required ShopOrderLine line,
     required String reason,
-    String? detail,
-  }) {
-    final request = ShopReturnRequest(
-      reference: 'LC-RET-${1000 + _random.nextInt(9000)}',
-      orderReference: order.reference,
-      item: item,
+    required String details,
+  }) async {
+    final response = await ref.read(shopRepositoryProvider).requestReturn(
+      order: order,
+      line: line,
       reason: reason,
-      detail: detail,
+      details: details,
     );
-    state = state.copyWith(returns: [...state.returns, request]);
-    return request;
+    final updated = await ref.read(shopRepositoryProvider).getOrder(order.id);
+    state = state.copyWith(
+      orders: [for (final item in state.orders) item.id == updated.id ? updated : item],
+    );
+    return ShopReturnRequest(
+      id: response.id,
+      reference: response.reference,
+      orderReference: order.reference,
+      item: line.product.name,
+      reason: reason,
+      detail: details.trim().isEmpty ? null : details.trim(),
+    );
   }
 }
 

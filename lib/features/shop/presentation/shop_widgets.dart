@@ -3,24 +3,9 @@ import 'package:flutter/material.dart';
 import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/utils/formatters.dart';
-import '../../../core/widgets/feedback/info_banner.dart';
 import '../../../core/widgets/layout/app_header_bar.dart';
 import '../../../core/widgets/layout/detail_list.dart';
 import '../domain/shop_models.dart';
-
-/// Says plainly that the shop is a preview.
-class ShopPreviewNotice extends StatelessWidget {
-  const ShopPreviewNotice({super.key});
-
-  @override
-  Widget build(BuildContext context) => const InfoBanner(
-    tone: BannerTone.warning,
-    message:
-        'The Wellbeing Shop is in preview. Orders stay in this app: no '
-        'payment is taken and nothing is shipped. Products and prices are '
-        'examples.',
-  );
-}
 
 /// The scaffold every Shop screen shares.
 class ShopPage extends StatelessWidget {

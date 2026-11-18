@@ -10,7 +10,9 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/buttons/secondary_button.dart';
 import '../../../core/widgets/feedback/app_popup.dart';
+import '../../../core/widgets/feedback/error_state.dart';
 import '../../../core/widgets/feedback/info_banner.dart';
+import '../../../core/widgets/feedback/skeleton_loader.dart';
 import '../../../core/widgets/layout/detail_list.dart';
 import '../../../core/widgets/layout/screen_title.dart';
 import '../../../core/widgets/lists/row_card.dart';
@@ -33,9 +35,10 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
-    final count = ref.watch(shopProvider.select((s) => s.itemCount));
+    final shop = ref.watch(shopProvider);
+    final count = shop.itemCount;
     final products = [
-      for (final p in ShopProduct.all)
+      for (final p in shop.products)
         if (_category == ShopCategory.all || p.category == _category) p,
     ];
 
@@ -48,6 +51,14 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
           subtitle: 'Products for your everyday routine.',
         ),
         const SizedBox(height: 14),
+        if (shop.loading)
+          const SkeletonLoader()
+        else if (shop.error != null)
+          ErrorState(
+            error: shop.error!,
+            onRetry: () => ref.read(shopProvider.notifier).refresh(),
+          )
+        else ...[
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
@@ -79,7 +90,16 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
           ),
         ),
         const SizedBox(height: 14),
-        GridView.count(
+        if (products.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 28),
+            child: Text(
+              'No products are available in this category right now.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: palette.inkMuted),
+            ),
+          )
+        else GridView.count(
           crossAxisCount: 2,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -106,8 +126,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
               'Supplements are not a substitute for a balanced diet or '
               'clinical care.',
         ),
-        const SizedBox(height: 10),
-        const ShopPreviewNotice(),
+        ],
       ],
     );
   }
@@ -184,7 +203,8 @@ class ShopProductScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final palette = context.palette;
-    final count = ref.watch(shopProvider.select((s) => s.itemCount));
+    final shop = ref.watch(shopProvider);
+    final count = shop.itemCount;
     return ShopPage(
       children: [
         ProductArt(product: product, height: 210, scale: 1.65, radius: 20),
@@ -200,6 +220,14 @@ class ShopProductScreen extends ConsumerWidget {
           ),
         ),
         PanelCard(title: 'About this product', body: product.description),
+        if (product.stockQuantity == 0)
+          const InfoBanner(message: 'This product is currently out of stock.'),
+        if (product.ingredients?.isNotEmpty == true)
+          PanelCard(title: 'Ingredients', body: product.ingredients),
+        if (product.usageInstructions?.isNotEmpty == true)
+          PanelCard(title: 'Directions', body: product.usageInstructions),
+        if (product.warnings?.isNotEmpty == true)
+          PanelCard(title: 'Warnings', body: product.warnings),
         if (product.isSupplement) ...[
           const InfoBanner(
             message:
@@ -211,14 +239,26 @@ class ShopProductScreen extends ConsumerWidget {
         const SizedBox(height: 10),
         PrimaryButton(
           label: 'Add to basket',
-          onPressed: () async {
-            ref.read(shopProvider.notifier).add(product);
-            await showSuccessPopup(
-              context,
-              title: 'Added to basket',
-              message: '${product.name} is in your basket.',
-            );
-          },
+          onPressed: product.isAvailable && !shop.loading
+              ? () async {
+                  try {
+                    await ref.read(shopProvider.notifier).add(product);
+                    if (context.mounted) {
+                      await showSuccessPopup(
+                        context,
+                        title: 'Added to basket',
+                        message: '${product.name} is in your basket.',
+                      );
+                    }
+                  } catch (error) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('$error')),
+                      );
+                    }
+                  }
+                }
+              : null,
         ),
         const SizedBox(height: 10),
         SecondaryButton(
@@ -241,10 +281,8 @@ class ShopProductScreen extends ConsumerWidget {
             expandedAlignment: Alignment.centerLeft,
             children: [
               Text(
-                'Delivery is ${Formatters.money(ShopPricing.deliveryPence)}, '
-                'free from ${Formatters.money(ShopPricing.freeFromPence)}. '
-                'Whether an item can be returned depends on the product and '
-                'its condition.',
+                'Delivery costs and return eligibility are shown from the '
+                'current order and shop terms at checkout.',
                 style: TextStyle(
                   fontSize: 13.5,
                   height: 1.6,
@@ -276,7 +314,14 @@ class ShopBasketScreen extends ConsumerWidget {
           subtitle: shop.itemCount == 1 ? '1 item' : '${shop.itemCount} items',
         ),
         const SizedBox(height: 10),
-        if (shop.itemCount == 0) ...[
+        if (shop.loading)
+          const SkeletonLoader()
+        else if (shop.error != null)
+          ErrorState(
+            error: shop.error!,
+            onRetry: () => notifier.refresh(),
+          )
+        else if (shop.itemCount == 0) ...[
           const SizedBox(height: 16),
           Center(child: LcIcon(LcIcons.bag, size: 44, color: palette.accent)),
           const SizedBox(height: 12),
